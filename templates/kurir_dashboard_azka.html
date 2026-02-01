@@ -26,6 +26,12 @@
             background: #f8fafc;
             font-family: 'Inter', sans-serif;
         }
+        #reader {
+            width: 100%;
+            max-width: 420px;
+            height: 320px;
+            margin: auto;
+        }
 
         .card-box {
             background: #fff;
@@ -165,41 +171,59 @@
 </div>
 <script>
 let scanTypeAzka = null;
-let html5QrCode;
+let html5QrCode = new Html5Qrcode("reader");
 
-function openScanner(type) {
-    scanTypeAzka = type;
-    document.getElementById("scannerBox").style.display = "block";
+async function startScanner() {
+    const devices = await Html5Qrcode.getCameras();
 
-    html5QrCode = new Html5Qrcode("reader");
+    if (!devices || devices.length === 0) {
+        alert("Kamera tidak ditemukan!");
+        return;
+    }
+
+    // cari DroidCam
+    let cameraId = devices[0].id;
+    devices.forEach(cam => {
+        if (cam.label.toLowerCase().includes("droid")) {
+            cameraId = cam.id;
+        }
+    });
 
     html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        msg => {
+        cameraId,
+        {
+            fps: 15,
+            qrbox: { width: 220, height: 220 }
+        },
+        (msg) => {
             html5QrCode.stop();
 
             const data = msg.split("|");
-
             if (data[0] !== "GUDANG") {
                 alert("QR bukan QR Gudang!");
                 return;
             }
-
-            const warehouseIdAzka = data[1];
 
             fetch("/scan_kurir_azka", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
-                body: `scan_type_azka=${scanTypeAzka}&warehouse_id_azka=${warehouseIdAzka}`
+                body: `scan_type_azka=${scanTypeAzka}&warehouse_id_azka=${data[1]}`
             }).then(() => location.reload());
         }
     );
 }
-</script>
 
+function openScanner(type) {
+    scanTypeAzka = type;
+    document.getElementById("scannerBox").style.display = "block";
+
+    html5QrCode.stop().catch(() => {}).finally(() => {
+        startScanner();
+    });
+}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
