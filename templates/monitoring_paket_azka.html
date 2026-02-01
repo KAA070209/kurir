@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Paket Azka</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <style>
+        .tracking-table th, .tracking-table td {
+            text-align: center;
+        }
+        .status {
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .status.in-transit { background-color: #ffc107; }
+        .status.out-for-delivery { background-color: #28a745; }
+        .status.delivered { background-color: #17a2b8; }
+        .status.processing { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Monitoring Paket Azka</h2>
+        
+        <form method="POST" action="/monitoring_paket_azka" class="my-4">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <input type="text" name="tracking_number_azka" class="form-control" placeholder="Masukkan Nomor Tracking" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Cari</button>
+                </div>
+            </div>
+        </form>
+        
+        {% if shipment_azka %}
+        <div class="card">
+            <div class="card-header">
+                <h4>Informasi Pengiriman</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Nomor Tracking:</strong> {{ shipment_azka['tracking_number_azka'] }}</p>
+                <p><strong>Status Pengiriman:</strong> 
+                    <span class="status {{ shipment_azka['status_azka'].replace(' ', '-').lower() }}">
+                        {{ shipment_azka['status_azka'] }}
+                    </span>
+                </p>
+                <p><strong>Lokasi Terakhir:</strong> {{ shipment_azka['current_location_azka'] }}</p>
+                <p><strong>Kurir:</strong> {{ shipment_azka['kurir_nama_azka'] }}</p>
+                <p><strong>Gudang Pengiriman:</strong> {{ shipment_azka['warehouse_nama_azka'] }}</p>
+                <p><strong>Waktu Terakhir Diperbarui:</strong> {{ shipment_azka['updated_at_azka'] }}</p>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>Riwayat Tracking</h4>
+            </div>
+            <div class="card-body">
+                <table class="table tracking-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Deskripsi</th>
+                            <th>Lokasi</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for track in tracking_azka %}
+                        <tr>
+                            <td>
+                                <span class="status {{ track['status_azka'].replace(' ', '-').lower() }}">
+                                    {{ track['status_azka'] }}
+                                </span>
+                            </td>
+                            <td>{{ track['description_azka'] }}</td>
+                            <td>{{ track['location_azka'] }}</td>
+                            <td>{{ track['created_at_azka'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning mt-4">
+            Tidak ada informasi pengiriman ditemukan. Pastikan nomor tracking yang dimasukkan benar.
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

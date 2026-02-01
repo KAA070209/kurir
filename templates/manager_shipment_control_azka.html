@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Control – Manager</title>
+    <link rel="icon" type="image/x-icon" href="/static/icon/icon.png">
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CHARTJS (tidak dipakai disini, tapi biarkan saja untuk kompatibilitas) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ICONS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        /* Semua styling mengikuti style admin/manager agar konsisten */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-color: #6366f1;
+            --bg-light: #f8fafc;
+            --bg-card: #ffffff;
+            --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: #1f2937;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            position: fixed;
+            padding: 40px 0;
+            overflow-y: auto;
+            box-shadow: var(--shadow-light);
+            animation: slideInLeft 0.7s ease;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 10px 24px;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #6b7280;
+            border-radius: var(--radius);
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .sidebar a.active,
+        .sidebar a:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateX(8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .sidebar a i {
+            font-size: 20px;
+            width: 40px;
+        }
+
+        /* CONTENT */
+        .content {
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            background: var(--bg-card);
+            padding: 24px 32px;
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+        }
+
+        .user-avatar {
+            width: 52px;
+            height: 52px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* TABLE */
+        .table-card {
+            background: var(--bg-card);
+            padding: 28px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-light);
+        }
+
+        .table thead th {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+            transition: 0.2s;
+        }
+
+        /* STATUS BADGE */
+        .status {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .in_transit { background: #dbeafe; color: #1e40af; }
+        .delivered { background: #dcfce7; color: #166534; }
+        .failed { background: #fee2e2; color: #991b1b; }
+        .pending { background: #fef9c3; color: #854d0e; }
+         @media (max-width: 768px) {
+
+            body {
+                padding-bottom: 80px;
+            }
+
+            /* HIDE SIDEBAR */
+            .sidebar {
+                display: none;
+            }
+
+            /* FULL CONTENT */
+            .content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            /* TOPBAR */
+            .topbar {
+               display: flex;
+                flex-direction: row !important;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .topbar h4 {
+                font-size: 20px;
+            }
+
+            .topbar p {
+                font-size: 12px;
+            }
+
+            /* Container row */
+            .row.g-4 {
+                margin-left: -6px;
+                margin-right: -6px;
+            }
+
+            /* Bagi 2 kolom rata kiri–kanan */
+            .row.g-4 > .col-md-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            /* Card lebih compact */
+            .card-metric {
+                padding: 18px 16px;
+                height: auto;
+                border-radius: 14px;
+                text-align: left;
+            }
+
+            .card-metric h6 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .card-metric h2 {
+                font-size: 22px;
+                line-height: 1.2;
+            }
+
+            .metric-icon {
+                font-size: 24px;
+                top: 12px;
+                right: 12px;
+            }
+        }
+
+            /* CHART */
+            .chart-container {
+                padding: 20px;
+            }
+
+            /* ===== BOTTOM NAV ===== */
+            .bottom-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background: rgba(255,255,255,0.95);
+                backdrop-filter: blur(12px);
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                border-top: 1px solid rgba(0,0,0,0.08);
+                z-index: 3000;
+            }
+
+            .bottom-nav a {
+                flex: 1;
+                text-align: center;
+                color: #6b7280;
+                font-size: 11px;
+                text-decoration: none;
+            }
+
+            .bottom-nav a i {
+                font-size: 22px;
+                display: block;
+            }
+
+            .bottom-nav a.active {
+                color: #6366f1;
+                font-weight: 600;
+            }
+
+            /* ===== MOBILE MENU (FULL SIDEBAR) ===== */
+            .mobile-menu {
+                position: fixed;
+                bottom: -100%;
+                left: 0;
+                right: 0;
+                height: 85vh;
+                background: #fff;
+                border-radius: 24px 24px 0 0;
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+                transition: 0.35s ease;
+                z-index: 4000;
+                padding: 20px;
+            }
+
+            .mobile-menu.show {
+                bottom: 0;
+            }
+
+            .menu-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .menu-grid a {
+                background: #f8fafc;
+                border-radius: 16px;
+                padding: 16px 10px;
+                text-align: center;
+                font-size: 12px;
+                color: #1f2937;
+                text-decoration: none;
+            }
+
+            .menu-grid a i {
+                font-size: 24px;
+                display: block;
+                margin-bottom: 6px;
+                color: #6366f1;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+     <div class="sidebar">
+        <h4>📊 Manager</h4>
+
+        <a href="/manager_dashboard_azka" ><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/manager_shipment_control_azka"class="active"><i class="bi bi-truck"></i> Shipment Control</a>
+        <a href="/manager_stock_monitor_azka" ><i class="bi bi-box-seam"></i> Stock Monitor</a>
+        <a href="/manager_courier_performance_azka"><i class="bi bi-people"></i> Kurir Performance</a>
+        <a href="/manager_area_report_azka"><i class="bi bi-geo-alt"></i> Area Report</a>
+        <a href="/manager_po_monitor_azka"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
+        
+    </div>
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div>
+                <h4>Shipment Control</h4>
+                <p class="text-muted">Monitoring & Pengaturan Pengiriman</p>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-avatar">{{ username_azka[0] }}</div>
+                <div>
+                    <strong>{{ username_azka }}</strong><br>
+                    <small class="text-muted">Manager</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+         <div class="table-responsive table-responsive-custom">
+            <h5 class="mb-3">Daftar Pengiriman</h5>
+            <table class="table table-hover table-bordered align-middle table-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Order</th>
+                        <th>Kurir</th>
+                        <th>Status</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for s in shipments %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>#{{ s.order_number_azka }}</td>
+                        <td>
+                            {% if s.courier_name %}
+                                {{ s.courier_name }}
+                            {% else %}
+                                <span class="text-muted">Belum ada kurir</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="status {{ s.status_azka }}">
+                                {{ s.status_azka|capitalize }}
+                            </span>
+                        </td>
+
+                        <td>{{ s.created_at_azka }}</td>
+
+                        <td>
+                            <!-- ASSIGN KURIR -->
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#assignModal{{ s.id_azka }}">
+                                <i class="bi bi-person-check"></i>
+                            </button>
+
+                            <!-- DETAIL -->
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#detailModal{{ s.id_azka }}">
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                            <!-- UPDATE STATUS -->
+                            <button class="btn btn-success btn-sm" onclick="updateStatus('{{ s.id_azka }}','delivered')">
+                                <i class="bi bi-check2-circle"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="updateStatus('{{ s.id_azka }}','failed')">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <div class="modal fade" id="assignModal{{ s.id_azka }}">
+                        <div class="modal-dialog">
+                    
+                            <form method="POST" action="/manager_assign_courier_azka/{{ s.id_azka }}" class="modal-content">
+                    
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Assign Kurir</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                    
+                                <div class="modal-body">
+                                    <input type="hidden" name="shipment_id" value="{{ s.id_azka }}">
+                    
+                                    <label class="form-label">Pilih Kurir</label>
+                                    <select name="courier_id" class="form-select" required>
+                                        <option value="">-- Pilih Kurir --</option>
+                                        {% for c in couriers %}
+                                            <option value="{{ c.id_azka }}">{{ c.username_azka }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                    
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary">Simpan</button>
+                                </div>
+                    
+                            </form>
+                    
+                        </div>
+                    </div>
+                    
+
+                    <!-- MODAL DETAIL -->
+                    <div class="modal fade" id="detailModal{{ s.id_azka }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Detail Pengiriman</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p><strong>Order ID:</strong> {{ s.order_id_azka }}</p>
+                                    <p><strong>Nama Customer:</strong> {{ s.customer_nama_azka }}</p>
+                                    <p><strong>Status:</strong> {{ s.status_azka }}</p>
+                                    <p><strong>Kurir:</strong> {{ s.courier_name }}</p>
+                                    <p><strong>Alamat:</strong> {{ s.customer_addres_azka }}</p>
+                                    <p><strong>Tanggal:</strong> {{ s.created_at_azka }}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(id, status) {
+            fetch(`/manager_update_shipment_status_azka/${id}/${status}`)
+                .then(() => location.reload());
+        }
+    </script>
+         <div class="bottom-nav d-md-none">
+    <a href="/manager_dashboard_azka"
+       class="{% if request.path == '/manager_dashboard_azka' %}active{% endif %}">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="/manager_stock_monitor_azka"
+       class="{% if request.path == '/manager_stock_monitor_azka' %}active{% endif %}">
+        <i class="bi bi-box-seam"></i> 
+        <span>Stock Monitor</span>
+    </a>
+
+    <a href="/manager_courier_performance_azka"
+       class="{% if request.path == '/manager_courier_performance_azka' %}active{% endif %}">
+       <i class="bi bi-people"></i>
+            
+        <span>Kurir Performance</span>
+    </a>
+
+
+    <a href="#" id="openMenu"  class="active">
+        <i class="bi bi-list"></i>
+        Menu
+    </a>
+</div>
+   <div class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <span>📦 Manager Menu</span>
+            <button id="closeMenu">&times;</button>
+        </div>
+
+        <div class="menu-grid">
+             <a href="/manager_dashboard_azka" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/manager_shipment_control_azka"><i class="bi bi-truck"></i> Shipment Control</a>
+        <a href="/manager_stock_monitor_azka"><i class="bi bi-box-seam"></i> Stock Monitor</a>
+        <a href="/manager_courier_performance_azka"><i class="bi bi-people"></i> Kurir Performance</a>
+        <a href="/manager_area_report_azka"><i class="bi bi-geo-alt"></i> Area Report</a>
+        <a href="/manager_po_monitor_azka"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
+        
+        </div>
+    </div>
+    <script>
+        const openMenu = document.getElementById('openMenu');
+        const closeMenu = document.getElementById('closeMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        openMenu.addEventListener('click', e => {
+            e.preventDefault();
+            mobileMenu.classList.add('show');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('show');
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

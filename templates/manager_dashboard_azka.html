@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard – Logistics Azka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/static/icon/icon.png">
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- MODERN FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ICONS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-color: #6366f1;
+            --text-primary: #1f2937;
+            --text-muted: #6b7280;
+            --bg-light: #f8fafc;
+            --bg-card: #ffffff;
+            --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 40px 0 20px;
+            box-shadow: var(--shadow-light);
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: slideInLeft 0.8s ease-out;
+            z-index: 1000;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .sidebar a i {
+            font-size: 20px;
+            width: 45px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            margin: 8px 20px;
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            position: relative;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .sidebar a:hover::before,
+        .sidebar a.active::before {
+            left: 0;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #fff;
+            transform: translateX(8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* MAIN */
+        .content {
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            background: var(--bg-card);
+            padding: 24px 32px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .topbar h4 {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 700;
+            box-shadow: var(--shadow-light);
+        }
+
+        /* METRIC CARDS */
+        .card-metric {
+            background: var(--bg-card);
+            padding: 32px;
+            height: 140px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            position: relative;
+            transition: var(--transition);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .card-metric:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-metric h6 {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .card-metric h2 {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .metric-icon {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 32px;
+            opacity: 0.5;
+        }
+
+        /* CHART CARD */
+        .chart-container {
+            background: var(--bg-card);
+            padding: 32px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            margin-top: 25px;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+        .dropdown-menu {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow-hover);
+            padding: 12px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        @media (max-width: 768px) {
+
+            body {
+                padding-bottom: 80px;
+            }
+
+            /* HIDE SIDEBAR */
+            .sidebar {
+                display: none;
+            }
+
+            /* FULL CONTENT */
+            .content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            /* TOPBAR */
+            .topbar {
+               display: flex;
+                flex-direction: row !important;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .topbar h4 {
+                font-size: 20px;
+            }
+
+            .topbar p {
+                font-size: 12px;
+            }
+
+            /* Container row */
+            .row.g-4 {
+                margin-left: -6px;
+                margin-right: -6px;
+            }
+
+            /* Bagi 2 kolom rata kiri–kanan */
+            .row.g-4 > .col-md-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            /* Card lebih compact */
+            .card-metric {
+                padding: 18px 16px;
+                height: auto;
+                border-radius: 14px;
+                text-align: left;
+            }
+
+            .card-metric h6 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .card-metric h2 {
+                font-size: 22px;
+                line-height: 1.2;
+            }
+
+            .metric-icon {
+                font-size: 24px;
+                top: 12px;
+                right: 12px;
+            }
+        }
+
+            /* CHART */
+            .chart-container {
+                padding: 20px;
+            }
+
+            /* ===== BOTTOM NAV ===== */
+            .bottom-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background: rgba(255,255,255,0.95);
+                backdrop-filter: blur(12px);
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                border-top: 1px solid rgba(0,0,0,0.08);
+                z-index: 3000;
+            }
+
+            .bottom-nav a {
+                flex: 1;
+                text-align: center;
+                color: #6b7280;
+                font-size: 11px;
+                text-decoration: none;
+            }
+
+            .bottom-nav a i {
+                font-size: 22px;
+                display: block;
+            }
+
+            .bottom-nav a.active {
+                color: #6366f1;
+                font-weight: 600;
+            }
+
+            /* ===== MOBILE MENU (FULL SIDEBAR) ===== */
+            .mobile-menu {
+                position: fixed;
+                bottom: -100%;
+                left: 0;
+                right: 0;
+                height: 85vh;
+                background: #fff;
+                border-radius: 24px 24px 0 0;
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+                transition: 0.35s ease;
+                z-index: 4000;
+                padding: 20px;
+            }
+
+            .mobile-menu.show {
+                bottom: 0;
+            }
+
+            .menu-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .menu-grid a {
+                background: #f8fafc;
+                border-radius: 16px;
+                padding: 16px 10px;
+                text-align: center;
+                font-size: 12px;
+                color: #1f2937;
+                text-decoration: none;
+            }
+
+            .menu-grid a i {
+                font-size: 24px;
+                display: block;
+                margin-bottom: 6px;
+                color: #6366f1;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4>📊 Manager</h4>
+
+        <a href="/manager_dashboard_azka" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/manager_shipment_control_azka"><i class="bi bi-truck"></i> Shipment Control</a>
+        <a href="/manager_stock_monitor_azka"><i class="bi bi-box-seam"></i> Stock Monitor</a>
+        <a href="/manager_courier_performance_azka"><i class="bi bi-people"></i> Kurir Performance</a>
+        <a href="/manager_area_report_azka"><i class="bi bi-geo-alt"></i> Area Report</a>
+        <a href="/manager_po_monitor_azka"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
+        
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div>
+                <h4>Selamat Datang, <b>{{ username_azka }}</b> 👋</h4>
+                <p>Dashboard Manager • Distribusi Logistik</p>
+            </div>
+
+            <div class="dropdown">
+                <button class="btn d-flex align-items-center gap-3" style="background: none; border: none;"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+
+                    <div class="user-avatar">
+                        {{ username_azka[0]|upper }}
+                    </div>
+
+                    <div class="text-start">
+                        <strong>{{ username_azka }}</strong><br>
+                        <small class="text-muted">Manager</small>
+                    </div>
+
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    {% if session['role_id_azka'] == 1 %}
+                    <li>
+                        <a class="dropdown-item" href="/admin_dashboard_azka">
+                            <i class="bi bi-building me-2"></i> Kembali Dashboard Admin
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <a class="dropdown-item" href="/kurir_dashboard_azka">
+                        <i class="bi bi-truck"></i> Dashboard Kurir
+                    </a>
+                    <li><hr class="dropdown-divider"></li>
+                    <a class="dropdown-item" href="/gudang_dashboard_azka">
+                        <i class="bi bi-truck"></i> Dashboard Gudang
+                    </a>
+                    <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                    <li>
+                        <a class="dropdown-item text-danger" href="/logout_azka">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- METRIC CARDS -->
+        <div class="row g-4">
+
+            <div class="col-md-3">
+                <div class="card-metric">
+                    <span class="metric-icon">📨</span>
+                    <h6>Orders Hari Ini</h6>
+                    <h2>{{ total_orders_today }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-metric">
+                    <span class="metric-icon">🚚</span>
+                    <h6>Dalam Perjalanan</h6>
+                    <h2>{{ in_transit }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-metric">
+                    <span class="metric-icon">✔️</span>
+                    <h6>Terkirim</h6>
+                    <h2>{{ delivered }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-metric">
+                    <span class="metric-icon">❌</span>
+                    <h6>Gagal Kirim</h6>
+                    <h2>{{ failed }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-metric">
+                    <span class="metric-icon">📦</span>
+                    <h6>Receiving Hari Ini</h6>
+                    <h2>{{ total_receiving_today }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-metric">
+                    <span class="metric-icon">📤</span>
+                    <h6>Outbound Hari Ini</h6>
+                    <h2>{{ total_outbound_today }}</h2>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CHARTS -->
+        <div class="row mt-4">
+
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5>Statistik Pengiriman Mingguan</h5>
+                    <canvas id="chartShipment"></canvas>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5>Receiving vs Outbound</h5>
+                    <canvas id="chartIO"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // CHART 1 (Shipment)
+        new Chart(document.getElementById("chartShipment"), {
+            type: "line",
+            data: {
+                labels: ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"],
+                datasets: [{
+                    label: "Pengiriman",
+                    data: [10, 14, 12, 18, 20, 15, 12],
+                    borderColor: "rgba(102, 126, 234, 1)",
+                    backgroundColor: "rgba(102, 126, 234, 0.2)",
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true
+                }]
+            }
+        });
+
+        // CHART 2 (Receiving vs Outbound)
+        new Chart(document.getElementById("chartIO"), {
+            type: "bar",
+            data: {
+                labels: ["Receiving", "Outbound"],
+                datasets: [{
+                    label: "Jumlah",
+                    data: [{{ total_receiving_today }}, {{ total_outbound_today }}],
+                    backgroundColor: ["rgba(16,185,129,0.7)", "rgba(245,158,11,0.8)"],
+                    borderRadius: 10
+                }]
+            }
+        });
+    </script>
+        <div class="bottom-nav d-md-none">
+    <a href="/manager_dashboard_azka"
+       class="{% if request.path == '/manager_dashboard_azka' %}active{% endif %}">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="/manager_stock_monitor_azka"
+       class="{% if request.path == '/manager_stock_monitor_azka' %}active{% endif %}">
+        <i class="bi bi-box-seam"></i> 
+        <span>Stock Monitor</span>
+    </a>
+
+    <a href="/manager_courier_performance_azka"
+       class="{% if request.path == '/manager_courier_performance_azka' %}active{% endif %}">
+       <i class="bi bi-people"></i>
+            
+        <span>Kurir Performance</span>
+    </a>
+
+
+    <a href="#" id="openMenu">
+        <i class="bi bi-list"></i>
+        Menu
+    </a>
+</div>
+   <div class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <span>📦 Manager Menu</span>
+            <button id="closeMenu">&times;</button>
+        </div>
+
+        <div class="menu-grid">
+             <a href="/manager_dashboard_azka" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/manager_shipment_control_azka"><i class="bi bi-truck"></i> Shipment Control</a>
+        <a href="/manager_stock_monitor_azka"><i class="bi bi-box-seam"></i> Stock Monitor</a>
+        <a href="/manager_courier_performance_azka"><i class="bi bi-people"></i> Kurir Performance</a>
+        <a href="/manager_area_report_azka"><i class="bi bi-geo-alt"></i> Area Report</a>
+        <a href="/manager_po_monitor_azka"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
+        
+        </div>
+    </div>
+    <script>
+        const openMenu = document.getElementById('openMenu');
+        const closeMenu = document.getElementById('closeMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        openMenu.addEventListener('click', e => {
+            e.preventDefault();
+            mobileMenu.classList.add('show');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('show');
+        });
+    </script>
+    
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

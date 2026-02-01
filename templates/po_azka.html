@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pre Order – Logistics Azka</title>
+    <link rel="icon" type="image/x-icon" href="/static/icon/icon.png">
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MODERN FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ICONS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+         :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-color: #6366f1;
+            --text-primary: #1f2937;
+            --text-muted: #6b7280;
+            --bg-light: #f8fafc;
+            --bg-card: #ffffff;
+            --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 40px 0 20px;
+            box-shadow: var(--shadow-light);
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: slideInLeft 0.8s ease-out;
+            z-index: 1000;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .sidebar a i {
+            font-size: 20px;          /* Lebarkan ikon */
+            width: 45px;              /* Tambahkan ruang khusus ikon */
+            text-align: center;       /* Biar rapi di tengah */
+            flex-shrink: 0;           /* Jangan mengecil */
+        }
+
+
+        .sidebar a {
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            margin: 8px 20px;
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .sidebar a:hover::before,
+        .sidebar a.active::before {
+            left: 0;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            transform: translateX(8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .sidebar a.active {
+            font-weight: 600;
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* MAIN CONTENT */
+        .content {
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            background: var(--bg-card);
+            padding: 24px 32px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .topbar h4 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .topbar p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 700;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .dropdown-menu {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow-hover);
+            padding: 12px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        /* METRIC CARDS */
+        .card-metric {
+            background: var(--bg-card);
+            padding: 32px;
+            height: 140px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-metric::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--primary-gradient);
+            opacity: 0.05;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .card-metric:hover::before {
+            transform: scale(1);
+        }
+
+        .card-metric:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .metric-icon {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 32px;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .card-metric:hover .metric-icon {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+
+        .card-metric h6 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 0;
+            z-index: 1;
+        }
+
+        .card-metric h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 0;
+            z-index: 1;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* CHART CONTAINER */
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            box-shadow: var(--shadow-light);
+            margin-top: 24px;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-container:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .chart-container h5 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px 0;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .card-metric {
+                height: auto;
+                padding: 24px;
+            }
+
+            .row .col-md-3 {
+                margin-bottom: 16px;
+            }
+        }
+        /* TABLE CARD */
+        .table-card {
+            background: var(--bg-card);
+            padding: 32px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+
+        .table-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        
+        /* POPUP BACKDROP */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+
+        /* TAMPIL OTOMATIS SAAT TARGET */
+        .modal-overlay:target {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* BOX POPUP */
+        .modal-box {
+            width: 420px;
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            animation: popup .3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        @keyframes popup {
+            from { transform: translateY(-20px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-box h4 {
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .modal-box input,
+        .modal-box select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+         @media (max-width: 768px) {
+
+            body {
+                padding-bottom: 80px;
+            }
+
+            /* HIDE SIDEBAR */
+            .sidebar {
+                display: none;
+            }
+
+            /* FULL CONTENT */
+            .content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            /* TOPBAR */
+            .topbar {
+               display: flex;
+                flex-direction: row !important;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .topbar h4 {
+                font-size: 20px;
+            }
+
+            .topbar p {
+                font-size: 12px;
+            }
+
+            /* Container row */
+            .row.g-4 {
+                margin-left: -6px;
+                margin-right: -6px;
+            }
+
+            /* Bagi 2 kolom rata kiri–kanan */
+            .row.g-4 > .col-md-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            /* Card lebih compact */
+            .card-metric {
+                padding: 18px 16px;
+                height: auto;
+                border-radius: 14px;
+                text-align: left;
+            }
+
+            .card-metric h6 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .card-metric h2 {
+                font-size: 22px;
+                line-height: 1.2;
+            }
+
+            .metric-icon {
+                font-size: 24px;
+                top: 12px;
+                right: 12px;
+            }
+        }
+
+            /* CHART */
+            .chart-container {
+                padding: 20px;
+            }
+
+            /* ===== BOTTOM NAV ===== */
+            .bottom-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background: rgba(255,255,255,0.95);
+                backdrop-filter: blur(12px);
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                border-top: 1px solid rgba(0,0,0,0.08);
+                z-index: 3000;
+            }
+
+            .bottom-nav a {
+                flex: 1;
+                text-align: center;
+                color: #6b7280;
+                font-size: 11px;
+                text-decoration: none;
+            }
+
+            .bottom-nav a i {
+                font-size: 22px;
+                display: block;
+            }
+
+            .bottom-nav a.active {
+                color: #6366f1;
+                font-weight: 600;
+            }
+
+            /* ===== MOBILE MENU (FULL SIDEBAR) ===== */
+            .mobile-menu {
+                position: fixed;
+                bottom: -100%;
+                left: 0;
+                right: 0;
+                height: 85vh;
+                background: #fff;
+                border-radius: 24px 24px 0 0;
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+                transition: 0.35s ease;
+                z-index: 4000;
+                padding: 20px;
+            }
+
+            .mobile-menu.show {
+                bottom: 0;
+            }
+
+            .menu-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .menu-grid a {
+                background: #f8fafc;
+                border-radius: 16px;
+                padding: 16px 10px;
+                text-align: center;
+                font-size: 12px;
+                color: #1f2937;
+                text-decoration: none;
+            }
+
+            .menu-grid a i {
+                font-size: 24px;
+                display: block;
+                margin-bottom: 6px;
+                color: #6366f1;
+            }
+        
+/* ================= TABLE MODERN ================= */
+.table-custom {
+    font-size: 14px;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.table-custom thead th {
+    background: #f1f5f9;
+    font-weight: 600;
+    font-size: 13px;
+    color: #334155;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table-custom td {
+    vertical-align: middle;
+    padding: 12px;
+    color: #1f2937;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #f8fafc;
+}
+@media (max-width: 768px) {
+
+    .table-responsive-custom {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-custom {
+        font-size: 12px;
+        min-width: 760px; /* penting: biar tidak gepeng */
+    }
+
+    .table-custom th,
+    .table-custom td {
+        padding: 8px 10px;
+        white-space: nowrap;
+    }
+
+    /* Kolom deskripsi dipendekin */
+    .table-custom td:nth-child(5) {
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Aksi lebih rapih */
+    .table-custom td:last-child {
+        text-align: center;
+    }
+
+    .table-custom .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
+@media (max-width: 768px) {
+    .table-custom thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4>📦 Logistics</h4>
+        <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/product_azka"><i class="bi bi-box-seam"></i> Data Barang</a>
+        <a href="/suplier_azka"><i class="bi bi-truck"></i> Supplier</a>
+        <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i> Activity Logs</a>
+        <a href="admin_users_azka"><i class="bi bi-people"></i> Pengguna</a>
+        <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
+        <a href="/order_azka"><i class="bi bi-receipt"></i> Orders</a>
+        <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i> Receiving</a>
+        <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i> Shipment</a>
+        <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i> Movement</a>
+        <a href="/po_azka" class="active"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
+        <a href="#"><i class="bi bi-bar-chart"></i> Laporan</a>
+    </div>
+ <div class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <span>📦 Logistics Menu</span>
+            <button id="closeMenu">&times;</button>
+        </div>
+
+        <div class="menu-grid">
+            <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i>Dashboard</a>
+            <a href="/product_azka"><i class="bi bi-box-seam"></i>Data Barang</a>
+            <a href="/suplier_azka"><i class="bi bi-truck"></i>Supplier</a>
+            <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i>Activity Logs</a>
+            <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
+            <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
+            <a href="/order_azka"><i class="bi bi-receipt"></i>Orders</a>
+            <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i>Receiving</a>
+            <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
+            <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i>Stock Movement</a>
+            <a href="/po_azka"><i class="bi bi-file-earmark-text"></i>Purchase Order</a>
+            <a href="#"><i class="bi bi-bar-chart"></i>Laporan</a>
+        </div>
+    </div>
+    <div class="content">
+
+        <div class="topbar">
+            <div>
+                <h4>Data Pre order </h4>
+                <p class="text-muted">Data Pre Order • Sistem Manajemen Distribusi Logistik Barang</p>
+            </div>
+
+            <div class="dropdown">
+                <button class="btn d-flex align-items-center gap-3" style="background:none;border:none;" data-bs-toggle="dropdown">
+                    <div class="user-avatar">{{ username_azka[0]|upper }}</div>
+                    <div class="text-start">
+                        <strong>{{ username_azka }}</strong><br>
+                        <small class="text-muted">Administrator</small>
+                    </div>
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+
+                    <!-- Hanya ADMIN yang bisa melihat tombol ini -->
+                    {% if session['role_id_azka'] == 1 %}
+                    <li>
+                        <a class="dropdown-item" href="/kurir_dashboard_azka">
+                            <i class="bi bi-truck"></i> Dashboard Kurir
+                        </a>
+                        <li><hr class="dropdown-divider"></li>
+                        <a class="dropdown-item" href="/gudang_dashboard_azka">
+                            <i class="bi bi-building me-2"></i> Dashboard Gudang
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                
+                    <li>
+                        <a class="dropdown-item text-danger" href="/logout_azka">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+                
+                
+            </div>
+        </div>
+        <div class="table-responsive table-responsive-custom">
+            <div class="d-flex justify-content-between mb-3">
+                <h5><i class="bi bi-list-check me-2"></i>Data Pre Orders</h5>
+            
+                <a href="#add_product" class="btn btn-primary"
+                   style="border-radius: 12px; padding: 8px 16px;">
+                    <i class="bi bi-plus-circle me-1"></i> Tambah Barang
+                </a>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} d-flex align-items-center shadow-sm fade show mb-4"
+                            style="border-radius: 14px; padding:14px; font-size:15px; background:white;">
+                            
+                            {% if category == 'success' %}
+                                <i class="bi bi-check-circle-fill text-success fs-4 me-2"></i>
+                            {% elif category == 'danger' %}
+                                <i class="bi bi-x-circle-fill text-danger fs-4 me-2"></i>
+                            {% elif category == 'warning' %}
+                                <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-2"></i>
+                            {% else %}
+                                <i class="bi bi-info-circle-fill text-primary fs-4 me-2"></i>
+                            {% endif %}
+
+                            <div>{{ message }}</div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <table class="table table-hover table-bordered align-middle table-custom">
+                <thead class="accent-color">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Supplier</th>
+                        <th>Kode PO</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in data_po_azka %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ log.supplier_name_azka }}</td>
+                        <td>{{ log.po_number_azka }}</td>
+                        <td>{{ log.status_azka }}</td>
+                        <td class="text-center">
+
+                        <a href="#edit_{{ log.id_azka }}" 
+                            class="btn btn-sm btn-warning me-1"
+                            style="border-radius: 10px;">
+                             <i class="bi bi-pencil-square"></i>
+                         </a>
+                         
+                            <a href="/po_delete_azka/{{ log.id_azka }}"
+                               class="btn btn-sm btn-danger"
+                               style="border-radius: 10px;"
+                               onclick="return confirm('Yakin ingin menghapus data po ini?');">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        
+                        </td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <div id="add_product" class="modal-overlay">
+        <div class="modal-box">
+    
+            <h4>Tambah Data PO</h4>
+    
+            <form action="/po_add_azka" method="POST">
+    
+                <label class="mt-2">Kode Supplier</label>
+                <select name="supplier_id_azka" class="form-control" required>
+                    <option value="">--Pilih Supplier--</option>
+                    {% for c in dropdown_supplier_azka %}
+                    <option value="{{ c.id_azka }}">
+                        {{ loop.index }} - {{ c.nama_azka }}
+                    </option>
+                    {% endfor %}
+                </select>
+    
+                <label class="mt-2">Kode PO</label>
+                <input type="text" name="po_number_azka" id="" placeholder="Masukkan Kode Po..">
+    
+                <label class="mt-2">Status </label>
+                <select name="status_azka" id=""required>
+                    <option value="">--Pilih Status--</option>
+                    <option value="draft">draft</option>
+                    <option value="received">received</option>
+                    <option value="closed">closed</option>
+                </select>
+    
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a href="#" class="btn btn-secondary">Batal</a>
+                    <button type="submit" class="btn btn-success">Simpan</button>
+                </div>
+    
+            </form>
+    
+        </div>
+    </div>
+    
+    {% for log in data_po_azka %}
+    <div id="edit_{{ log.id_azka }}" class="modal-overlay">
+        <div class="modal-box">
+
+            <h4>Edit Data PO</h4>
+
+            <form action="/po_edit_azka/{{ log.id_azka }}" method="POST">
+
+                <label class="mt-2">Kode Supplier</label>
+                <select name="supplier_id_azka" class="form-control" required>
+                    {% for c in dropdown_supplier_azka %}
+                    <option value="{{ c.id_azka }}"
+                        {% if c.id_azka == log.supplier_id_azka %} selected {% endif %}>
+                        {{ loop.index }} - {{ c.nama_azka }}
+                    </option>
+                
+                    {% endfor %}
+                </select>
+                
+                
+
+                <label class="mt-2">Kode PO</label>
+                <input type="text" name="po_number_azka" value="{{ log.po_number_azka }}" required>
+
+                <label class="mt-2">Status</label>
+                <select name="status_azka" id="">
+                    <option value="draft" {% if log.status_azka == 'draft' %}selected{% endif %}>draft</option>
+                    <option value="received" {% if log.status_azka == 'received' %}selected{% endif %}>received</option>
+                    <option value="closed" {% if log.status_azka == 'closed' %}selected{% endif %}>closed</option>
+                </select>                
+
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a href="#" class="btn btn-secondary">Batal</a>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+    {% endfor %}
+<div class="bottom-nav d-md-none">
+    <a href="/admin_dashboard_azka"
+       class="{% if request.path == '/admin_dashboard_azka' %}active{% endif %}">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="/product_azka"
+       class="{% if request.path == '/product_azka' %}active{% endif %}">
+        <i class="bi bi-box-seam"></i>
+        <span>Barang</span>
+    </a>
+
+    <a href="/order_azka"
+       class="{% if request.path == '/order_azka' %}active{% endif %}">
+        <i class="bi bi-receipt"></i>
+        <span>Orders</span>
+    </a>
+
+    <a href="/shipment_azka"
+       class="{% if request.path == '/shipment_azka' %}active{% endif %}">
+        <i class="bi bi-box-arrow-up"></i>
+        <span>Shipment</span>
+    </a>
+
+    <a href="#" id="openMenu" class="active">
+        <i class="bi bi-grid"></i>
+        <span>Menu</span>
+    </a>
+</div>
+
+ <script>
+        const openMenu = document.getElementById('openMenu');
+        const closeMenu = document.getElementById('closeMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        openMenu.addEventListener('click', e => {
+            e.preventDefault();
+            mobileMenu.classList.add('show');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('show');
+        });
+    </script>
+
+    <!-- BOOTSTRAP SCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

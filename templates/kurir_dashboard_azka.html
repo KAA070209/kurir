@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Kurir – Logistics Azka</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- ICON -->
+    <link rel="icon" href="/static/icon/icon.png">
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ICONS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <!-- STYLE (SAMA DENGAN ADMIN) -->
+    <style>
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .card-box {
+            background: #fff;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.06);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .scan-btn {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 18px;
+            border-radius: 16px;
+        }
+
+        .status-badge {
+            font-size: 14px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .flow {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .flow .step {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 14px;
+            font-size: 13px;
+            background: #e5e7eb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .flow .active {
+            background: linear-gradient(135deg,#6366f1,#4f46e5);
+            color: #fff;
+        }
+
+        #scannerBox {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <!-- HEADER -->
+    <div class="card-box mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-0 gradient-text">Dashboard Kurir</h4>
+            <small class="text-muted">Sistem Scan Gudang</small>
+        </div>
+        <a href="/logout_azka" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-box-arrow-right"></i>
+        </a>
+    </div>
+
+    <!-- PROFIL KURIR -->
+    <div class="card-box mb-4">
+        <h6 class="text-muted mb-1">Kurir</h6>
+        <h4 class="mb-2">{{ kurir_azka.username_azka }}</h4>
+        <div class="card-box mb-4 text-center">
+        <h6 class="fw-semibold mb-3">QR Identitas Kurir</h6>
+
+            <img src="/qr_kurir_azka/{{ kurir_azka.id_azka }}"
+                alt="QR Kurir"
+                style="max-width:220px">
+
+            <div class="text-muted mt-2">
+                Tunjukkan QR ini saat scan gudang
+            </div>
+        </div>
+
+        {% if last_scan_azka %}
+            {% if last_scan_azka.scan_type_azka == 'IN' %}
+                <span class="status-badge bg-success">🟢 DI GUDANG</span>
+            {% else %}
+                <span class="status-badge bg-danger">🔴 DI LUAR</span>
+            {% endif %}
+            <div class="text-muted mt-2">
+                Terakhir scan: {{ last_scan_azka.scan_time_azka }}
+            </div>
+        {% else %}
+            <span class="status-badge bg-secondary">BELUM SCAN</span>
+        {% endif %}
+    </div>
+
+    <!-- FLOW JNT -->
+    <div class="card-box mb-4">
+        <h6 class="fw-semibold mb-3">📍 Alur Pengiriman (J&T)</h6>
+        <div class="flow">
+            <div class="step active">Pickup</div>
+            <div class="step">Sorting</div>
+            <div class="step">Line Haul</div>
+            <div class="step">Hub Tujuan</div>
+            <div class="step">Delivery</div>
+        </div>
+    </div>
+
+    <!-- SCAN BUTTON -->
+    <div class="row g-3 mb-4">
+        <div class="col-6">
+            <button class="btn btn-success w-100 scan-btn"
+                onclick="openScanner('IN')">
+                📥 SCAN MASUK
+            </button>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-danger w-100 scan-btn"
+                onclick="openScanner('OUT')">
+                📤 SCAN KELUAR
+            </button>
+        </div>
+    </div>
+
+    <!-- SCANNER -->
+    <div class="card-box" id="scannerBox">
+        <h6 class="fw-semibold mb-3">📸 Arahkan Kamera ke QR Gudang</h6>
+        <div id="reader" style="width:100%"></div>
+    </div>
+
+</div>
+<script>
+let scanTypeAzka = null;
+let html5QrCode;
+
+function openScanner(type) {
+    scanTypeAzka = type;
+    document.getElementById("scannerBox").style.display = "block";
+
+    html5QrCode = new Html5Qrcode("reader");
+
+    html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        msg => {
+            html5QrCode.stop();
+
+            const data = msg.split("|");
+
+            if (data[0] !== "GUDANG") {
+                alert("QR bukan QR Gudang!");
+                return;
+            }
+
+            const warehouseIdAzka = data[1];
+
+            fetch("/scan_kurir_azka", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `scan_type_azka=${scanTypeAzka}&warehouse_id_azka=${warehouseIdAzka}`
+            }).then(() => location.reload());
+        }
+    );
+}
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
