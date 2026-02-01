@@ -22,7 +22,7 @@ def get_db_connection_azka():
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME")
     )
-    
+
 def count_shipment_status(cursor, status):
     cursor.execute("""
         SELECT COUNT(*) 
@@ -246,61 +246,99 @@ def admin_dashboard_azka():
         SELECT 
             u.id_azka,
             u.username_azka,
-            w.nama_azka,
+            w.nama_azka AS warehouse_name_azka,
+            w.address_azka,
             s.scan_type_azka,
             s.scan_time_azka
         FROM tbl_users_azka u
         LEFT JOIN (
-            SELECT cs1.*
-            FROM tbl_courier_scans_azka cs1
+            SELECT cs.*
+            FROM tbl_courier_scans_azka cs
             JOIN (
-                SELECT courier_id_azka, MAX(scan_time_azka) AS last_scan
+                SELECT 
+                    courier_id_azka, 
+                    MAX(scan_time_azka) AS last_scan
                 FROM tbl_courier_scans_azka
                 GROUP BY courier_id_azka
-            ) cs2
-            ON cs1.courier_id_azka = cs2.courier_id_azka
-            AND cs1.scan_time_azka = cs2.last_scan
+            ) last_scan
+            ON cs.courier_id_azka = last_scan.courier_id_azka
+            AND cs.scan_time_azka = last_scan.last_scan
         ) s ON u.id_azka = s.courier_id_azka
         LEFT JOIN tbl_warehouses_azka w 
-            ON s.id_azka = w.id_azka
+            ON s.warehouse_id_azka = w.id_azka
         WHERE u.role_id_azka = 3
-        ORDER BY u.username_azka
+        ORDER BY u.username_azka;
+
     """)
 
     courier_position_azka = cursor_azka.fetchall()
 
+    # ===================== LOG SCAN KURIR (MONITORING) =====================
+    cursor_azka.execute("""
+        SELECT 
+            u.username_azka AS courier_name_azka,
+            cs.scan_type_azka,
+            w.nama_azka AS warehouse_name_azka,
+            cs.scan_time_azka
+        FROM tbl_courier_scans_azka cs
+        JOIN tbl_users_azka u ON cs.courier_id_azka = u.id_azka
+        LEFT JOIN tbl_warehouses_azka w ON cs.warehouse_id_azka = w.id_azka
+        ORDER BY cs.scan_time_azka DESC
+        LIMIT 10
+    """)
+    courier_scan_logs_azka = cursor_azka.fetchall()
+    # ===================== KURIR DI DALAM GUDANG =====================
+    cursor_azka.execute("""
+        SELECT COUNT(DISTINCT cs.courier_id_azka) AS total
+        FROM tbl_courier_scans_azka cs
+        JOIN (
+            SELECT courier_id_azka, MAX(scan_time_azka) AS last_scan
+            FROM tbl_courier_scans_azka
+            GROUP BY courier_id_azka
+        ) last_scan
+        ON cs.courier_id_azka = last_scan.courier_id_azka
+        AND cs.scan_time_azka = last_scan.last_scan
+        WHERE cs.scan_type_azka = 'IN'
+    """)
+    courier_inside_azka = cursor_azka.fetchone()['total']
+
+    # ===================== KURIR DI LUAR =====================
+    cursor_azka.execute("""
+        SELECT COUNT(DISTINCT cs.courier_id_azka) AS total
+        FROM tbl_courier_scans_azka cs
+        JOIN (
+            SELECT courier_id_azka, MAX(scan_time_azka) AS last_scan
+            FROM tbl_courier_scans_azka
+            GROUP BY courier_id_azka
+        ) last_scan
+        ON cs.courier_id_azka = last_scan.courier_id_azka
+        AND cs.scan_time_azka = last_scan.last_scan
+        WHERE cs.scan_type_azka = 'OUT'
+    """)
+    courier_outside_azka = cursor_azka.fetchone()['total']
 
     conn_azka.close()
 
     return render_template(
-        "admin_dashboard_azka.html",
-        username_azka=session['username_azka'],
+    "admin_dashboard_azka.html",
+    username_azka=session['username_azka'],
 
-        tahun_azka=tahun_azka,
-        list_tahun_azka=list_tahun_azka,
+    tahun_azka=tahun_azka,
+    list_tahun_azka=list_tahun_azka,
 
-        **totals_azka,
+    **totals_azka,
 
-        total_couriers_azka=total_couriers_azka,
-        courier_online_azka=courier_online_azka,
-        courier_offline_azka=courier_offline_azka,
+    total_couriers_azka=total_couriers_azka,
+    courier_inside_azka=courier_inside_azka,
+    courier_outside_azka=courier_outside_azka,
 
-        created_azka=status_count_azka['created'],
-        received_azka=status_count_azka['received'],
-        sorted_azka=status_count_azka['sorted'],
-        transit_azka=status_count_azka['in_transit'],
-        hub_azka=status_count_azka['arrived_hub'],
-        delivery_azka=status_count_azka['out_for_delivery'],
-        delivered_azka=status_count_azka['delivered'],
-        failed_azka=status_count_azka['failed'],
+    courier_scan_logs_azka=courier_scan_logs_azka,
+    courier_position_azka=courier_position_azka,
 
-        current_status_azka=current_status_azka,
+    barang_masuk_azka=map_bulan_azka(barang_masuk_raw_azka),
+    barang_keluar_azka=map_bulan_azka(barang_keluar_raw_azka),
+)
 
-        barang_masuk_azka=map_bulan_azka(barang_masuk_raw_azka),
-        barang_keluar_azka=map_bulan_azka(barang_keluar_raw_azka),
-
-        courier_logs_azka=courier_logs_azka,courier_position_azka=courier_position_azka
-    )
 
 @app.before_request
 def update_last_activity():

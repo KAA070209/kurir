@@ -847,7 +847,7 @@
 
                     <td>
                         {% if k.scan_type_azka == 'IN' %}
-                            {{ k.warehouse_name_azka }}
+                            {{ k.warehouse_name_azka }} - {{k.address_azka}}
                         {% elif k.scan_type_azka == 'OUT' %}
                             Delivery / Jalan
                         {% else %}
