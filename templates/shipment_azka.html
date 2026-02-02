@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Pengiriman – Logistics Azka</title>
     <link rel="icon" type="image/x-icon" href="/static/icon/icon.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -211,6 +214,10 @@
             display: flex;
             align-items: center;
             gap: 16px;
+        }
+        #map {
+            width: 100%;
+            min-height: 400px;
         }
 
         .user-avatar {
@@ -781,143 +788,152 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
+<table class="table table-hover table-bordered align-middle table-custom">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Tracking</th>
+            <th>Pengirim</th>
+            <th>Penerima</th>
+            <th>Gudang</th>
+            <th>Kurir</th>
+            <th>Status</th>
+            <th>Dibuat</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in data_shipment_azka %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td><strong>{{ s.tracking_number_azka }}</strong></td>
+            <td>{{ s.sender_name_azka }}</td>
+            <td>
+                {{ s.receiver_name_azka }}<br>
+                <small class="text-muted">{{ s.receiver_address_azka }}</small>
+            </td>
+            <td>{{ s.warehouse }}</td>
+            <td>{{ s.courier or '-' }}</td>
+            <td>
+                {% if s.status_azka == 'CREATED' %}
+                    <span class="badge bg-secondary">CREATED</span>
+                {% elif s.status_azka == 'PICKED_UP' %}
+                    <span class="badge bg-info">PICKED UP</span>
+                {% elif s.status_azka == 'ARRIVED_AT_HUB' %}
+                    <span class="badge bg-warning">ARRIVED HUB</span>
+                {% elif s.status_azka == 'OUT_FOR_DELIVERY' %}
+                    <span class="badge bg-primary">OUT DELIVERY</span>
+                {% elif s.status_azka == 'DELIVERED' %}
+                    <span class="badge bg-success">DELIVERED</span>
+                {% endif %}
+            </td>
+            <td>{{ s.created_at_azka }}</td>
+            <td>
+                <a href="/shipment_delete_azka/{{ s.id_azka }}"
+                   onclick="return confirm('Hapus shipment?')"
+                   class="btn btn-sm btn-danger mt-1">
+                    <i class="bi bi-trash"></i>
+                </a>
+                <button class="btn btn-sm btn-primary"
+                onclick='openMapFromWarehouses(
+                    {{ s.origin_lat }},
+                    {{ s.origin_lng }},
+                    {{ s.destination_lat }},
+                    {{ s.destination_lng }},
+                    {{ warehouses_azka | tojson }}
+                )'>
+                📍 Tracking
+                </button>
 
-            <table class="table table-hover table-bordered align-middle table-custom">
-                <thead class="accent-color">
-                    <tr>
-                        <th>No</th>
-                        <th>Kode Order</th>
-                        <th>Nama Kurir </th>
-                        <th>Kode Nomor</th>
-                        <th>Status</th>
-                        <th>Waktu Dikirim</th>
-                        <th>Waktu Sampai</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in data_shipment_azka %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ log.order_number_azka }}</td>
-                        <td>{{ log.username_azka }} Expresss</td>
-                        <td>{{ log.tracking_number_azka }}</td>
-                        <td>{{ log.status_azka }}</td>
-                        <td>{{ log.shipped_at_azka }}</td>
-                        <td>{{ log.delivered_at_azka }}</td>
-                        <td class="text-center">
 
-                        <a href="#edit_{{ log.id_azka }}" 
-                            class="btn btn-sm btn-warning me-1"
-                            style="border-radius: 10px;">
-                             <i class="bi bi-pencil-square"></i>
-                         </a>
-                         
-                         <a href="/shipment_delete_azka/{{ log.id_azka }}" 
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin ingin menghapus data ini?');">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                            
-                                
-                        </td>
-                        
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+
+
+
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
         </div>
 
     </div>
     <div id="add_product" class="modal-overlay">
-        <div class="modal-box">
-    
-            <h4>Tambah Data Pengiriman</h4>
-    
-            <form action="/shipment_add_azka" method="POST">
-    
-                <label class="mt-2">Kode Order </label>
-                <select name="order_number_azka" class="form-control" required>
-                    {% for c in dropdown_order_azkaa %}
-                    <option value="{{ c.id_azka }}">
-                        {{ loop.index }} - {{ c.order_number_azka }}
-                    </option>                    
-                    {% endfor %}
-                </select>
-
-                <label class="mt-2">Nama Kurir </label>
-                <select name="kurir_id_azka" class="form-control" required>
-                    {% for c in couriers_azka %}
-                    <option value="{{ c.id_azka }}">
-                        {{ loop.index }} - {{ c.username_azka }}
-                    </option>                    
-                    {% endfor %}
-                </select>
-
-                <label class="mt-2">Status</label>
-                <select name="status_azka" id="">
-                    <option value="pending">Pending</option>
-                    <option value="in_transit">In Transit</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="failed">Failed</option>
-                </select>
-                <label class="mt-2">Waktu Dikirim</label>
-                <input type="datetime-local" name="shipped_at_azka" placeholder="Masukkan minimal stok" >
-                <label for="mt-2">Waktu sampai</label>
-                <input type="datetime-local" name="delivered_at_azka" placeholder="Masukkan minimal stok" >
-    
-                <div class="d-flex justify-content-end gap-3 mt-4">
-                    <a href="#" class="btn btn-secondary">Batal</a>
-                    <button type="submit" class="btn btn-success">Simpan</button>
-                </div>
-    
-            </form>
-    
-        </div>
-    </div>
-    
-    {% for log in data_shipment_azka %}
-<div id="edit_{{ log.id_azka }}" class="modal-overlay">
     <div class="modal-box">
 
-        <h4>Edit Data Pengiriman</h4>
+        <h4>Tambah Shipment (Drop Point)</h4>
 
-        <form action="/shipment_edit_azka/{{ log.id_azka }}" method="POST">
+        <form action="/shipment_add_azka" method="POST">
 
+            <label class="mt-2">Nama Pengirim</label>
+            <input type="text" name="sender_name_azka" class="form-control" required>
 
-            <label class="mt-2">Kode Order</label>
-            <select name="order_id_azka" class="form-control" required>
-                {% for c in dropdown_order_azkaa %}
-                <option value="{{ c.id_azka }}">
-                    {{ loop.index }} - {{ c.order_number_azka }}
+            <label class="mt-2">Nama Penerima</label>
+            <input type="text" name="receiver_name_azka" class="form-control" required>
+
+            <label class="mt-2">Alamat Penerima</label>
+            <textarea name="receiver_address_azka" class="form-control" rows="3" required></textarea>
+
+            <label class="mt-2">Gudang Awal (Drop Point)</label>
+            <select name="warehouse_id_azka" class="form-control" required>
+                <option value="">--Pilih Gudang--</option>
+                {% for w in warehouses_azka %}
+                <option value="{{ w.id_azka }}">
+                    {{ w.nama_azka }}
                 </option>
                 {% endfor %}
             </select>
-            
 
-            <label class="mt-2">Nama Kurir</label>
-            <input type="text" name="carrier_azka" value="{{ log.carrier_azka }}" required>
-
-            <label class="mt-2">Kode Nomor</label>
-            <input type="text" name="tracking_number_azka" value="{{ log.tracking_number_azka }}">
-
-            <label class="mt-2">Status</label>
-            <select name="status_azka" class="form-control">
-                <option value="pending"     {% if log.status_azka == 'pending' %} selected {% endif %}>Pending</option>
-                <option value="in_transit"  {% if log.status_azka == 'in_transit' %} selected {% endif %}>In Transit</option>
-                <option value="delivered"   {% if log.status_azka == 'delivered' %} selected {% endif %}>Delivered</option>
-                <option value="failed"      {% if log.status_azka == 'failed' %} selected {% endif %}>Failed</option>
-            </select>
-
-            <label class="mt-2">Waktu Dikirim</label>
-            <input type="datetime-local" name="shipped_at_azka" value="{{ log.shipped_at_azka|replace(' ','T') }}">
-
-            <label class="mt-2">Waktu Sampai</label>
-            <input type="datetime-local" name="delivered_at_azka" value="{{ log.delivered_at_azka|replace(' ','T') }}">
+            <!-- STATUS DISET OTOMATIS -->
+            <input type="hidden" name="status_azka" value="CREATED">
 
             <div class="d-flex justify-content-end gap-3 mt-4">
                 <a href="#" class="btn btn-secondary">Batal</a>
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-box-arrow-up"></i> Buat Shipment
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+{% for log in data_shipment_azka %}
+<div id="edit_{{ log.id_azka }}" class="modal-overlay">
+    <div class="modal-box">
+
+        <h4>Update Status Shipment</h4>
+
+        <form action="/shipment_edit_azka/{{ log.id_azka }}" method="POST">
+
+            <label class="mt-2">Tracking Number</label>
+            <input type="text" class="form-control" value="{{ log.tracking_number_azka }}" disabled>
+
+            <label class="mt-2">Status Pengiriman</label>
+            <select name="status_azka" class="form-control" required>
+                <option value="CREATED" {% if log.status_azka=='CREATED' %}selected{% endif %}>Created (Drop Point)</option>
+                <option value="PICKED_UP" {% if log.status_azka=='PICKED_UP' %}selected{% endif %}>Picked Up Kurir</option>
+                <option value="ARRIVED_AT_HUB" {% if log.status_azka=='ARRIVED_AT_HUB' %}selected{% endif %}>Tiba di Gudang</option>
+                <option value="OUT_FOR_DELIVERY" {% if log.status_azka=='OUT_FOR_DELIVERY' %}selected{% endif %}>Dikirim ke Penerima</option>
+                <option value="DELIVERED" {% if log.status_azka=='DELIVERED' %}selected{% endif %}>Delivered</option>
+            </select>
+
+            <label class="mt-2">Gudang Saat Ini</label>
+            <select name="warehouse_id_azka" class="form-control">
+                {% for w in warehouses_azka %}
+                <option value="{{ w.id_azka }}"
+                    {% if log.warehouse_id_azka == w.id_azka %}selected{% endif %}>
+                    {{ w.nama_warehouse_azka }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <div class="d-flex justify-content-end gap-3 mt-4">
+                <a href="#" class="btn btn-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-arrow-repeat"></i> Update Status
+                </button>
             </div>
 
         </form>
@@ -925,6 +941,20 @@
     </div>
 </div>
 {% endfor %}
+<div class="modal fade" id="mapModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tracking Shipment</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="map" style="height:400px;border-radius:12px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <div class="bottom-nav d-md-none">
     <a href="/admin_dashboard_azka"
@@ -956,6 +986,92 @@
         <span>Menu</span>
     </a>
 </div>
+<script>
+let map, vehicleMarker, animIndex = 0, animTimer;
+
+function openMapFromWarehouses(oLat, oLng, dLat, dLng, warehouses) {
+
+    const modalEl = document.getElementById('mapModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+
+    modalEl.addEventListener('shown.bs.modal', () => {
+
+        if (map) map.remove();
+
+        const origin = [oLat, oLng];
+        const destination = [dLat, dLng];
+
+        // ===== SUSUN RUTE DARI GUDANG =====
+        let route = [origin];
+
+        warehouses
+            .filter(w => w.tipe_azka === 'HUB')
+            .sort((a,b) => a.urutan_azka - b.urutan_azka)
+            .forEach(w => {
+                route.push([w.latitude_azka, w.longitude_azka]);
+            });
+
+        route.push(destination);
+
+        map = L.map('map').setView(origin, 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // ===== MARKER =====
+        L.marker(origin).addTo(map).bindPopup("🏢 Gudang Asal");
+
+        warehouses.forEach(w => {
+            if (w.tipe_azka === 'HUB') {
+                L.marker([w.latitude_azka, w.longitude_azka])
+                    .addTo(map)
+                    .bindPopup("🏬 Hub: " + w.nama_azka);
+            }
+        });
+
+        L.marker(destination).addTo(map).bindPopup("🏠 Gudang Tujuan");
+
+        // ===== GARIS =====
+        L.polyline(route, {
+            color: '#4f46e5',
+            weight: 4
+        }).addTo(map);
+
+        map.fitBounds(route);
+
+        // ===== ICON MOBIL =====
+        const truckIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/743/743131.png',
+            iconSize: [36,36],
+            iconAnchor: [18,18]
+        });
+
+        vehicleMarker = L.marker(origin, { icon: truckIcon }).addTo(map);
+
+        animateVehicle(route);
+
+    }, { once: true });
+}
+
+// ===== ANIMASI =====
+function animateVehicle(route) {
+    animIndex = 0;
+    clearInterval(animTimer);
+
+    animTimer = setInterval(() => {
+        if (animIndex >= route.length) {
+            clearInterval(animTimer);
+            return;
+        }
+        vehicleMarker.setLatLng(route[animIndex]);
+        animIndex++;
+    }, 1200);
+}
+</script>
+
+
 
  <script>
         const openMenu = document.getElementById('openMenu');

@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, session, flash, url_for,current_app
-import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
-import qrcode
-import os
 from io import BytesIO
 from flask import send_file
-
+import mysql.connector
+import qrcode
+import os
+import time
+import requests
+import re
 
 app = Flask(__name__)
 app.secret_key = 'Azka123'
@@ -22,6 +24,47 @@ def get_db_connection_azka():
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME")
     )
+
+def get_lat_lng_from_address(address):
+    try:
+        time.sleep(1)
+        url = "https://nominatim.openstreetmap.org/search"
+        headers = {"User-Agent": "LogisticsAzka/1.0"}
+
+        queries = [
+            address,
+            "Cibeureum Cimahi Selatan",
+            "Cimahi Selatan",
+            "Cimahi"
+        ]
+
+        for q in queries:
+            res = requests.get(url, params={
+                "q": q,
+                "format": "json",
+                "limit": 1
+            }, headers=headers, timeout=10)
+
+            data = res.json()
+            if data:
+                return float(data[0]["lat"]), float(data[0]["lon"])
+
+    except Exception as e:
+        print("Geocoding error:", e)
+
+    return None, None
+
+def normalize_address(address):
+    address = address.lower()
+    address = address.replace("no.", "")
+    address = address.replace("jl.", "jalan")
+    address = address.replace("kec.", "")
+    address = address.replace("kab.", "")
+    address = address.replace("kota", "")
+    return address.strip()
+
+def safe_filename(name):
+    return re.sub(r'[^a-zA-Z0-9_-]', '_', name.lower())
 
 def count_shipment_status(cursor, status):
     cursor.execute("""
@@ -121,22 +164,22 @@ def admin_dashboard_azka():
         flash("Akses ditolak!", "danger")
         return redirect(url_for('dashboard_azka'))
 
-    tahun_azka = request.args.get('tahun_azka')
+    #tahun_azka = request.args.get('tahun_azka')
 
     conn_azka = get_db_connection_azka()
     cursor_azka = conn_azka.cursor(dictionary=True)
 
     # ===================== LIST TAHUN =====================
-    cursor_azka.execute("""
-        SELECT DISTINCT YEAR(created_at_azka) AS tahun_azka
-        FROM tbl_shipment_azka
-        ORDER BY tahun_azka DESC
-    """)
-    list_tahun_azka = [row['tahun_azka'] for row in cursor_azka.fetchall()]
+    #cursor_azka.execute("""
+        #SELECT DISTINCT YEAR(created_at_azka) AS tahun_azka
+        #FROM tbl_shipment_azka
+        #ORDER BY tahun_azka DESC
+    #""")
+    #list_tahun_azka = [row['tahun_azka'] for row in cursor_azka.fetchall()]
 
-    if not tahun_azka and list_tahun_azka:
-        tahun_azka = list_tahun_azka[0]
-    tahun_azka = int(tahun_azka)
+    #if not tahun_azka and list_tahun_azka:
+        #tahun_azka = list_tahun_azka[0]
+    #tahun_azka = int(tahun_azka)
 
     # ===================== TOTAL DATA =====================
     tables_azka = {
@@ -199,34 +242,34 @@ def admin_dashboard_azka():
         status_count_azka[status_azka] = cursor_azka.fetchone()['total_azka']
 
     # ===================== STATUS TERAKHIR =====================
-    cursor_azka.execute("""
-        SELECT status_azka
-        FROM tbl_shipment_azka
-        ORDER BY updated_at_azka DESC
-        LIMIT 1
-    """)
-    row_azka = cursor_azka.fetchone()
-    current_status_azka = row_azka['status_azka'] if row_azka else None
+    #cursor_azka.execute("""
+        #SELECT status_azka
+        #FROM tbl_shipment_azka
+        #ORDER BY updated_at_azka DESC
+        #LIMIT 1
+    #""")
+    #row_azka = cursor_azka.fetchone()
+    #current_status_azka = row_azka['status_azka'] if row_azka else None
 
     # ===================== DATA BULANAN =====================
-    def data_bulanan_azka(table_azka):
-        cursor_azka.execute(f"""
-            SELECT MONTH(created_at_azka) AS bulan_azka, COUNT(*) AS total_azka
-            FROM {table_azka}
-            WHERE YEAR(created_at_azka) = %s
-            GROUP BY bulan_azka
-            ORDER BY bulan_azka
-        """, (tahun_azka,))
-        return cursor_azka.fetchall()
+    #def data_bulanan_azka(table_azka):
+        #cursor_azka.execute(f"""
+            #SELECT MONTH(created_at_azka) AS bulan_azka, COUNT(*) AS total_azka
+            #FROM {table_azka}
+            #WHERE YEAR(created_at_azka) = %s
+            #GROUP BY bulan_azka
+            #ORDER BY bulan_azka
+        #""", (tahun_azka,))
+        #return cursor_azka.fetchall()
 
-    barang_masuk_raw_azka  = data_bulanan_azka("tbl_receiving_azka")
-    barang_keluar_raw_azka = data_bulanan_azka("tbl_shipment_azka")
+    #barang_masuk_raw_azka  = data_bulanan_azka("tbl_receiving_azka")
+    #barang_keluar_raw_azka = data_bulanan_azka("tbl_shipment_azka")
 
-    def map_bulan_azka(data_azka):
-        hasil_azka = [0] * 12
-        for row_azka in data_azka:
-            hasil_azka[row_azka['bulan_azka'] - 1] = row_azka['total_azka']
-        return hasil_azka
+    #def map_bulan_azka(data_azka):
+        #hasil_azka = [0] * 12
+        #for row_azka in data_azka:
+            #hasil_azka[row_azka['bulan_azka'] - 1] = row_azka['total_azka']
+        #return hasil_azka
 
     # ===================== LOG SCAN KURIR =====================
     cursor_azka.execute("""
@@ -323,8 +366,8 @@ def admin_dashboard_azka():
     "admin_dashboard_azka.html",
     username_azka=session['username_azka'],
 
-    tahun_azka=tahun_azka,
-    list_tahun_azka=list_tahun_azka,
+    #tahun_azka=tahun_azka,
+    #list_tahun_azka=list_tahun_azka,
 
     **totals_azka,
 
@@ -335,8 +378,8 @@ def admin_dashboard_azka():
     courier_scan_logs_azka=courier_scan_logs_azka,
     courier_position_azka=courier_position_azka,
 
-    barang_masuk_azka=map_bulan_azka(barang_masuk_raw_azka),
-    barang_keluar_azka=map_bulan_azka(barang_keluar_raw_azka),
+    #barang_masuk_azka=map_bulan_azka(barang_masuk_raw_azka),
+    #barang_keluar_azka=map_bulan_azka(barang_keluar_raw_azka),
 )
 
 
@@ -780,16 +823,14 @@ def gudang_azka():
         username_azka=session['username_azka'],
         gudang_azka=gudang_azka
     )
- 
-
 @app.route('/qr_gudang_azka/<int:warehouse_id>')
 def qr_gudang_azka(warehouse_id):
     conn = get_db_connection_azka()
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT id_azka, qr_code_data_azka 
-        FROM tbl_warehouses_azka 
+        SELECT id_azka, nama_azka, qr_code_data_azka
+        FROM tbl_warehouses_azka
         WHERE id_azka = %s
     """, (warehouse_id,))
     gudang_azka = cursor.fetchone()
@@ -798,58 +839,73 @@ def qr_gudang_azka(warehouse_id):
     if not gudang_azka:
         return "Gudang tidak ditemukan", 404
 
-    # 📁 path folder static/qr_gudang_azka/gudang_<id>
+    # 🧼 nama file aman
+    gudang_name = safe_filename(gudang_azka['nama_azka'])
+
+    # 📁 folder
     base_dir = os.path.join(
         current_app.root_path,
         'static',
         'qr_gudang_azka',
         f'gudang_{warehouse_id}'
     )
-
-    # 📂 buat folder jika belum ada
     os.makedirs(base_dir, exist_ok=True)
 
-    qr_path = os.path.join(base_dir, 'qr.png')
+    # 🖼️ file path pakai nama gudang
+    qr_path = os.path.join(base_dir, f'{gudang_name}.png')
 
-    # ⚙️ generate QR hanya jika belum ada
+    # ⚙️ generate QR jika belum ada
     if not os.path.exists(qr_path):
         qr = qrcode.make(gudang_azka['qr_code_data_azka'])
         qr.save(qr_path)
 
-    # 🖼️ kirim file QR
     return send_file(qr_path, mimetype='image/png')
 @app.route('/gudang_add_azka', methods=['POST'])
 def gudang_add_azka():
     nama_azka = request.form['nama_azka']
     address_azka = request.form['address_azka']
 
+    # 🌍 Geocoding alamat gudang
+    lat, lng = get_lat_lng_from_address(address_azka)
+
+    # ❌ jika gagal dapat koordinat
+    if lat is None or lng is None:
+        flash(
+            "❌ Alamat gudang tidak ditemukan di peta. "
+            "Mohon gunakan alamat yang lebih lengkap.",
+            "warning"
+        )
+        return redirect(url_for('gudang_azka'))
+
     conn = get_db_connection_azka()
     cursor = conn.cursor()
 
-    # Insert without QR code first
     cursor.execute("""
-        INSERT INTO tbl_warehouses_azka (nama_azka, address_azka)
-        VALUES (%s, %s)
-    """, (nama_azka, address_azka))
+        INSERT INTO tbl_warehouses_azka
+        (nama_azka, address_azka, latitude_azka, longitude_azka)
+        VALUES (%s, %s, %s, %s)
+    """, (nama_azka, address_azka, lat, lng))
     conn.commit()
 
-    # Get the last inserted id
     id_azka = cursor.lastrowid
-
-    # Generate QR code data
     qr_data_azka = f"GUDANG|{id_azka}"
 
-    # Update the record with the correct column name
     cursor.execute("""
         UPDATE tbl_warehouses_azka
         SET qr_code_data_azka = %s
         WHERE id_azka = %s
     """, (qr_data_azka, id_azka))
+
     conn.commit()
     conn.close()
 
-    insert_log_azka(session['user_id_azka'], "Tambah Data", f"Gudang #{nama_azka} ditambahkan")
-    flash("Berhasil menambah data gudang!", "success")
+    insert_log_azka(
+        session['user_id_azka'],
+        "Tambah Data",
+        f"Gudang #{nama_azka} ditambahkan"
+    )
+
+    flash("Gudang berhasil ditambahkan + lokasi otomatis 📍", "success")
     return redirect(url_for('gudang_azka'))
 
 
@@ -874,17 +930,47 @@ def gudang_edit_azka(id_azka):
 
     flash("gudang berhasil diupdate!", "success")
     return redirect('/gudang_azka')
-
 @app.route('/gudang_delete_azka/<int:id>')
 def gudang_delete_azka(id):
     conn = get_db_connection_azka()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("DELETE FROM tbl_warehouses_azka WHERE id_azka=%s", (id,))
+    # 🔍 cek relasi shipment
+    cursor.execute("""
+        SELECT COUNT(*) AS total
+        FROM tbl_shipment_azka
+        WHERE warehouse_id_azka = %s
+    """, (id,))
+    shipment_count = cursor.fetchone()['total']
+
+    # 🔍 cek relasi scan kurir (jika tabel ada)
+    cursor.execute("""
+        SELECT COUNT(*) AS total
+        FROM tbl_courier_scans_azka
+        WHERE warehouse_id_azka = %s
+    """, (id,))
+    scan_count = cursor.fetchone()['total']
+
+    if shipment_count > 0 or scan_count > 0:
+        conn.close()
+        flash(
+            f"❌ Gudang tidak bisa dihapus! "
+            f"Masih terhubung dengan {shipment_count} shipment "
+            f"dan {scan_count} riwayat scan.",
+            "warning"
+        )
+        return redirect(url_for('gudang_azka'))
+
+    # ✅ aman untuk dihapus
+    cursor.execute("""
+        DELETE FROM tbl_warehouses_azka
+        WHERE id_azka = %s
+    """, (id,))
 
     conn.commit()
     conn.close()
-    flash("Stock movement berhasil dihapus!", "success")
+
+    flash("✅ Gudang berhasil dihapus", "success")
     return redirect(url_for('gudang_azka'))
 
 
@@ -1154,168 +1240,232 @@ def shipment_azka():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT
+       SELECT
             s.id_azka,
             s.tracking_number_azka,
+            s.sender_name_azka,
+            s.receiver_name_azka,
+            s.receiver_address_azka,
             s.status_azka,
             s.created_at_azka,
-            s.delivered_at_azka,
-            u.username_azka AS kurir,
-            w.nama_warehouse_azka AS warehouse
+
+            s.destination_lat,
+            s.destination_lng,
+
+            u.username_azka AS courier,
+            w.nama_azka AS warehouse,
+
+            wo.latitude_azka AS origin_lat,
+            wo.longitude_azka AS origin_lng,
+
+            wl.latitude_azka AS last_lat,
+            wl.longitude_azka AS last_lng
         FROM tbl_shipment_azka s
-        LEFT JOIN tbl_users_azka u ON s.kurir_id_azka = u.id_azka
-        LEFT JOIN tbl_warehouses_azka w ON s.current_warehouse_id_azka = w.id_azka
+
+
+        LEFT JOIN tbl_users_azka u ON s.courier_id_azka = u.id_azka
+        LEFT JOIN tbl_warehouses_azka w ON s.warehouse_id_azka = w.id_azka
+
+        LEFT JOIN tbl_warehouses_azka wo
+            ON s.warehouse_id_azka = wo.id_azka
+
+        LEFT JOIN tbl_courier_scans_azka cs
+            ON cs.id_azka = (
+                SELECT id_azka FROM tbl_courier_scans_azka
+                WHERE courier_id_azka = s.courier_id_azka
+                ORDER BY scan_time_azka DESC
+                LIMIT 1
+            )
+
+        LEFT JOIN tbl_warehouses_azka wl
+            ON cs.warehouse_id_azka = wl.id_azka
+
         ORDER BY s.created_at_azka DESC
     """)
+
 
     data_shipment_azka = cursor.fetchall()
 
     cursor.execute("""
-        SELECT id_azka, username_azka
-        FROM tbl_users_azka
-        WHERE role_id_azka = 3
-    """)
-    couriers_azka = cursor.fetchall()
-
-    cursor.execute("""
-        SELECT id_azka, nama_warehouse_azka
-        FROM tbl_warehouses_azka
-    """)
+        SELECT * FROM tbl_warehouses_azka   """)
     warehouses_azka = cursor.fetchall()
-
     conn.close()
 
     return render_template(
         'shipment_azka.html',
-        username_azka=session['username_azka'],
         data_shipment_azka=data_shipment_azka,
-        couriers_azka=couriers_azka,
-        warehouses_azka=warehouses_azka
+        warehouses_azka=warehouses_azka,
+        username_azka=session['username_azka']
     )
-
-import time
-
-@app.route("/shipment_add_azka", methods=["POST"])
+@app.route('/shipment_add_azka', methods=['POST'])
 def shipment_add_azka():
-    kurir_id_azka = request.form["kurir_id_azka"]
-    warehouse_id_azka = request.form["warehouse_id_azka"]
-
-    tracking_number = "JNT-" + str(int(time.time()))
+    tracking_number = "AE-" + str(int(time.time()))
+    warehouse_id = request.form['warehouse_id_azka']
 
     conn = get_db_connection_azka()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
+    # 📍 Ambil lokasi gudang asal
+    cursor.execute("""
+        SELECT latitude_azka, longitude_azka
+        FROM tbl_warehouses_azka
+        WHERE id_azka = %s
+    """, (warehouse_id,))
+    wh = cursor.fetchone()
+
+    origin_lat = wh['latitude_azka']
+    origin_lng = wh['longitude_azka']
+    receiver_address = request.form['receiver_address_azka']
+
+    # 📍 Ambil koordinat alamat penerima
+    dest_lat, dest_lng = get_lat_lng_from_address(receiver_address)
+
+    if dest_lat is None or dest_lng is None:
+        flash("Alamat penerima tidak ditemukan di peta", "danger")
+        return redirect(url_for('shipment_azka'))
+
+    # 📦 Insert shipment (KURIR NULL)
     cursor.execute("""
         INSERT INTO tbl_shipment_azka
-        (tracking_number_azka, status_azka, kurir_id_azka, current_warehouse_id_azka, created_at_azka)
-        VALUES (%s, 'created', %s, %s, NOW())
+        (tracking_number_azka, sender_name_azka, receiver_name_azka,
+        receiver_address_azka, warehouse_id_azka,
+        courier_id_azka,
+        origin_lat, origin_lng,
+        destination_lat, destination_lng,
+        last_lat, last_lng,
+        status_azka)
+        VALUES (%s,%s,%s,%s,%s,NULL,%s,%s,%s,%s,%s,%s,'CREATED')
     """, (
         tracking_number,
-        kurir_id_azka,
-        warehouse_id_azka
+        request.form['sender_name_azka'],
+        request.form['receiver_name_azka'],
+        receiver_address,
+        warehouse_id,
+        origin_lat, origin_lng,
+        dest_lat, dest_lng,          # 🎯 TUJUAN
+        origin_lat, origin_lng       # posisi awal
     ))
-
-    shipment_id = cursor.lastrowid
-
-    cursor.execute("""
-        INSERT INTO tbl_shipment_tracking_azka
-        (shipment_id_azka, status_azka, warehouse_id_azka, description_azka)
-        VALUES (%s, 'created', %s, 'Paket dibuat di drop point')
-    """, (shipment_id, warehouse_id_azka))
 
     conn.commit()
     conn.close()
 
-    flash("Shipment berhasil ditambahkan", "success")
-    return redirect(url_for("shipment_azka"))
-    
-@app.route('/shipment_update_azka/<int:id_azka>', methods=['POST'])
-def shipment_update_azka(id_azka):
-    status = request.form['status_azka']
-    warehouse = request.form.get('warehouse_id_azka')
-    deskripsi = request.form['description_azka']
+    flash("Shipment dibuat & menunggu kurir scan 📦", "success")
+    return redirect(url_for('shipment_azka'))
 
+@app.route('/shipment_pickup_azka/<int:id_azka>')
+def shipment_pickup_azka(id_azka):
     conn = get_db_connection_azka()
     cursor = conn.cursor()
 
-    # UPDATE STATUS (updated_at AUTO)
     cursor.execute("""
         UPDATE tbl_shipment_azka
-        SET status_azka=%s,
-            current_warehouse_id_azka=%s
+        SET status_azka='PICKED_UP',
+            courier_id_azka=%s
         WHERE id_azka=%s
-    """, (status, warehouse, id_azka))
-
-    # INSERT LOG TRACKING
-    cursor.execute("""
-        INSERT INTO tbl_shipment_tracking_azka
-        (shipment_id_azka, status_azka, warehouse_id_azka, description_azka)
-        VALUES (%s,%s,%s,%s)
-    """, (id_azka, status, warehouse, deskripsi))
+    """, (session['user_id_azka'], id_azka))
 
     conn.commit()
     conn.close()
 
-    flash("Status shipment berhasil diperbarui", "success")
-    return redirect('/shipment_list_azka')
+    flash("Paket berhasil di-pickup kurir", "success")
+    return redirect(url_for('shipment_azka'))
 
-@app.route("/shipment_edit_azka/<int:id_azka>", methods=["POST"])
-def shipment_edit_azka(id_azka):
-    status_azka = request.form["status_azka"]
-    warehouse_id_azka = request.form["warehouse_id_azka"]
-    kurir_id_azka = request.form["kurir_id_azka"]
-
+@app.route('/shipment_arrived_origin_azka/<int:id_azka>')
+def shipment_arrived_origin_azka(id_azka):
     conn = get_db_connection_azka()
     cursor = conn.cursor()
 
     cursor.execute("""
-        UPDATE tbl_shipment_azka SET
-            status_azka=%s,
-            kurir_id_azka=%s,
-            current_warehouse_id_azka=%s,
-            delivered_at_azka = CASE
-                WHEN %s = 'delivered' THEN NOW()
-                ELSE delivered_at_azka
-            END
+        UPDATE tbl_shipment_azka
+        SET status_azka='ARRIVED_AT_ORIGIN_HUB'
         WHERE id_azka=%s
-    """, (
-        status_azka,
-        kurir_id_azka,
-        warehouse_id_azka,
-        status_azka,
-        id_azka
-    ))
-
-    cursor.execute("""
-        INSERT INTO tbl_shipment_tracking_azka
-        (shipment_id_azka, status_azka, warehouse_id_azka, description_azka)
-        VALUES (%s,%s,%s,%s)
-    """, (
-        id_azka,
-        status_azka,
-        warehouse_id_azka,
-        f"Status berubah menjadi {status_azka}"
-    ))
+    """, (id_azka,))
 
     conn.commit()
     conn.close()
 
-    flash("Status shipment berhasil diperbarui", "success")
-    return redirect(url_for("shipment_azka"))
+    flash("Barang tiba di gudang asal", "success")
+    return redirect(url_for('shipment_azka'))
 
-@app.route("/shipment_delete_azka/<int:id_azka>")
+@app.route('/shipment_transit_azka/<int:id_azka>')
+def shipment_transit_azka(id_azka):
+    conn = get_db_connection_azka()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE tbl_shipment_azka
+        SET status_azka='IN_TRANSIT'
+        WHERE id_azka=%s
+    """, (id_azka,))
+
+    conn.commit()
+    conn.close()
+
+    flash("Paket dalam proses transit", "info")
+    return redirect(url_for('shipment_azka'))
+
+@app.route('/shipment_arrived_dest_azka/<int:id_azka>')
+def shipment_arrived_dest_azka(id_azka):
+    conn = get_db_connection_azka()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE tbl_shipment_azka
+        SET status_azka='ARRIVED_AT_DEST_HUB'
+        WHERE id_azka=%s
+    """, (id_azka,))
+
+    conn.commit()
+    conn.close()
+
+    flash("Barang tiba di gudang tujuan", "success")
+    return redirect(url_for('shipment_azka'))
+
+@app.route('/shipment_out_delivery_azka/<int:id_azka>')
+def shipment_out_delivery_azka(id_azka):
+    conn = get_db_connection_azka()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE tbl_shipment_azka
+        SET status_azka='OUT_FOR_DELIVERY'
+        WHERE id_azka=%s
+    """, (id_azka,))
+
+    conn.commit()
+    conn.close()
+
+    flash("Paket sedang diantar kurir", "info")
+    return redirect(url_for('shipment_azka'))
+
+@app.route('/shipment_delivered_azka/<int:id_azka>')
+def shipment_delivered_azka(id_azka):
+    conn = get_db_connection_azka()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE tbl_shipment_azka
+        SET status_azka='DELIVERED'
+        WHERE id_azka=%s
+    """, (id_azka,))
+
+    conn.commit()
+    conn.close()
+
+    flash("Paket berhasil diterima", "success")
+    return redirect(url_for('shipment_azka'))
+
+@app.route('/shipment_delete_azka/<int:id_azka>')
 def shipment_delete_azka(id_azka):
     conn = get_db_connection_azka()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM tbl_shipment_tracking_azka WHERE shipment_id_azka=%s", (id_azka,))
     cursor.execute("DELETE FROM tbl_shipment_azka WHERE id_azka=%s", (id_azka,))
-
     conn.commit()
     conn.close()
 
-    flash("Data shipment berhasil dihapus!", "success")
-    return redirect(url_for("shipment_azka"))
+    flash("Shipment berhasil dihapus", "success")
+    return redirect(url_for('shipment_azka'))
 
 @app.route('/movement_azka')
 def movement_azka():
@@ -3444,48 +3594,141 @@ def qr_kurir_azka(courier_id_azka):
     qr_azka.save(file_path_azka)
 
     return send_file(file_path_azka, mimetype='image/png')
-
 @app.route('/scan_kurir_azka', methods=['POST'])
 def scan_kurir_azka():
     if 'user_id_azka' not in session:
-        return redirect(url_for('login_azka'))
+        return "Unauthorized", 401
 
     if session.get('role_id_azka') != 3:
-        return "Unauthorized", 403
+        return "Forbidden", 403
 
-    courier_id_azka = session['user_id_azka']
-    scan_type_azka = request.form['scan_type_azka']
-    warehouse_id_azka = request.form['warehouse_id_azka']
+    courier_id = session['user_id_azka']
+    scan_type = request.form.get('scan_type_azka')
+    warehouse_id = request.form.get('warehouse_id_azka')
+
+    if scan_type not in ['IN', 'OUT'] or not warehouse_id:
+        return "Invalid data", 400
 
     conn = get_db_connection_azka()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
-    # SIMPAN SCAN
+    # ===============================
+    # 1️⃣ CEK SHIPMENT AKTIF KURIR
+    # ===============================
+    cursor.execute("""
+        SELECT * FROM tbl_shipment_azka
+        WHERE courier_id_azka=%s
+          AND status_azka NOT IN ('DELIVERED')
+        LIMIT 1
+    """, (courier_id,))
+    shipment = cursor.fetchone()
+
+    # ===============================
+    # 2️⃣ AUTO AMBIL SHIPMENT (JIKA BELUM ADA)
+    # ===============================
+    if not shipment:
+        cursor.execute("""
+            SELECT * FROM tbl_shipment_azka
+            WHERE courier_id_azka IS NULL
+              AND status_azka = 'CREATED'
+              AND warehouse_id_azka = %s
+            ORDER BY created_at_azka ASC
+            LIMIT 1
+        """, (warehouse_id,))
+        shipment = cursor.fetchone()
+
+        if not shipment:
+            conn.close()
+            return "Tidak ada shipment di gudang ini", 404
+
+       # assign ke kurir + pickup
+        cursor.execute("""
+            UPDATE tbl_shipment_azka
+            SET courier_id_azka=%s,
+                status_azka='PICKED_UP'
+            WHERE id_azka=%s
+        """, (courier_id, shipment['id_azka']))
+        conn.commit()
+
+    # 📍 Ambil koordinat gudang
+    cursor.execute("""
+        SELECT latitude_azka, longitude_azka
+        FROM tbl_warehouses_azka
+        WHERE id_azka = %s
+    """, (warehouse_id,))
+    wh = cursor.fetchone()
+
+    if not wh:
+        conn.close()
+        return "Gudang tidak ditemukan", 404
+
+    lat = wh['latitude_azka']
+    lng = wh['longitude_azka']
+
+    # ===============================
+    # 3️⃣ FLOW STATUS VALID
+    # ===============================
+    status = shipment['status_azka']
+    new_status = None
+
+    if status == 'CREATED' and scan_type == 'IN':
+        new_status = 'PICKED_UP'
+    # keluar gudang
+    elif status == 'PICKED_UP' and scan_type == 'OUT':
+        new_status = 'IN_TRANSIT'
+
+    elif status == 'IN_TRANSIT' and scan_type == 'IN':
+        new_status = 'ARRIVED_AT_DEST_HUB'
+
+    elif status == 'ARRIVED_AT_DEST_HUB' and scan_type == 'OUT':
+        new_status = 'OUT_FOR_DELIVERY'
+
+    elif status == 'OUT_FOR_DELIVERY' and scan_type == 'IN':
+        new_status = 'DELIVERED'
+
+        # lepas shipment dari kurir
+        cursor.execute("""
+            UPDATE tbl_shipment_azka
+            SET courier_id_azka=NULL
+            WHERE id_azka=%s
+        """, (shipment['id_azka'],))
+
+    else:
+        conn.close()
+        return f"Scan tidak valid ({status} + {scan_type})", 400
+
+    # ===============================
+    # 4️⃣ UPDATE SHIPMENT
+    # ===============================
+    cursor.execute("""
+        UPDATE tbl_shipment_azka
+        SET status_azka=%s,
+            warehouse_id_azka=%s
+        WHERE id_azka=%s
+    """, (new_status, warehouse_id, shipment['id_azka']))
+
+    # ===============================
+    # 5️⃣ SIMPAN LOG
+    # ===============================
     cursor.execute("""
         INSERT INTO tbl_courier_scans_azka
-        (courier_id_azka, warehouse_id_azka, scan_type_azka, scan_time_azka)
-        VALUES (%s, %s, %s, NOW())
-    """, (
-        courier_id_azka,
-        warehouse_id_azka,
-        scan_type_azka
-    ))
+        (courier_id_azka, warehouse_id_azka, scan_type_azka,
+        latitude_azka, longitude_azka, scan_time_azka)
+        VALUES (%s,%s,%s,%s,%s,NOW())
+    """, (courier_id, warehouse_id, scan_type, lat, lng))
 
-    # LOG AKTIVITAS (UNTUK ADMIN)
     cursor.execute("""
         INSERT INTO tbl_activity_logs_azka
         (user_id_azka, actions_azka, created_at_azka)
-        VALUES (%s, %s, NOW())
+        VALUES (%s,%s,NOW())
     """, (
-        courier_id_azka,
-        f"Kurir scan {scan_type_azka} di gudang ID {warehouse_id_azka}"
+        courier_id,
+        f"Scan {scan_type} | {shipment['tracking_number_azka']} → {new_status}"
     ))
 
     conn.commit()
     conn.close()
-
     return "OK"
-
 
 @app.route('/logout_azka')
 def logout_azka():

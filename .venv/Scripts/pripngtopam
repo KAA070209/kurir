@@ -1,4 +1,4 @@
-#!D:\manajemen_logistik_barangg\.venv\Scripts\python.exe
+#!D:\barcode\.venv\Scripts\python.exe
 
 import struct
 
