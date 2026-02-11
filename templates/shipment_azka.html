@@ -7,6 +7,8 @@
     <link rel="icon" type="image/x-icon" href="/static/icon/icon.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -422,7 +424,10 @@
 
         /* BOX POPUP */
         .modal-box {
-            width: 420px;
+            width: 800px;          /* LEBAR */
+            max-width: 95%;
+            max-height: 80vh;     /* BATAS TINGGI */
+            overflow-y: auto;
             background: white;
             padding: 30px;
             border-radius: 18px;
@@ -448,6 +453,14 @@
             border-radius: 12px;
             margin-top: 5px;
         }
+        @media (max-width:768px) {
+            .modal-box {
+                width: 95%;
+                max-height: 75vh;
+                padding: 20px;
+            }
+        }
+
              @media (max-width: 768px) {
 
             body {
@@ -670,6 +683,17 @@
     }
 }
 
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+@media (max-width:768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
     </style>
 </head>
@@ -680,18 +704,13 @@
         <h4>📦 Logistics</h4>
         <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i> Dashboard</a>
         <a href="/product_azka"><i class="bi bi-box-seam"></i> Data Barang</a>
-        <a href="/suplier_azka"><i class="bi bi-truck"></i> Supplier</a>
         <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i> Activity Logs</a>
-        <a href="#"><i class="bi bi-people"></i> Pengguna</a>
+        <a href="/admin_users_azka"><i class="bi bi-people"></i> Pengguna</a>
         <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
-        <a href="/order_azka"><i class="bi bi-receipt"></i> Orders</a>
-        <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i> Receiving</a>
         <a href="/shipment_azka"  class="active"><i class="bi bi-box-arrow-up"></i> Shipment</a>
-        <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i> Movement</a>
-        <a href="/po_azka"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
         <a href="#"><i class="bi bi-bar-chart"></i> Laporan</a>
     </div>
-    <!-- MOBILE FULL MENU -->
+    <!-- MOBILE FULL MENU --> 
     <div class="mobile-menu" id="mobileMenu">
         <div class="menu-header">
             <span>📦 Logistics Menu</span>
@@ -701,15 +720,11 @@
         <div class="menu-grid">
             <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i>Dashboard</a>
             <a href="/product_azka"><i class="bi bi-box-seam"></i>Data Barang</a>
-            <a href="/suplier_azka"><i class="bi bi-truck"></i>Supplier</a>
             <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i>Activity Logs</a>
             <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
             <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
-            <a href="/order_azka"><i class="bi bi-receipt"></i>Orders</a>
-            <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i>Receiving</a>
             <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
-            <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i>Stock Movement</a>
-            <a href="/po_azka"><i class="bi bi-file-earmark-text"></i>Purchase Order</a>
+           
             <a href="#"><i class="bi bi-bar-chart"></i>Laporan</a>
         </div>
     </div>
@@ -792,7 +807,7 @@
     <thead>
         <tr>
             <th>No</th>
-            <th>Tracking</th>
+            <th>No Resi</th>
             <th>Pengirim</th>
             <th>Penerima</th>
             <th>Gudang</th>
@@ -812,43 +827,41 @@
                 {{ s.receiver_name_azka }}<br>
                 <small class="text-muted">{{ s.receiver_address_azka }}</small>
             </td>
-            <td>{{ s.warehouse }}</td>
+            <td>{{ s.origin_name }}</td>
             <td>{{ s.courier or '-' }}</td>
             <td>
-                {% if s.status_azka == 'CREATED' %}
-                    <span class="badge bg-secondary">CREATED</span>
-                {% elif s.status_azka == 'PICKED_UP' %}
-                    <span class="badge bg-info">PICKED UP</span>
-                {% elif s.status_azka == 'ARRIVED_AT_HUB' %}
-                    <span class="badge bg-warning">ARRIVED HUB</span>
-                {% elif s.status_azka == 'OUT_FOR_DELIVERY' %}
-                    <span class="badge bg-primary">OUT DELIVERY</span>
-                {% elif s.status_azka == 'DELIVERED' %}
-                    <span class="badge bg-success">DELIVERED</span>
-                {% endif %}
+                
+                <span class="badge 
+                    {% if s.status_azka == 'OUT_FOR_DELIVERY' %}bg-primary
+                    {% elif s.status_azka == 'ARRIVED_AT_HUB' %}bg-warning
+                    {% elif s.status_azka == 'DELIVERED' %}bg-success
+                    {% else %}bg-secondary{% endif %}
+                    mb-1 d-block">
+                    {{ s.status_azka.replace('_',' ') }}
+                </span>
+
+    
+            </td>
+
             </td>
             <td>{{ s.created_at_azka }}</td>
             <td>
-                <a href="/shipment_delete_azka/{{ s.id_azka }}"
-                   onclick="return confirm('Hapus shipment?')"
-                   class="btn btn-sm btn-danger mt-1">
-                    <i class="bi bi-trash"></i>
-                </a>
-                <button class="btn btn-sm btn-primary"
-                onclick='openMapFromWarehouses(
-                    {{ s.origin_lat }},
-                    {{ s.origin_lng }},
-                    {{ s.destination_lat }},
-                    {{ s.destination_lng }},
-                    {{ warehouses_azka | tojson }}
-                )'>
-                📍 Tracking
+                <form action="/shipment_delete_azka/{{ s.id_azka }}" method="POST"
+                    onsubmit="return confirm('Yakin hapus shipment ini?')">
+
+                    <button type="submit" class="btn btn-sm btn-danger mt-1">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+                <button type="button"
+                    class="btn btn-sm btn-primary mt-1 w-100"
+                    onclick='openTrackingModal(
+                        {{ s.routes | tojson }},
+                        "{{ s.status_azka }}",
+                        {{ s.truck_position | tojson }}
+                    )'>
+                    <i class="bi bi-geo-alt-fill"></i> Tracking
                 </button>
-
-
-
-
-
 
             </td>
         </tr>
@@ -859,89 +872,57 @@
         </div>
 
     </div>
-    <div id="add_product" class="modal-overlay">
-    <div class="modal-box">
+    <div class="form-grid">
+        <div id="add_product" class="modal-overlay">
+        <div class="modal-box">
 
-        <h4>Tambah Shipment (Drop Point)</h4>
+            <h4>Tambah Shipment (Drop Point)</h4>
 
-        <form action="/shipment_add_azka" method="POST">
+            <form action="/shipment_add_azka" method="POST">
 
-            <label class="mt-2">Nama Pengirim</label>
-            <input type="text" name="sender_name_azka" class="form-control" required>
+                <label class="mt-2">Nama Pengirim</label>
+                <input type="text" name="sender_name_azka" class="form-control" required>
 
-            <label class="mt-2">Nama Penerima</label>
-            <input type="text" name="receiver_name_azka" class="form-control" required>
+                <label class="mt-2">Nama Penerima</label>
+                <input type="text" name="receiver_name_azka" class="form-control" required>
 
-            <label class="mt-2">Alamat Penerima</label>
-            <textarea name="receiver_address_azka" class="form-control" rows="3" required></textarea>
+                <label class="mt-2">Nama Barang</label>
+                <input name="nama_barang_azka" class="form-control" placeholder="Nama Barang" required>
+                <label class="mt-2">Berat Barang</label>
+                <input name="berat_azka" type="number" step="0.1" class="form-control" placeholder="Berat (kg)" required>
 
-            <label class="mt-2">Gudang Awal (Drop Point)</label>
-            <select name="warehouse_id_azka" class="form-control" required>
-                <option value="">--Pilih Gudang--</option>
-                {% for w in warehouses_azka %}
-                <option value="{{ w.id_azka }}">
-                    {{ w.nama_azka }}
-                </option>
-                {% endfor %}
-            </select>
+                <label class="mt-2"> Jumlah</label>
+                <input name="qty_azka" type="number" class="form-control" placeholder="Qty" required>
 
-            <!-- STATUS DISET OTOMATIS -->
-            <input type="hidden" name="status_azka" value="CREATED">
+                <label class="mt-2">Alamat Penerima</label>
+                <textarea name="receiver_address_azka" class="form-control" rows="3" required></textarea>
 
-            <div class="d-flex justify-content-end gap-3 mt-4">
-                <a href="#" class="btn btn-secondary">Batal</a>
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-box-arrow-up"></i> Buat Shipment
-                </button>
-            </div>
+                <label class="mt-2">Gudang Awal (Drop Point)</label>
+                <select name="warehouse_id_azka" class="form-control" required>
+                    <option value="">--Pilih Gudang--</option>
+                    {% for w in warehouses_azka %}
+                    <option value="{{ w.id_azka }}">
+                        {{ w.nama_azka }}
+                    </option>
+                    {% endfor %}
+                </select>
 
-        </form>
+                <!-- STATUS DISET OTOMATIS -->
+                <input type="hidden" name="status_azka" value="CREATED">
 
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a href="#" class="btn btn-secondary">Batal</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-box-arrow-up"></i> Buat Shipment
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
 </div>
-{% for log in data_shipment_azka %}
-<div id="edit_{{ log.id_azka }}" class="modal-overlay">
-    <div class="modal-box">
-
-        <h4>Update Status Shipment</h4>
-
-        <form action="/shipment_edit_azka/{{ log.id_azka }}" method="POST">
-
-            <label class="mt-2">Tracking Number</label>
-            <input type="text" class="form-control" value="{{ log.tracking_number_azka }}" disabled>
-
-            <label class="mt-2">Status Pengiriman</label>
-            <select name="status_azka" class="form-control" required>
-                <option value="CREATED" {% if log.status_azka=='CREATED' %}selected{% endif %}>Created (Drop Point)</option>
-                <option value="PICKED_UP" {% if log.status_azka=='PICKED_UP' %}selected{% endif %}>Picked Up Kurir</option>
-                <option value="ARRIVED_AT_HUB" {% if log.status_azka=='ARRIVED_AT_HUB' %}selected{% endif %}>Tiba di Gudang</option>
-                <option value="OUT_FOR_DELIVERY" {% if log.status_azka=='OUT_FOR_DELIVERY' %}selected{% endif %}>Dikirim ke Penerima</option>
-                <option value="DELIVERED" {% if log.status_azka=='DELIVERED' %}selected{% endif %}>Delivered</option>
-            </select>
-
-            <label class="mt-2">Gudang Saat Ini</label>
-            <select name="warehouse_id_azka" class="form-control">
-                {% for w in warehouses_azka %}
-                <option value="{{ w.id_azka }}"
-                    {% if log.warehouse_id_azka == w.id_azka %}selected{% endif %}>
-                    {{ w.nama_warehouse_azka }}
-                </option>
-                {% endfor %}
-            </select>
-
-            <div class="d-flex justify-content-end gap-3 mt-4">
-                <a href="#" class="btn btn-secondary">Batal</a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-arrow-repeat"></i> Update Status
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-{% endfor %}
-<div class="modal fade" id="mapModal" tabindex="-1">
+<div class="modal fade" id="trackingModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -949,7 +930,8 @@
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div id="map" style="height:400px;border-radius:12px"></div>
+        <!-- ID HARUS trackingMap -->
+        <div id="trackingMap" style="height:400px;border-radius:12px"></div>
       </div>
     </div>
   </div>
@@ -969,12 +951,6 @@
         <span>Barang</span>
     </a>
 
-    <a href="/order_azka"
-       class="{% if request.path == '/order_azka' %}active{% endif %}">
-        <i class="bi bi-receipt"></i>
-        <span>Orders</span>
-    </a>
-
     <a href="/shipment_azka"
        class="{% if request.path == '/shipment_azka' %}active{% endif %}">
         <i class="bi bi-box-arrow-up"></i>
@@ -987,92 +963,164 @@
     </a>
 </div>
 <script>
-let map, vehicleMarker, animIndex = 0, animTimer;
+function distance(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2-lat1) * Math.PI/180;
+    const dLng = (lng2-lng1) * Math.PI/180;
 
-function openMapFromWarehouses(oLat, oLng, dLat, dLng, warehouses) {
+    const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1*Math.PI/180) *
+        Math.cos(lat2*Math.PI/180) *
+        Math.sin(dLng/2) * Math.sin(dLng/2);
 
-    const modalEl = document.getElementById('mapModal');
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+</script>
+<script>
+let trackingMap = null;
+let truckMarker = null;
+let routeLine = null;
+
+/* ================= ICON ================= */
+const warehouseIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32]
+});
+
+const hubIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/535/535239.png',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28]
+});
+
+const destinationIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684809.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32]
+});
+
+const truckIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png',
+    iconSize: [36, 36],
+    iconAnchor: [18, 36]
+});
+
+/* ================= OPEN MODAL ================= */
+function openTrackingModal(routes, status, truckPosition) {
+    const modalEl = document.getElementById('trackingModal');
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
 
     modalEl.addEventListener('shown.bs.modal', () => {
+        renderTrackingMap(routes, status, truckPosition);
 
-        if (map) map.remove();
-
-        const origin = [oLat, oLng];
-        const destination = [dLat, dLng];
-
-        // ===== SUSUN RUTE DARI GUDANG =====
-        let route = [origin];
-
-        warehouses
-            .filter(w => w.tipe_azka === 'HUB')
-            .sort((a,b) => a.urutan_azka - b.urutan_azka)
-            .forEach(w => {
-                route.push([w.latitude_azka, w.longitude_azka]);
-            });
-
-        route.push(destination);
-
-        map = L.map('map').setView(origin, 6);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        // ===== MARKER =====
-        L.marker(origin).addTo(map).bindPopup("🏢 Gudang Asal");
-
-        warehouses.forEach(w => {
-            if (w.tipe_azka === 'HUB') {
-                L.marker([w.latitude_azka, w.longitude_azka])
-                    .addTo(map)
-                    .bindPopup("🏬 Hub: " + w.nama_azka);
-            }
-        });
-
-        L.marker(destination).addTo(map).bindPopup("🏠 Gudang Tujuan");
-
-        // ===== GARIS =====
-        L.polyline(route, {
-            color: '#4f46e5',
-            weight: 4
-        }).addTo(map);
-
-        map.fitBounds(route);
-
-        // ===== ICON MOBIL =====
-        const truckIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/743/743131.png',
-            iconSize: [36,36],
-            iconAnchor: [18,18]
-        });
-
-        vehicleMarker = L.marker(origin, { icon: truckIcon }).addTo(map);
-
-        animateVehicle(route);
-
+        // WAJIB untuk Leaflet di modal
+        setTimeout(() => {
+            trackingMap.invalidateSize();
+        }, 200);
     }, { once: true });
 }
+/* ================= RENDER MAP ================= */
+function renderTrackingMap(routes, status, truckPosition) {
+    if (!routes || routes.length === 0) {
+        alert("Data tracking tidak tersedia");
+        return;
+    }
 
-// ===== ANIMASI =====
-function animateVehicle(route) {
-    animIndex = 0;
-    clearInterval(animTimer);
+    /* destroy map lama */
+    if (trackingMap) {
+        trackingMap.remove();
+        trackingMap = null;
+    }
 
-    animTimer = setInterval(() => {
-        if (animIndex >= route.length) {
-            clearInterval(animTimer);
-            return;
+    trackingMap = L.map('trackingMap').setView([routes[0].lat, routes[0].lng], 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(trackingMap);
+
+    let points = [];
+    let hubIndex = 1;
+
+    /* ===== MARKERS ===== */
+    routes.forEach(r => {
+        if (!r || r.lat === null || r.lng === null) return;
+
+        const lat = parseFloat(r.lat);
+        const lng = parseFloat(r.lng);
+
+        let icon = warehouseIcon;
+        let label = "Gudang Asal";
+
+        if (r.type === "HUB") {
+            icon = hubIcon;
+            label = `Hub Transit ${hubIndex}`;
+            hubIndex++;
         }
-        vehicleMarker.setLatLng(route[animIndex]);
-        animIndex++;
-    }, 1200);
+
+        if (r.type === "DESTINATION") {
+            icon = destinationIcon;
+            label = "Tujuan";
+        }
+
+        L.marker([lat, lng], { icon })
+            .addTo(trackingMap)
+            .bindPopup(`<b>${r.name}</b><br>${label}`);
+
+        points.push([lat, lng]);
+    });
+
+    /* ===== ROUTE LINE ===== */
+/* ===== ROUTE SESUAI JALAN ===== */
+if (points.length > 1) {
+
+    if (routeLine) {
+        trackingMap.removeControl(routeLine);
+        routeLine = null;
+    }
+
+    routeLine = L.Routing.control({
+        waypoints: points.map(p => L.latLng(p[0], p[1])),
+        router: L.Routing.osrmv1({
+            serviceUrl: 'https://router.project-osrm.org/route/v1'
+        }),
+        addWaypoints: false,
+        draggableWaypoints: false,
+        fitSelectedRoutes: true,
+        show: false,
+        lineOptions: {
+            styles: [{ weight: 5, opacity: 0.8 }]
+        },
+        createMarker: () => null // MATIKAN marker default
+    }).addTo(trackingMap);
 }
+    /* ===== TRUCK ===== */
+    if (truckPosition && truckPosition.lat && truckPosition.lng) {
+        truckMarker = L.marker(
+            [truckPosition.lat, truckPosition.lng],
+            { icon: truckIcon }
+        ).addTo(trackingMap);
+
+        animateTruck(points);
+    }
+}
+routeLine.on('routesfound', function (e) {
+    const route = e.routes[0];
+    const coords = route.coordinates;
+
+    let i = 0;
+    function moveTruck() {
+        if (i >= coords.length) return;
+
+        truckMarker.setLatLng([coords[i].lat, coords[i].lng]);
+        i++;
+        setTimeout(moveTruck, 40);
+    }
+    moveTruck();
+});
 </script>
-
-
-
  <script>
         const openMenu = document.getElementById('openMenu');
         const closeMenu = document.getElementById('closeMenu');

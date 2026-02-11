@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 02 Feb 2026 pada 18.10
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.2.12
+-- Generation Time: Feb 05, 2026 at 11:28 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_activity_logs_azka`
+-- Table structure for table `tbl_activity_logs_azka`
 --
 
 CREATE TABLE `tbl_activity_logs_azka` (
@@ -36,7 +36,7 @@ CREATE TABLE `tbl_activity_logs_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_activity_logs_azka`
+-- Dumping data for table `tbl_activity_logs_azka`
 --
 
 INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `actions_azka`, `reference_azka`, `created_at_azka`) VALUES
@@ -408,17 +408,139 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `actions_azka`,
 (366, 7, 'Login', 'User fadlan berhasil login', '2026-02-02 17:08:41'),
 (367, 7, 'Scan IN | AE-1770049610 → ARRIVED_AT_DEST_HUB', '', '2026-02-02 17:08:53'),
 (368, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-02 17:09:02'),
-(369, 1, 'Login', 'User Admin berhasil login', '2026-02-02 17:09:07');
+(369, 1, 'Login', 'User Admin berhasil login', '2026-02-02 17:09:07'),
+(370, 1, 'Login', 'User Admin berhasil login', '2026-02-03 12:28:52'),
+(371, 1, 'Tambah Data', 'Gudang #Gudang Utama Barat ditambahkan', '2026-02-03 12:33:09'),
+(372, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 12:44:10'),
+(373, 1, 'Login', 'User Admin berhasil login', '2026-02-03 12:44:35'),
+(374, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 12:53:08'),
+(375, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 12:53:13'),
+(376, 7, 'Scan IN | AE-1770053374 → PICKED_UP', '', '2026-02-03 12:54:29'),
+(377, 7, 'Scan IN | AE-1770053374 → PICKED_UP', '', '2026-02-03 12:54:29'),
+(378, 7, 'Scan IN | AE-1770053374 → PICKED_UP', '', '2026-02-03 12:54:29'),
+(379, 7, 'Scan OUT | AE-1770053374 → IN_TRANSIT', '', '2026-02-03 12:54:47'),
+(380, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 12:54:55'),
+(381, 1, 'Login', 'User Admin berhasil login', '2026-02-03 12:55:01'),
+(382, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 13:06:10'),
+(383, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 13:06:14'),
+(384, 7, 'Scan IN | AE-1770123875 → PICKED_UP', '', '2026-02-03 13:06:47'),
+(385, 7, 'Scan OUT | AE-1770123875 → IN_TRANSIT', '', '2026-02-03 13:07:00'),
+(386, 7, 'Scan IN | AE-1770123875 → ARRIVED_AT_DEST_HUB', '', '2026-02-03 13:07:13'),
+(387, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 13:07:16'),
+(388, 1, 'Login', 'User Admin berhasil login', '2026-02-03 13:07:20'),
+(389, 1, 'Login', 'User Admin berhasil login', '2026-02-03 15:08:50'),
+(390, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 15:15:46'),
+(391, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 15:15:54'),
+(392, 7, 'Scan IN | AE-1770131359 → PICKED_UP', '', '2026-02-03 15:17:14'),
+(393, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 15:17:20'),
+(394, 1, 'Login', 'User Admin berhasil login', '2026-02-03 15:17:25'),
+(395, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 15:17:47'),
+(396, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 15:17:52'),
+(397, 7, 'Scan OUT | AE-1770131359 → IN_TRANSIT', '', '2026-02-03 15:18:01'),
+(398, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 15:18:05'),
+(399, 1, 'Login', 'User Admin berhasil login', '2026-02-03 15:18:09'),
+(400, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 15:28:21'),
+(401, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 15:28:25'),
+(402, 7, 'Scan IN | AE-1770132486 → PICKED_UP', '', '2026-02-03 15:28:30'),
+(403, 7, 'Scan OUT | AE-1770132486 → IN_TRANSIT', '', '2026-02-03 15:29:50'),
+(404, 7, 'Scan IN | AE-1770132783 → PICKED_UP', '', '2026-02-03 15:36:35'),
+(405, 7, 'Scan OUT | AE-1770132783 → IN_TRANSIT', '', '2026-02-03 15:36:46'),
+(406, 7, 'Scan IN | AE-1770132783 → ARRIVED_AT_DEST_HUB', '', '2026-02-03 15:37:18'),
+(407, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 15:41:39'),
+(408, 1, 'Login', 'User Admin berhasil login', '2026-02-03 15:41:44'),
+(409, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 15:47:10'),
+(410, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 15:47:14'),
+(411, 7, 'Scan IN | AE-1770133567 → PICKED_UP', '', '2026-02-03 15:47:38'),
+(412, 7, 'Scan OUT | AE-1770133567 → IN_TRANSIT', '', '2026-02-03 15:47:57'),
+(413, 7, 'Scan IN | AE-1770133567 → ARRIVED_AT_DEST_HUB', '', '2026-02-03 15:48:20'),
+(414, 7, 'Scan IN | AE-1770134025 → PICKED_UP', '', '2026-02-03 15:54:03'),
+(415, 7, 'Scan OUT | AE-1770134025 → IN_TRANSIT', '', '2026-02-03 15:54:14'),
+(416, 7, 'Scan IN | AE-1770134025 → ARRIVED_AT_DEST_HUB', '', '2026-02-03 15:54:23'),
+(417, 7, 'Scan IN | AE-1770134385 → PICKED_UP', '', '2026-02-03 16:00:20'),
+(418, 7, 'Scan OUT | AE-1770134385 → IN_TRANSIT', '', '2026-02-03 16:00:39'),
+(419, 7, 'Scan IN | AE-1770134385 → ARRIVED_AT_HUB', '', '2026-02-03 16:00:44'),
+(420, 7, 'Scan IN | AE-1770134640 → PICKED_UP', '', '2026-02-03 16:04:13'),
+(421, 7, 'Scan OUT | AE-1770134640 → IN_TRANSIT', '', '2026-02-03 16:04:23'),
+(422, 7, 'Scan IN | AE-1770134640 → ARRIVED_AT_HUB', '', '2026-02-03 16:04:27'),
+(423, 7, 'Scan IN | AE-1770134944 → PICKED_UP', '', '2026-02-03 16:09:13'),
+(424, 7, 'Scan IN | AE-1770135111 → PICKED_UP', '', '2026-02-03 16:12:11'),
+(425, 7, 'Scan OUT | AE-1770135111 → IN_TRANSIT', '', '2026-02-03 16:12:15'),
+(426, 7, 'Scan IN | AE-1770135111 → ARRIVED_AT_HUB', '', '2026-02-03 16:12:20'),
+(427, 7, 'Scan OUT | AE-1770135111 → IN_TRANSIT', '', '2026-02-03 16:12:29'),
+(428, 7, 'Scan IN | AE-1770135111 → ARRIVED_AT_HUB', '', '2026-02-03 16:12:31'),
+(429, 7, 'Scan IN | AE-1770135282 → PICKED_UP', '', '2026-02-03 16:15:00'),
+(430, 7, 'Scan OUT | AE-1770135282 → IN_TRANSIT', '', '2026-02-03 16:15:10'),
+(431, 7, 'Scan IN | AE-1770135448 → PICKED_UP', '', '2026-02-03 16:17:37'),
+(432, 7, 'Scan OUT | AE-1770135448 → IN_TRANSIT', '', '2026-02-03 16:17:45'),
+(433, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 16:21:45'),
+(434, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 16:21:50'),
+(435, 7, 'Scan IN | AE-1770135687 → PICKED_UP', '', '2026-02-03 16:21:55'),
+(436, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 16:22:03'),
+(437, 1, 'Login', 'User Admin berhasil login', '2026-02-03 16:23:05'),
+(438, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 16:23:33'),
+(439, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 16:23:37'),
+(440, 7, 'Scan IN | AE-1770135807 → PICKED_UP', '', '2026-02-03 16:23:40'),
+(441, 7, 'Scan OUT | AE-1770135807 → IN_TRANSIT', '', '2026-02-03 16:23:48'),
+(442, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 16:28:17'),
+(443, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 16:28:29'),
+(444, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 16:30:20'),
+(445, 1, 'Login', 'User Admin berhasil login', '2026-02-03 16:30:27'),
+(446, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 16:31:03'),
+(447, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 16:31:07'),
+(448, 7, 'Scan IN | AE-1770136252 → PICKED_UP', '', '2026-02-03 16:31:12'),
+(449, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 16:46:01'),
+(450, 1, 'Login', 'User Admin berhasil login', '2026-02-03 16:47:01'),
+(451, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 16:47:29'),
+(452, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 16:47:33'),
+(453, 7, 'Scan IN | AE-1770137244 → PICKED_UP', '', '2026-02-03 16:54:47'),
+(454, 7, 'Scan OUT | AE-1770137244 → IN_TRANSIT', '', '2026-02-03 16:55:01'),
+(455, 7, 'Scan IN | AE-1770137244 → ARRIVED_AT_HUB', '', '2026-02-03 16:58:54'),
+(456, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 17:03:16'),
+(457, 1, 'Login', 'User Admin berhasil login', '2026-02-03 17:03:21'),
+(458, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 17:03:56'),
+(459, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 17:04:00'),
+(460, 7, 'Scan IN | AE-1770138230 → PICKED_UP', '', '2026-02-03 17:04:06'),
+(461, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 17:04:19'),
+(462, 1, 'Login', 'User Admin berhasil login', '2026-02-03 17:04:24'),
+(463, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 17:04:37'),
+(464, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 17:04:41'),
+(465, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 17:09:06'),
+(466, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 17:09:11'),
+(467, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 17:15:52'),
+(468, 1, 'Login', 'User Admin berhasil login', '2026-02-03 17:15:57'),
+(469, 1, 'Logout', 'User Admin berhasil logout', '2026-02-03 17:16:38'),
+(470, 7, 'Login', 'User fadlan berhasil login', '2026-02-03 17:16:43'),
+(471, 7, 'Scan IN | AE-1770138993 → PICKED_UP', '', '2026-02-03 17:16:50'),
+(472, 7, 'Scan OUT | AE-1770138993 → IN_TRANSIT', '', '2026-02-03 17:21:12'),
+(473, 7, 'Scan IN | AE-1770138993 → ARRIVED_AT_DEST_HUB', '', '2026-02-03 17:21:40'),
+(474, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-03 17:21:46'),
+(475, 1, 'Login', 'User Admin berhasil login', '2026-02-03 17:22:00'),
+(476, 1, 'Login', 'User Admin berhasil login', '2026-02-04 09:49:53'),
+(477, 1, 'Tambah Data', 'Gudang #Gudang Kedua ditambahkan', '2026-02-04 10:50:22'),
+(478, 1, 'Logout', 'User Admin berhasil logout', '2026-02-04 11:11:42'),
+(479, 7, 'Login', 'User fadlan berhasil login', '2026-02-04 11:11:48'),
+(480, 7, 'Logout', 'User fadlan berhasil logout', '2026-02-04 11:11:58'),
+(481, 1, 'Login', 'User Admin berhasil login', '2026-02-04 11:12:03'),
+(482, 1, 'Logout', 'User Admin berhasil logout', '2026-02-04 11:14:09'),
+(483, 1, 'Login', 'User Admin berhasil login', '2026-02-04 11:14:17'),
+(484, 1, 'Logout', 'User Admin berhasil logout', '2026-02-04 11:15:26'),
+(485, 1, 'Login', 'User Admin berhasil login', '2026-02-04 11:16:02'),
+(486, 1, 'Login', 'User Admin berhasil login', '2026-02-05 09:30:27'),
+(487, 1, 'Tambah Data', 'Gudang #Gudang Utama ditambahkan', '2026-02-05 10:08:02'),
+(488, 1, 'Tambah Data', 'Gudang #Gudang Utama Barat ditambahkan', '2026-02-05 10:10:52'),
+(489, 1, 'Tambah Data', 'Gudang #Gudang Utama Timur ditambahkan', '2026-02-05 10:11:37'),
+(490, 1, 'Login', 'User Admin berhasil login', '2026-02-05 10:26:22');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_courier_scans_azka`
+-- Table structure for table `tbl_courier_scans_azka`
 --
 
 CREATE TABLE `tbl_courier_scans_azka` (
   `id_azka` int(11) NOT NULL,
   `courier_id_azka` int(11) NOT NULL,
+  `shipment_id_azka` int(11) DEFAULT NULL,
   `warehouse_id_azka` int(11) NOT NULL,
   `scan_type_azka` enum('IN','OUT') NOT NULL,
   `scan_time_azka` datetime DEFAULT current_timestamp(),
@@ -429,7 +551,7 @@ CREATE TABLE `tbl_courier_scans_azka` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_locations_azka`
+-- Table structure for table `tbl_locations_azka`
 --
 
 CREATE TABLE `tbl_locations_azka` (
@@ -440,7 +562,7 @@ CREATE TABLE `tbl_locations_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_locations_azka`
+-- Dumping data for table `tbl_locations_azka`
 --
 
 INSERT INTO `tbl_locations_azka` (`id_azka`, `code_azka`, `type_azka`, `description_azka`) VALUES
@@ -452,39 +574,28 @@ INSERT INTO `tbl_locations_azka` (`id_azka`, `code_azka`, `type_azka`, `descript
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_product_azka`
+-- Table structure for table `tbl_products_azka`
 --
 
-CREATE TABLE `tbl_product_azka` (
+CREATE TABLE `tbl_products_azka` (
   `id_azka` int(11) NOT NULL,
-  `sku_azka` varchar(100) NOT NULL,
-  `nama_product_azka` varchar(255) NOT NULL,
-  `category_id_azka` int(11) NOT NULL,
-  `unit_azka` varchar(50) NOT NULL,
-  `min_stock_azka` int(11) DEFAULT 0,
-  `created_at_azka` timestamp NOT NULL DEFAULT current_timestamp()
+  `shipment_id_azka` int(11) DEFAULT NULL,
+  `nama_barang_azka` varchar(100) DEFAULT NULL,
+  `berat_azka` float DEFAULT NULL,
+  `qty_azka` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_product_azka`
+-- Dumping data for table `tbl_products_azka`
 --
 
-INSERT INTO `tbl_product_azka` (`id_azka`, `sku_azka`, `nama_product_azka`, `category_id_azka`, `unit_azka`, `min_stock_azka`, `created_at_azka`) VALUES
-(1, 'SKU-BRS-001', 'Beras Premium 5kg', 1, 'kg', 100, '2025-11-28 12:56:42'),
-(2, 'SKU-GLS-002', 'Gula Putih 1kg', 1, 'kg', 100, '2025-11-28 12:58:31'),
-(3, 'SKU-AIR-003', 'Air Miineral 600ml', 3, 'botol', 100, '2025-11-28 12:58:31'),
-(4, 'SKU-LPT-004', 'Laptop Mackbook', 2, 'unit', 100, '2025-11-28 13:00:27'),
-(5, 'SKU-TLR-005', 'Telur Premium 10kg', 1, 'kg', 100, '2025-11-30 10:54:21'),
-(6, 'SKU-HP-006', 'OPPO A16', 2, 'Unit', 100, '2025-11-30 10:57:40'),
-(7, 'SKU-PWRBNK-007', 'Power Bank', 2, 'unit', 100, '2025-12-03 15:34:55'),
-(8, 'SKU-KYBRD-008', 'Keyboard logitech', 2, 'Unit', 100, '2025-12-04 12:43:09'),
-(9, 'SKU-MBDR-009', 'Motherboard ', 2, 'Unit', 124, '2026-01-15 10:50:43'),
-(10, 'SKU-LCD-010', 'LCD Hp', 2, 'Unit', 100, '2026-01-21 15:02:34');
+INSERT INTO `tbl_products_azka` (`id_azka`, `shipment_id_azka`, `nama_barang_azka`, `berat_azka`, `qty_azka`) VALUES
+(6, 42, 'Handphone', 0.5, 1);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_product_categories_azka`
+-- Table structure for table `tbl_product_categories_azka`
 --
 
 CREATE TABLE `tbl_product_categories_azka` (
@@ -493,7 +604,7 @@ CREATE TABLE `tbl_product_categories_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_product_categories_azka`
+-- Dumping data for table `tbl_product_categories_azka`
 --
 
 INSERT INTO `tbl_product_categories_azka` (`id_azka`, `nama_azka`) VALUES
@@ -504,7 +615,7 @@ INSERT INTO `tbl_product_categories_azka` (`id_azka`, `nama_azka`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_receiving_azka`
+-- Table structure for table `tbl_receiving_azka`
 --
 
 CREATE TABLE `tbl_receiving_azka` (
@@ -517,7 +628,7 @@ CREATE TABLE `tbl_receiving_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_receiving_azka`
+-- Dumping data for table `tbl_receiving_azka`
 --
 
 INSERT INTO `tbl_receiving_azka` (`id_azka`, `po_id_azka`, `warehouse_id_azka`, `received_by_azka`, `status_azka`, `created_at_azka`) VALUES
@@ -528,7 +639,7 @@ INSERT INTO `tbl_receiving_azka` (`id_azka`, `po_id_azka`, `warehouse_id_azka`, 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_receiving_items_azka`
+-- Table structure for table `tbl_receiving_items_azka`
 --
 
 CREATE TABLE `tbl_receiving_items_azka` (
@@ -544,7 +655,7 @@ CREATE TABLE `tbl_receiving_items_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_receiving_items_azka`
+-- Dumping data for table `tbl_receiving_items_azka`
 --
 
 INSERT INTO `tbl_receiving_items_azka` (`id_azka`, `receiving_id_azka`, `product_id_azka`, `quantity_received_azka`, `quantity_accepted_azka`, `expire_date_azka`, `batch_number_azka`, `created_at_azka`, `tanggal_azka`) VALUES
@@ -557,7 +668,7 @@ INSERT INTO `tbl_receiving_items_azka` (`id_azka`, `receiving_id_azka`, `product
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_roles_azka`
+-- Table structure for table `tbl_roles_azka`
 --
 
 CREATE TABLE `tbl_roles_azka` (
@@ -567,19 +678,20 @@ CREATE TABLE `tbl_roles_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_roles_azka`
+-- Dumping data for table `tbl_roles_azka`
 --
 
 INSERT INTO `tbl_roles_azka` (`id_azka`, `nama_azka`, `description_azka`) VALUES
 (1, 'admin', 'full acces system\r\n\r\n'),
 (2, 'Gudang', 'pengelolaan barang'),
 (3, 'Kurir', 'Pengantaran barang'),
-(4, 'Manager', 'Mendistribusi logistik barang\r\n');
+(4, 'Manager', 'Mendistribusi logistik barang\r\n'),
+(5, 'Sopir', 'Membawa Paket');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_shipment_azka`
+-- Table structure for table `tbl_shipment_azka`
 --
 
 CREATE TABLE `tbl_shipment_azka` (
@@ -601,10 +713,17 @@ CREATE TABLE `tbl_shipment_azka` (
   `destination_lng` double DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `tbl_shipment_azka`
+--
+
+INSERT INTO `tbl_shipment_azka` (`id_azka`, `tracking_number_azka`, `sender_name_azka`, `receiver_name_azka`, `receiver_address_azka`, `warehouse_id_azka`, `courier_id_azka`, `status_azka`, `created_at_azka`, `updated_at_azka`, `origin_lat`, `origin_lng`, `last_lat`, `last_lng`, `destination_lat`, `destination_lng`) VALUES
+(42, 'AE-1770286863', 'Azka', 'Alif', 'Jl. Raya Batujajar No.58 - Kec. Batujajar', 16, NULL, 'CREATED', '2026-02-05 17:21:05', '2026-02-05 17:21:05', -7.2489076, 112.7502949, -7.2489076, 112.7502949, -6.9145444, 107.4967993);
+
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_shipment_tracking_azka`
+-- Table structure for table `tbl_shipment_tracking_azka`
 --
 
 CREATE TABLE `tbl_shipment_tracking_azka` (
@@ -618,7 +737,7 @@ CREATE TABLE `tbl_shipment_tracking_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_shipment_tracking_azka`
+-- Dumping data for table `tbl_shipment_tracking_azka`
 --
 
 INSERT INTO `tbl_shipment_tracking_azka` (`id_azka`, `shipment_id_azka`, `status_azka`, `warehouse_id_azka`, `description_azka`, `created_at_azka`, `location_azka`) VALUES
@@ -631,7 +750,7 @@ INSERT INTO `tbl_shipment_tracking_azka` (`id_azka`, `shipment_id_azka`, `status
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_stocks_azka`
+-- Table structure for table `tbl_stocks_azka`
 --
 
 CREATE TABLE `tbl_stocks_azka` (
@@ -644,7 +763,7 @@ CREATE TABLE `tbl_stocks_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_stocks_azka`
+-- Dumping data for table `tbl_stocks_azka`
 --
 
 INSERT INTO `tbl_stocks_azka` (`id_azka`, `product_id_azka`, `location_id_azka`, `warehouse_id_azka`, `quantity_azka`, `update_at_azka`) VALUES
@@ -666,7 +785,7 @@ INSERT INTO `tbl_stocks_azka` (`id_azka`, `product_id_azka`, `location_id_azka`,
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_stock_movements_azka`
+-- Table structure for table `tbl_stock_movements_azka`
 --
 
 CREATE TABLE `tbl_stock_movements_azka` (
@@ -681,7 +800,7 @@ CREATE TABLE `tbl_stock_movements_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_stock_movements_azka`
+-- Dumping data for table `tbl_stock_movements_azka`
 --
 
 INSERT INTO `tbl_stock_movements_azka` (`id_azka`, `product_id_azka`, `from_location_azka`, `to_location_azka`, `quantity_azka`, `type_azka`, `reference_id_azka`, `created_at_azka`) VALUES
@@ -691,7 +810,7 @@ INSERT INTO `tbl_stock_movements_azka` (`id_azka`, `product_id_azka`, `from_loca
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_suppliers_azka`
+-- Table structure for table `tbl_suppliers_azka`
 --
 
 CREATE TABLE `tbl_suppliers_azka` (
@@ -701,7 +820,7 @@ CREATE TABLE `tbl_suppliers_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_suppliers_azka`
+-- Dumping data for table `tbl_suppliers_azka`
 --
 
 INSERT INTO `tbl_suppliers_azka` (`id_azka`, `nama_azka`, `contact_azka`) VALUES
@@ -711,7 +830,7 @@ INSERT INTO `tbl_suppliers_azka` (`id_azka`, `nama_azka`, `contact_azka`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_users_azka`
+-- Table structure for table `tbl_users_azka`
 --
 
 CREATE TABLE `tbl_users_azka` (
@@ -727,21 +846,22 @@ CREATE TABLE `tbl_users_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_users_azka`
+-- Dumping data for table `tbl_users_azka`
 --
 
 INSERT INTO `tbl_users_azka` (`id_azka`, `username_azka`, `email_azka`, `password_hash_azka`, `role_id_azka`, `created_at_azka`, `update_at_azka`, `is_active_azka`, `last_activity`) VALUES
-(1, 'Admin', 'm.azkanabhan07@gmail.com', 'pbkdf2:sha256:1000000$sJt8RlYDDklN6ZGq$08f5b01cc2feff97c75b8b826bd003091a81a6d015566e101afbaa40222b2431', 1, '2025-11-28 07:57:41', '2026-02-02 17:10:07', 1, '2026-02-03 00:10:07'),
+(1, 'Admin', 'm.azkanabhan07@gmail.com', 'pbkdf2:sha256:1000000$sJt8RlYDDklN6ZGq$08f5b01cc2feff97c75b8b826bd003091a81a6d015566e101afbaa40222b2431', 1, '2025-11-28 07:57:41', '2026-02-05 10:26:39', 1, '2026-02-05 17:26:39'),
 (2, 'Staff Gudang', 'gudang.azka@gmail.com', 'pbkdf2:sha256:1000000$UfiK8cWkTJhwQ4d8$0fbcd7400c465d8a9e480f87c8e9a1052dc542737bfc08fdf057bac582ebd891', 2, '2025-11-29 01:32:00', '2025-11-29 12:48:48', 1, NULL),
 (5, 'Kurir', 'kurir.azka@gmail.com', 'pbkdf2:sha256:1000000$cXuNLCazkwj2xNl7$8cac681748c3be6015bdd82f8cc0ae7430591ff0fd494f72c8a4a3f011bb3c3f', 3, '2025-11-29 01:33:14', '2026-02-02 15:55:15', 1, '2026-02-02 22:55:15'),
 (6, 'Manager', 'manager.azka@gmail.com', 'pbkdf2:sha256:1000000$t3lg6jdq18UrYKC2$5ce6d3ec38d1a7ab7da2e256c507661d049054fa238ca9f6c9f3dace3f510853', 4, '2025-11-29 01:34:02', '2025-11-29 01:34:02', 1, NULL),
-(7, 'fadlan', 'fadlan@gmail.com', 'pbkdf2:sha256:1000000$Br5EBARsNCgxSxfe$ccb32c800f4c64e3c1625ce015da2bab6b8a60bbfc006428256e8378a028ad19', 3, '2025-12-07 09:56:30', '2026-02-02 17:09:02', 1, '2026-02-03 00:09:02'),
-(8, 'Alif', 'alif1@gmail.com', 'pbkdf2:sha256:1000000$jZDC7C9OhSB8m9fG$50c6f42434174d532e2c5d3344be0ba9c60e5ba91b1eea9e041350b2b0802763', 2, '2026-01-19 12:37:03', '2026-01-19 12:56:36', 1, '2026-01-19 19:56:36');
+(7, 'fadlan', 'fadlan@gmail.com', 'pbkdf2:sha256:1000000$Br5EBARsNCgxSxfe$ccb32c800f4c64e3c1625ce015da2bab6b8a60bbfc006428256e8378a028ad19', 3, '2025-12-07 09:56:30', '2026-02-04 11:11:58', 1, '2026-02-04 18:11:58'),
+(8, 'Alif', 'alif1@gmail.com', 'pbkdf2:sha256:1000000$jZDC7C9OhSB8m9fG$50c6f42434174d532e2c5d3344be0ba9c60e5ba91b1eea9e041350b2b0802763', 2, '2026-01-19 12:37:03', '2026-01-19 12:56:36', 1, '2026-01-19 19:56:36'),
+(9, 'Sopir', 'sopir@gmail.com', 'pbkdf2:sha256:1000000$bRqpAQTtj8B0CCaN$5e229b4bb04f008631e2e9ad76813cfe0f7df1a03a0507e2807842193bebc970', 5, '2026-02-05 09:45:13', '2026-02-05 09:45:13', 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tbl_warehouses_azka`
+-- Table structure for table `tbl_warehouses_azka`
 --
 
 CREATE TABLE `tbl_warehouses_azka` (
@@ -755,54 +875,55 @@ CREATE TABLE `tbl_warehouses_azka` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `tbl_warehouses_azka`
+-- Dumping data for table `tbl_warehouses_azka`
 --
 
 INSERT INTO `tbl_warehouses_azka` (`id_azka`, `nama_azka`, `address_azka`, `qr_code_data_azka`, `created_at_azka`, `latitude_azka`, `longitude_azka`) VALUES
-(8, 'Gudang Utama', 'Jl. Merdeka No. 5 - Bandung', 'GUDANG|8', '2026-02-02 15:15:13', -8.7137271, 115.1833496),
-(9, 'Gudang Utama Timur', 'Jl. Karya Bakti No. 12 - Surabaya', 'GUDANG|9', '2026-02-02 15:15:30', -7.2350132, 112.7632561);
+(14, 'Gudang Utama', 'Jl. Merdeka No.05 - Kota Bandung', 'GUDANG|14', '2026-02-05 10:08:02', -6.9088790, 107.6106028),
+(15, 'Gudang Utama Barat', 'Jl. Melati No.90 - Jakarta Barat', 'GUDANG|15', '2026-02-05 10:10:52', -6.1924323, 106.7648468),
+(16, 'Gudang Utama Timur', 'Jl. Kusuma Bangsa No.21 - Surabaya', 'GUDANG|16', '2026-02-05 10:11:37', -7.2489076, 112.7502949);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indeks untuk tabel `tbl_activity_logs_azka`
+-- Indexes for table `tbl_activity_logs_azka`
 --
 ALTER TABLE `tbl_activity_logs_azka`
   ADD PRIMARY KEY (`id_azka`),
   ADD KEY `fk_userr` (`user_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_courier_scans_azka`
+-- Indexes for table `tbl_courier_scans_azka`
 --
 ALTER TABLE `tbl_courier_scans_azka`
   ADD PRIMARY KEY (`id_azka`),
   ADD KEY `courier_id_azka` (`courier_id_azka`),
-  ADD KEY `warehouse_id_azka` (`warehouse_id_azka`);
+  ADD KEY `warehouse_id_azka` (`warehouse_id_azka`),
+  ADD KEY `shipment_id_azka` (`shipment_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_locations_azka`
+-- Indexes for table `tbl_locations_azka`
 --
 ALTER TABLE `tbl_locations_azka`
   ADD PRIMARY KEY (`id_azka`);
 
 --
--- Indeks untuk tabel `tbl_product_azka`
+-- Indexes for table `tbl_products_azka`
 --
-ALTER TABLE `tbl_product_azka`
+ALTER TABLE `tbl_products_azka`
   ADD PRIMARY KEY (`id_azka`),
-  ADD UNIQUE KEY `sku_azka` (`sku_azka`),
-  ADD KEY `fk_category_id` (`category_id_azka`);
+  ADD KEY `shipment_id_azka` (`shipment_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_product_categories_azka`
+-- Indexes for table `tbl_product_categories_azka`
 --
 ALTER TABLE `tbl_product_categories_azka`
   ADD PRIMARY KEY (`id_azka`);
 
 --
--- Indeks untuk tabel `tbl_receiving_azka`
+-- Indexes for table `tbl_receiving_azka`
 --
 ALTER TABLE `tbl_receiving_azka`
   ADD PRIMARY KEY (`id_azka`),
@@ -811,7 +932,7 @@ ALTER TABLE `tbl_receiving_azka`
   ADD KEY `fk_warehoue_id` (`warehouse_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_receiving_items_azka`
+-- Indexes for table `tbl_receiving_items_azka`
 --
 ALTER TABLE `tbl_receiving_items_azka`
   ADD PRIMARY KEY (`id_azka`),
@@ -819,13 +940,13 @@ ALTER TABLE `tbl_receiving_items_azka`
   ADD KEY `fk_product_idd` (`product_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_roles_azka`
+-- Indexes for table `tbl_roles_azka`
 --
 ALTER TABLE `tbl_roles_azka`
   ADD PRIMARY KEY (`id_azka`);
 
 --
--- Indeks untuk tabel `tbl_shipment_azka`
+-- Indexes for table `tbl_shipment_azka`
 --
 ALTER TABLE `tbl_shipment_azka`
   ADD PRIMARY KEY (`id_azka`),
@@ -834,7 +955,7 @@ ALTER TABLE `tbl_shipment_azka`
   ADD KEY `courier_id_azka` (`courier_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_shipment_tracking_azka`
+-- Indexes for table `tbl_shipment_tracking_azka`
 --
 ALTER TABLE `tbl_shipment_tracking_azka`
   ADD PRIMARY KEY (`id_azka`),
@@ -842,7 +963,7 @@ ALTER TABLE `tbl_shipment_tracking_azka`
   ADD KEY `fk_tracking_warehouse` (`warehouse_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_stocks_azka`
+-- Indexes for table `tbl_stocks_azka`
 --
 ALTER TABLE `tbl_stocks_azka`
   ADD PRIMARY KEY (`id_azka`),
@@ -851,7 +972,7 @@ ALTER TABLE `tbl_stocks_azka`
   ADD KEY `fk_warehouse_id` (`warehouse_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_stock_movements_azka`
+-- Indexes for table `tbl_stock_movements_azka`
 --
 ALTER TABLE `tbl_stock_movements_azka`
   ADD PRIMARY KEY (`id_azka`),
@@ -860,13 +981,13 @@ ALTER TABLE `tbl_stock_movements_azka`
   ADD KEY `fk_to` (`to_location_azka`);
 
 --
--- Indeks untuk tabel `tbl_suppliers_azka`
+-- Indexes for table `tbl_suppliers_azka`
 --
 ALTER TABLE `tbl_suppliers_azka`
   ADD PRIMARY KEY (`id_azka`);
 
 --
--- Indeks untuk tabel `tbl_users_azka`
+-- Indexes for table `tbl_users_azka`
 --
 ALTER TABLE `tbl_users_azka`
   ADD PRIMARY KEY (`id_azka`),
@@ -874,137 +995,138 @@ ALTER TABLE `tbl_users_azka`
   ADD KEY `fk_role_id` (`role_id_azka`);
 
 --
--- Indeks untuk tabel `tbl_warehouses_azka`
+-- Indexes for table `tbl_warehouses_azka`
 --
 ALTER TABLE `tbl_warehouses_azka`
   ADD PRIMARY KEY (`id_azka`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_activity_logs_azka`
+-- AUTO_INCREMENT for table `tbl_activity_logs_azka`
 --
 ALTER TABLE `tbl_activity_logs_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=370;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=491;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_courier_scans_azka`
+-- AUTO_INCREMENT for table `tbl_courier_scans_azka`
 --
 ALTER TABLE `tbl_courier_scans_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_locations_azka`
+-- AUTO_INCREMENT for table `tbl_locations_azka`
 --
 ALTER TABLE `tbl_locations_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_product_azka`
+-- AUTO_INCREMENT for table `tbl_products_azka`
 --
-ALTER TABLE `tbl_product_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+ALTER TABLE `tbl_products_azka`
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_product_categories_azka`
+-- AUTO_INCREMENT for table `tbl_product_categories_azka`
 --
 ALTER TABLE `tbl_product_categories_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_receiving_azka`
+-- AUTO_INCREMENT for table `tbl_receiving_azka`
 --
 ALTER TABLE `tbl_receiving_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_receiving_items_azka`
+-- AUTO_INCREMENT for table `tbl_receiving_items_azka`
 --
 ALTER TABLE `tbl_receiving_items_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_roles_azka`
+-- AUTO_INCREMENT for table `tbl_roles_azka`
 --
 ALTER TABLE `tbl_roles_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_shipment_azka`
+-- AUTO_INCREMENT for table `tbl_shipment_azka`
 --
 ALTER TABLE `tbl_shipment_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_shipment_tracking_azka`
+-- AUTO_INCREMENT for table `tbl_shipment_tracking_azka`
 --
 ALTER TABLE `tbl_shipment_tracking_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_stocks_azka`
+-- AUTO_INCREMENT for table `tbl_stocks_azka`
 --
 ALTER TABLE `tbl_stocks_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_stock_movements_azka`
+-- AUTO_INCREMENT for table `tbl_stock_movements_azka`
 --
 ALTER TABLE `tbl_stock_movements_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_suppliers_azka`
+-- AUTO_INCREMENT for table `tbl_suppliers_azka`
 --
 ALTER TABLE `tbl_suppliers_azka`
   MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_users_azka`
+-- AUTO_INCREMENT for table `tbl_users_azka`
 --
 ALTER TABLE `tbl_users_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT untuk tabel `tbl_warehouses_azka`
+-- AUTO_INCREMENT for table `tbl_warehouses_azka`
 --
 ALTER TABLE `tbl_warehouses_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `tbl_activity_logs_azka`
+-- Constraints for table `tbl_activity_logs_azka`
 --
 ALTER TABLE `tbl_activity_logs_azka`
   ADD CONSTRAINT `fk_userr` FOREIGN KEY (`user_id_azka`) REFERENCES `tbl_users_azka` (`id_azka`);
 
 --
--- Ketidakleluasaan untuk tabel `tbl_courier_scans_azka`
+-- Constraints for table `tbl_courier_scans_azka`
 --
 ALTER TABLE `tbl_courier_scans_azka`
   ADD CONSTRAINT `tbl_courier_scans_azka_ibfk_1` FOREIGN KEY (`courier_id_azka`) REFERENCES `tbl_users_azka` (`id_azka`),
-  ADD CONSTRAINT `tbl_courier_scans_azka_ibfk_2` FOREIGN KEY (`warehouse_id_azka`) REFERENCES `tbl_warehouses_azka` (`id_azka`);
+  ADD CONSTRAINT `tbl_courier_scans_azka_ibfk_2` FOREIGN KEY (`warehouse_id_azka`) REFERENCES `tbl_warehouses_azka` (`id_azka`),
+  ADD CONSTRAINT `tbl_courier_scans_azka_ibfk_3` FOREIGN KEY (`shipment_id_azka`) REFERENCES `tbl_shipment_azka` (`id_azka`);
 
 --
--- Ketidakleluasaan untuk tabel `tbl_product_azka`
+-- Constraints for table `tbl_products_azka`
 --
-ALTER TABLE `tbl_product_azka`
-  ADD CONSTRAINT `fk_category_id_azka` FOREIGN KEY (`category_id_azka`) REFERENCES `tbl_product_categories_azka` (`id_azka`);
+ALTER TABLE `tbl_products_azka`
+  ADD CONSTRAINT `tbl_products_azka_ibfk_1` FOREIGN KEY (`shipment_id_azka`) REFERENCES `tbl_shipment_azka` (`id_azka`);
 
 --
--- Ketidakleluasaan untuk tabel `tbl_receiving_items_azka`
+-- Constraints for table `tbl_receiving_items_azka`
 --
 ALTER TABLE `tbl_receiving_items_azka`
   ADD CONSTRAINT `fk_product_idd` FOREIGN KEY (`product_id_azka`) REFERENCES `tbl_product_azka` (`id_azka`),
   ADD CONSTRAINT `fk_receiving_id` FOREIGN KEY (`receiving_id_azka`) REFERENCES `tbl_receiving_azka` (`id_azka`);
 
 --
--- Ketidakleluasaan untuk tabel `tbl_shipment_azka`
+-- Constraints for table `tbl_shipment_azka`
 --
 ALTER TABLE `tbl_shipment_azka`
   ADD CONSTRAINT `tbl_shipment_azka_ibfk_1` FOREIGN KEY (`warehouse_id_azka`) REFERENCES `tbl_warehouses_azka` (`id_azka`),

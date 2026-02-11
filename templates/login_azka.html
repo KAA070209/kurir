@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login – Logistics </title>
+<title>Login – Logistics</title>
 <link rel="icon" type="image/x-icon" href="/static/icon/icon.png">
+
 <!-- FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -15,42 +16,48 @@
 :root {
     --primary: #4f46e5;
     --secondary: #6366f1;
-    --bg-gradient: linear-gradient(135deg, #eef2ff, #e0e7ff);
-    --glass-bg: rgba(255, 255, 255, 0.75);
+    --accent: #10b981;
+    --bg: #f3f4f6;
+    --glass-bg: rgba(255, 255, 255, 0.85);
     --text-dark: #1f2937;
     --radius: 16px;
-    --shadow-soft: 0 10px 30px rgba(0,0,0,0.12);
+    --shadow-soft: 0 12px 28px rgba(0,0,0,0.12);
+    --transition-speed: 0.25s;
 }
 
-* {
-    box-sizing: border-box;
-}
-
+/* ===== GLOBAL ===== */
+* { box-sizing: border-box; margin:0; padding:0; }
 body {
-    margin: 0;
-    min-height: 100vh;
+    height: 100vh;
     font-family: 'Inter', sans-serif;
-    background: var(--bg-gradient);
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
     color: var(--text-dark);
+    overflow: hidden;
 }
 
+/* ===== LOGIN BOX ===== */
 .login-box {
     width: 100%;
     max-width: 420px;
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
-    padding: 36px 32px;
+    padding: 40px 32px;
     border-radius: var(--radius);
     box-shadow: var(--shadow-soft);
+    text-align: center;
+    position: relative;
+    transition: var(--transition-speed);
 }
 
+.login-box:hover { transform: translateY(-3px); }
+
+/* ===== LOGO ===== */
 .logo {
-    width: 64px;
-    height: 64px;
+    width: 72px;
+    height: 72px;
     margin: 0 auto 20px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -58,42 +65,83 @@ body {
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 28px;
+    font-size: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
 }
 
+/* ===== TITLE ===== */
 h2 {
-    text-align: center;
-    margin-bottom: 28px;
-    font-size: 24px;
-    font-weight: 600;
+    margin-bottom: 32px;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-dark);
 }
 
+/* ===== FORM ===== */
 label {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 6px;
     display: block;
+    text-align: left;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #374151;
 }
 
 input {
     width: 100%;
     padding: 14px 16px;
+    margin-bottom: 20px;
     border-radius: var(--radius);
-    border: 1px solid #e5e7eb;
-    margin-bottom: 18px;
-    font-size: 15px;
+    border: 1px solid #d1d5db;
     outline: none;
-    transition: 0.25s;
+    font-size: 15px;
+    transition: var(--transition-speed);
+    background: rgba(255,255,255,0.95);
 }
+
+input::placeholder { color: #9ca3af; }
 
 input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+    box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
 }
 
+/* ===== PASSWORD TOGGLE ===== */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 44px;
+    height: 48px;
+    border-radius: var(--radius);
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 12px;
+    display: flex;
+    align-items: center;   /* vertical center */
+    justify-content: center; 
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 20px;
+    transition: 0.2s;
+}
+
+.password-wrapper .toggle-password:hover { color: var(--primary); }
+
+/* ===== BUTTON ===== */
 button {
     width: 100%;
     padding: 14px;
+    margin-top: 12px;
     border: none;
     border-radius: var(--radius);
     background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -101,23 +149,41 @@ button {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.25s;
+    transition: var(--transition-speed);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
 }
 
 button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+    opacity: 0.95;
+    transform: translateY(-2px);
 }
 
-/* ===== MOBILE OPTIMIZATION ===== */
-@media (max-width: 480px) {
-    .login-box {
-        padding: 28px 22px;
-    }
+/* ===== ALERT ===== */
+.alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
 
-    h2 {
-        font-size: 22px;
-    }
+/* ===== COPYRIGHT ===== */
+.copyright {
+    margin-top: 28px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .login-box { padding: 32px 24px; }
+    h2 { font-size: 24px; }
+    .logo { width: 64px; height: 64px; font-size: 28px; }
+}
+
+@media (max-width: 480px) {
+    .login-box { padding: 28px 20px; }
+    h2 { font-size: 22px; }
+    input, button { padding: 12px 14px; font-size: 15px; }
 }
 </style>
 </head>
@@ -135,7 +201,7 @@ button:hover {
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }}" style="margin-bottom:16px;">
+        <div class="alert alert-{{ category }}">
             {{ message }}
         </div>
         {% endfor %}
@@ -144,15 +210,35 @@ button:hover {
 
     <form method="POST" action="{{ url_for('login_azka') }}">
         <label>Username</label>
-        <input type="text" name="username_azka" required>
+        <input type="text" name="username_azka" required placeholder="Masukkan username">
 
         <label>Password</label>
-        <input type="password" name="password_azka" required>
+        <div class="password-wrapper">
+            <input type="password" name="password_azka" id="password" required placeholder="Masukkan password">
+            <i class="bi bi-eye-fill toggle-password" id="togglePassword"></i>
+        </div>
 
         <button type="submit">Masuk</button>
     </form>
 
+    <div class="copyright">
+        &copy; 2026 Logistics. All rights reserved.
+    </div>
+
 </div>
+
+<script>
+// Toggle password visibility
+const togglePassword = document.querySelector('#togglePassword');
+const password = document.querySelector('#password');
+
+togglePassword.addEventListener('click', function () {
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    this.classList.toggle('bi-eye-fill');
+    this.classList.toggle('bi-eye-slash-fill');
+});
+</script>
 
 </body>
 </html>

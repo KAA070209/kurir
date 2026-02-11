@@ -706,16 +706,12 @@
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
             <a href="/product_azka"><i class="bi bi-box-seam"></i> Data Barang</a>
-            <a href="suplier_azka"><i class="bi bi-truck"></i> Supplier</a>
             <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i> Activity Logs</a>
 
             <a href="/admin_users_azka" class="active"><i class="bi bi-people"></i> Pengguna</a>
             <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
-            <a href="/order_azka"><i class="bi bi-receipt"></i> Orders</a>
-            <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i> Receiving</a>
             <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i> Shipment</a>
-            <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i> Stock Movements</a>
-            <a href="/po_azka"><i class="bi bi-file-earmark-text"></i> Purchase Orders</a>
+
             <a href="#"><i class="bi bi-bar-chart"></i> Laporan</a>
         </div>
         <div class="mobile-menu" id="mobileMenu">
@@ -727,15 +723,10 @@
                 <div class="menu-grid">
                     <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i>Dashboard</a>
                     <a href="/product_azka"><i class="bi bi-box-seam"></i>Data Barang</a>
-                    <a href="/suplier_azka"><i class="bi bi-truck"></i>Supplier</a>
                     <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i>Activity Logs</a>
                     <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
                     <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
-                    <a href="/order_azka"><i class="bi bi-receipt"></i>Orders</a>
-                    <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i>Receiving</a>
                     <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
-                    <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i>Stock Movement</a>
-                    <a href="/po_azka"><i class="bi bi-file-earmark-text"></i>Purchase Order</a>
                     <a href="#"><i class="bi bi-bar-chart"></i>Laporan</a>
                 </div>
             </div>
@@ -1045,12 +1036,6 @@
        class="{% if request.path == '/product_azka' %}active{% endif %}">
         <i class="bi bi-box-seam"></i>
         <span>Barang</span>
-    </a>
-
-    <a href="/order_azka"
-       class="{% if request.path == '/order_azka' %}active{% endif %}">
-        <i class="bi bi-receipt"></i>
-        <span>Orders</span>
     </a>
 
     <a href="/shipment_azka"

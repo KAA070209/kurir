@@ -105,9 +105,10 @@
         <div class="card-box mb-4 text-center">
         <h6 class="fw-semibold mb-3">QR Identitas Kurir</h6>
 
-            <img src="/qr_kurir_azka/{{ kurir_azka.id_azka }}"
-                alt="QR Kurir"
+            <img id="qrKurir"
+                src="/qr_kurir_azka/{{ kurir_azka.id_azka }}"
                 style="max-width:220px">
+
 
             <div class="text-muted mt-2">
                 Tunjukkan QR ini saat scan gudang
@@ -168,26 +169,33 @@
         {% endif %}
     </div>
 
+<div class="row g-3 mb-4">
 
-    <!-- SCAN BUTTON -->
-    <div class="row g-3 mb-4">
-        <div class="col-6">
-            <button class="btn btn-success w-100 scan-btn"
-                onclick="openScanner('IN')">
-                📥 SCAN MASUK
-            </button>
-        </div>
-        <div class="col-6">
-            <button class="btn btn-danger w-100 scan-btn"
-                {% if last_scan_azka and last_scan_azka.scan_type_azka != 'IN' %}
-                disabled
-                {% endif %}
-                onclick="openScanner('OUT')">
-                📤 SCAN KELUAR
-                </button>
-
-        </div>
+    <div class="col-6">
+        <button type="button"
+            class="btn btn-success w-100 scan-btn"
+            {% if last_scan_azka and last_scan_azka.scan_type_azka == 'IN' %}
+            disabled
+            {% endif %}
+            onclick="openScanner('IN')">
+            📥 SCAN MASUK
+        </button>
     </div>
+
+    <div class="col-6">
+        <button type="button"
+            class="btn btn-danger w-100 scan-btn"
+            {% if not last_scan_azka or last_scan_azka.scan_type_azka == 'OUT' %}
+            disabled
+            {% endif %}
+            onclick="openScanner('OUT')">
+            📤 SCAN KELUAR
+        </button>
+    </div>
+
+</div>
+
+</div>
 
     <!-- SCANNER -->
     <div class="card-box" id="scannerBox">

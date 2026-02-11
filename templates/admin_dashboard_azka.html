@@ -603,15 +603,10 @@
         <h4>📦 Logistics</h4>
         <a href="/admin_dashboard_azka" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
         <a href="/product_azka"><i class="bi bi-box-seam"></i> Data Barang</a>
-        <a href="/suplier_azka"><i class="bi bi-truck"></i> Supplier</a>
         <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i> Activity Logs</a>
         <a href="/admin_users_azka"><i class="bi bi-people"></i> Pengguna</a>
         <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
-        <a href="/monitoring_paket_azka"><i class="bi bi-truck"></i>Monitoring Paket</a>
-        <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i> Receiving</a>
         <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i> Shipment</a>
-        <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i> Movement</a>
-        <a href="/po_azka"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
         <a href="#"><i class="bi bi-bar-chart"></i> Laporan</a>
     </div>
         <!-- MOBILE FULL MENU -->
@@ -624,15 +619,11 @@
         <div class="menu-grid">
             <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i>Dashboard</a>
             <a href="/product_azka"><i class="bi bi-box-seam"></i>Data Barang</a>
-            <a href="/suplier_azka"><i class="bi bi-truck"></i>Supplier</a>
             <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i>Activity Logs</a>
             <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
             <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
-            <a href="/monitoring_paket_azka"><i class="bi bi-truck"></i>Monitoring Paket</a>
-            <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i>Receiving</a>
             <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
-            <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i>Stock Movement</a>
-            <a href="/po_azka"><i class="bi bi-file-earmark-text"></i>Purchase Order</a>
+            
             <a href="#"><i class="bi bi-bar-chart"></i>Laporan</a>
         </div>
     </div>
@@ -709,14 +700,6 @@
 
             <div class="col-md-3">
                 <div class="card-metric">
-                    <span class="metric-icon">🚚</span>
-                    <h6>Total Supplier</h6>
-                    <h2>{{ total_suppliers_azka  }}</h2>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card-metric">
                     <span class="metric-icon">👥</span>
                     <h6>Pengguna</h6>
                     <h2>{{ total_users_azka  }}</h2>
@@ -731,13 +714,6 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card-metric">
-                    <span class="metric-icon">📥</span>
-                    <h6>Total Receiving</h6>
-                    <h2>{{ total_receiving_azka  }}</h2>
-                </div>
-            </div>
 
             <div class="col-md-3">
                 <div class="card-metric">
@@ -783,35 +759,68 @@
 
             <hr class="my-4">
 
-            <h6 class="fw-semibold mb-3">📋 Log Scan Terakhir</h6>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Kurir</th>
-                            <th>Status Scan</th>
-                            <th>Gudang</th>
-                            <th>Waktu</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in courier_scan_logs_azka %}
-                        <tr>
-                            <td>{{ row.courier_name_azka }}</td>
-                            <td>
-                                {% if row.scan_type_azka == 'IN' %}
-                                    <span class="badge bg-success">MASUK</span>
-                                {% else %}
-                                    <span class="badge bg-danger">KELUAR</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ row.warehouse_name_azka }}</td>
-                            <td>{{ row.scan_time_azka }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+           <div class="card-box">
+   <div class="card-box">
+    <h6 class="fw-semibold mb-3">📦 Pergerakan Paket Terbaru</h6>
+
+    <ul class="list-group list-group-flush">
+    {% for log in tracking_logs_azka %}
+        <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+                <strong>{{ log.nama_aktor_azka }}</strong>
+                <small class="text-muted">
+                    {{ log.created_at_azka.strftime('%d %b %Y %H:%M') }}
+                </small>
             </div>
+
+            <div class="mt-1">
+                <span class="badge bg-info">{{ log.role_aktor_azka }}</span>
+                <span>{{ log.deskripsi_azka }}</span>
+            </div>
+        </li>
+    {% else %}
+        <li class="list-group-item text-center text-muted">
+            Belum ada aktivitas paket
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+<h6 class="fw-bold mb-3">📦 Log Paket per Shipment</h6>
+
+{% for s in shipment_logs_azka %}
+<div class="card mb-3 shadow-sm">
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between mb-2">
+            <div>
+                <strong>Resi:</strong> {{ s.tracking_number_azka }}<br>
+                <span class="badge bg-secondary">{{ s.status_azka }}</span>
+            </div>
+            <span class="badge bg-primary">
+                {{ s.logs|length }} LOG
+            </span>
+        </div>
+
+        <ul class="list-group list-group-flush">
+            {% for log in s.logs %}
+            <li class="list-group-item px-0">
+                <strong>{{ log.nama_aktor_azka }}</strong>
+                <span class="badge bg-info ms-1">{{ log.role_aktor_azka }}</span>
+                <div class="text-muted small">
+                    {{ log.deskripsi_azka }}
+                </div>
+                <small class="text-muted">
+                    {{ log.created_at_azka.strftime('%d %b %Y %H:%M') }}
+                </small>
+            </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</div>
+{% else %}
+<div class="text-muted text-center">Belum ada log paket</div>
+{% endfor %}
 
         </div>
     </div>
