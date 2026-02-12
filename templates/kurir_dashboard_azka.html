@@ -170,28 +170,25 @@
     </div>
 
 <div class="row g-3 mb-4">
+<div class="row g-3 mb-4">
 
     <div class="col-6">
         <button type="button"
-            class="btn btn-success w-100 scan-btn"
-            {% if last_scan_azka and last_scan_azka.scan_type_azka == 'IN' %}
-            disabled
-            {% endif %}
-            onclick="openScanner('IN')">
-            📥 SCAN MASUK
-        </button>
-    </div>
-
-    <div class="col-6">
-        <button type="button"
-            class="btn btn-danger w-100 scan-btn"
-            {% if not last_scan_azka or last_scan_azka.scan_type_azka == 'OUT' %}
-            disabled
-            {% endif %}
+            class="btn btn-warning w-100 scan-btn"
             onclick="openScanner('OUT')">
-            📤 SCAN KELUAR
+            🚚 AMBIL PAKET DARI GUDANG
         </button>
     </div>
+
+    <div class="col-6">
+        <button type="button"
+            class="btn btn-primary w-100 scan-btn"
+            onclick="openScanner('PACKAGE')">
+            📦 SERAHKAN KE PENERIMA
+        </button>
+    </div>
+
+</div>
 
 </div>
 
@@ -203,6 +200,10 @@
         <div id="reader" style="width:100%"></div>
     </div>
 
+</div>
+<div class="card-box mt-4" id="packageListBox" style="display:none;">
+    <h6 class="fw-semibold mb-3">📦 Paket yang Dibawa</h6>
+    <ul class="list-group" id="packageList"></ul>
 </div>
 <script>
 let scanTypeAzka = null;
@@ -217,17 +218,38 @@ function openScanner(type) {
     html5QrCode.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
+
         async (msg) => {
 
             const data = msg.split("|");
-            if (data[0] !== "GUDANG") {
-                alert("QR bukan QR Gudang!");
-                return;
+
+            let warehouseId = null;
+            let packageCode = null;
+
+            // ================= SCAN GUDANG =================
+            if (scanTypeAzka === "OUT") {
+
+                if (data[0] !== "GUDANG") {
+                    alert("Harus scan QR Gudang!");
+                    return;
+                }
+
+                warehouseId = data[1];
             }
 
-            const warehouseId = data[1];
+            // ================= SCAN PAKET =================
+            if (scanTypeAzka === "PACKAGE") {
+
+                if (data[0] !== "PAKET") {
+                    alert("Harus scan QR Paket!");
+                    return;
+                }
+
+                packageCode = data[1];
+            }
 
             try {
+
                 const res = await fetch("/scan_kurir_azka", {
                     method: "POST",
                     headers: {
@@ -235,19 +257,46 @@ function openScanner(type) {
                     },
                     body: new URLSearchParams({
                         scan_type_azka: scanTypeAzka,
-                        warehouse_id_azka: warehouseId
+                        warehouse_id_azka: warehouseId,
+                        package_code: packageCode
                     })
                 });
 
-                const text = await res.text();
+                const result = await res.json();
 
                 if (!res.ok) {
-                    alert(text);
+                    alert(result.message || "Error");
                     return;
                 }
 
                 await html5QrCode.stop();
-                location.reload();
+
+                // ================= TAMPILKAN LIST PAKET =================
+                if (scanTypeAzka === "OUT") {
+
+                    const list = document.getElementById("packageList");
+                    list.innerHTML = "";
+
+                    result.data.forEach(pkg => {
+                        list.innerHTML += `
+                            <li class="list-group-item">
+                                <strong>📦 ${pkg.product_name_azka}</strong><br>
+                                👤 Penerima: ${pkg.receiver_name_azka}<br>
+                                ⚖ Berat: ${pkg.weight_azka} Kg<br>
+                                🧾 Resi: ${pkg.tracking_number_azka}<br>
+                                📍 Tujuan: ${pkg.receiver_city_azka}
+                            </li>
+                        `;
+                    });
+
+                    document.getElementById("packageListBox").style.display = "block";
+                }
+
+                // ================= SCAN PAKET =================
+                if (scanTypeAzka === "PACKAGE") {
+                    alert(result.message);
+                    location.reload();
+                }
 
             } catch (err) {
                 console.error(err);
@@ -257,9 +306,6 @@ function openScanner(type) {
     );
 }
 </script>
-
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -694,7 +694,7 @@
                 <div class="card-metric">
                     <span class="metric-icon">📦</span>
                     <h6>Total Barang</h6>
-                    <h2>{{ total_product_azka }}</h2>
+                    <h2>{{ total_barang_azka }}</h2>
                 </div>
             </div>
 
@@ -787,43 +787,70 @@
 </div>
 <h6 class="fw-bold mb-3">📦 Log Paket per Shipment</h6>
 
+<div class="accordion" id="shipmentAccordion">
+
 {% for s in shipment_logs_azka %}
-<div class="card mb-3 shadow-sm">
-    <div class="card-body">
+<div class="accordion-item mb-3 shadow-sm rounded-3 border-0">
 
-        <div class="d-flex justify-content-between mb-2">
-            <div>
-                <strong>Resi:</strong> {{ s.tracking_number_azka }}<br>
-                <span class="badge bg-secondary">{{ s.status_azka }}</span>
-            </div>
-            <span class="badge bg-primary">
-                {{ s.logs|length }} LOG
-            </span>
-        </div>
+    <h2 class="accordion-header" id="heading{{ loop.index }}">
+        <button class="accordion-button collapsed fw-semibold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapse{{ loop.index }}"
+                aria-expanded="false">
 
-        <ul class="list-group list-group-flush">
-            {% for log in s.logs %}
-            <li class="list-group-item px-0">
-                <strong>{{ log.nama_aktor_azka }}</strong>
-                <span class="badge bg-info ms-1">{{ log.role_aktor_azka }}</span>
-                <div class="text-muted small">
-                    {{ log.deskripsi_azka }}
+            <div class="d-flex justify-content-between w-100 me-3">
+                <div>
+                    <strong>Resi:</strong> {{ s.tracking_number_azka }}
+                    <span class="badge bg-secondary ms-2">
+                        {{ s.status_azka }}
+                    </span>
                 </div>
-                <small class="text-muted">
-                    {{ log.created_at_azka.strftime('%d %b %Y %H:%M') }}
-                </small>
-            </li>
-            {% endfor %}
-        </ul>
 
+                <span class="badge bg-primary">
+                    {{ s.logs|length }} LOG
+                </span>
+            </div>
+
+        </button>
+    </h2>
+
+    <div id="collapse{{ loop.index }}"
+         class="accordion-collapse collapse"
+         data-bs-parent="#shipmentAccordion">
+
+        <div class="accordion-body">
+
+            <ul class="list-group list-group-flush">
+                {% for log in s.logs %}
+                <li class="list-group-item">
+
+                    <strong>{{ log.nama_aktor_azka }}</strong>
+                    <span class="badge bg-info ms-1">
+                        {{ log.role_aktor_azka }}
+                    </span>
+
+                    <div class="text-muted small mt-1">
+                        {{ log.deskripsi_azka }}
+                    </div>
+
+                    <small class="text-muted">
+                        {{ log.created_at_azka.strftime('%d %b %Y %H:%M') }}
+                    </small>
+
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
     </div>
+
 </div>
+
 {% else %}
 <div class="text-muted text-center">Belum ada log paket</div>
 {% endfor %}
 
-        </div>
-    </div>
 </div>
 
 <div class="card-box mt-4">
@@ -845,24 +872,32 @@
                     <td class="fw-semibold">{{ k.username_azka }}</td>
 
                     <td>
-                        {% if k.scan_type_azka == 'IN' %}
-                            <span class="badge bg-success">DI GUDANG</span>
-                        {% elif k.scan_type_azka == 'OUT' %}
-                            <span class="badge bg-danger">DI LUAR</span>
-                        {% else %}
-                            <span class="badge bg-secondary">BELUM SCAN</span>
-                        {% endif %}
+                    {% if k.delivery_status_azka == 'WAREHOUSE' %}
+                        <span class="badge bg-success">DI GUDANG</span>
+
+                    {% elif k.delivery_status_azka == 'DELIVERY' %}
+                        <span class="badge bg-primary">
+                            🚚 DALAM PROSES PENGANTARAN
+                        </span>
+
+                    {% else %}
+                        <span class="badge bg-secondary">BELUM SCAN</span>
+                    {% endif %}
                     </td>
 
-                    <td>
-                        {% if k.scan_type_azka == 'IN' %}
-                            {{ k.warehouse_name_azka }} - {{k.address_azka}}
-                        {% elif k.scan_type_azka == 'OUT' %}
-                            Delivery / Jalan
-                        {% else %}
-                            -
-                        {% endif %}
+
+                   <td>
+                    {% if k.delivery_status_azka == 'WAREHOUSE' %}
+                        {{ k.warehouse_name_azka }} - {{ k.address_azka }}
+
+                    {% elif k.delivery_status_azka == 'DELIVERY' %}
+                        🚚 Sedang Mengantar Paket
+
+                    {% else %}
+                        -
+                    {% endif %}
                     </td>
+
 
                     <td class="text-muted">
                         {{ k.scan_time_azka or '-' }}
@@ -873,28 +908,6 @@
         </table>
     </div>
 </div>
-
-        <!-- CHARTS -->
-<!--          
-        <div class="row mt-4">
-                        <form method="get" class="d-flex align-items-center gap-2">
-                <label class="fw-semibold">Tahun:</label>
-                <select name="tahun_azka" class="form-select"
-                    onchange="this.form.submit()" style="width:120px">
-                    {% for th in list_tahun_azka %}
-                    <option value="{{ th }}" {% if th == tahun_azka|int %}selected{% endif %}>
-                        {{ th }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </form>
-
-            <div class="col-md-6">
-                <div class="chart-container">
-                    <h5>Statistik Barang Masuk & Keluar</h5>
-                    <canvas id="chartBarang"></canvas>
-                </div>
-            </div> -->
 
     </div>
     <div class="bottom-nav d-md-none">
