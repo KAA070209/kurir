@@ -712,7 +712,7 @@
             <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
             <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i> Shipment</a>
 
-            <a href="#"><i class="bi bi-bar-chart"></i> Laporan</a>
+             <a href="/laporan_azka"><i class="bi bi-bar-chart"></i> Laporan</a>
         </div>
         <div class="mobile-menu" id="mobileMenu">
                 <div class="menu-header">
@@ -727,7 +727,7 @@
                     <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
                     <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
                     <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
-                    <a href="#"><i class="bi bi-bar-chart"></i>Laporan</a>
+                     <a href="/laporan_azka"><i class="bi bi-bar-chart"></i> Laporan</a>
                 </div>
             </div>
     <div class="content">
@@ -758,23 +758,8 @@
 
                 <ul class="dropdown-menu dropdown-menu-end">
 
-                    <!-- Hanya ADMIN yang bisa melihat tombol ini -->
-                    {% if session['role_id_azka'] == 1 %}
-                    <li>
-                        <a class="dropdown-item" href="/manager_dashboard_azka">
-                            <i class="bi bi-building me-2"></i> Dashboard Manager
-                        </a>
-                        <li><hr class="dropdown-divider"></li>
-                        <a class="dropdown-item" href="/kurir_dashboard_azka">
-                            <i class="bi bi-truck"></i> Dashboard Kurir
-                        </a>
-                        <li><hr class="dropdown-divider"></li>
-                        <a class="dropdown-item" href="/gudang_dashboard_azka">
-                            <i class="bi bi-building me-2"></i> Dashboard Gudang
-                        </a>
-                    </li>
+                    
                     <li><hr class="dropdown-divider"></li>
-                    {% endif %}
                 
                     <li>
                         <a class="dropdown-item text-danger" href="/logout_azka">

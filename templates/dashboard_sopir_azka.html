@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Kurir – Logistics Azka</title>
+    <title>Dashboard Driver – Logistics Azka</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- ICON -->
@@ -123,12 +123,13 @@
                 Tunjukkan QR ini saat scan gudang
             </div>
         </div>
-
         {% if last_scan_azka %}
             {% if last_scan_azka.scan_type_azka == 'IN' %}
                 <span class="status-badge bg-success">🟢 DI GUDANG</span>
-            {% else %}
+            {% elif last_scan_azka.scan_type_azka == 'OUT' and shipment_active > 0 %}
                 <span class="status-badge bg-danger">🔴 DI LUAR</span>
+            {% else %}
+                <span class="status-badge bg-secondary">BELUM SCAN</span>
             {% endif %}
             <div class="text-muted mt-2">
                 Terakhir scan: {{ last_scan_azka.scan_time_azka }}
@@ -136,6 +137,7 @@
         {% else %}
             <span class="status-badge bg-secondary">BELUM SCAN</span>
         {% endif %}
+
     </div>
 
         {% if shipment %}
@@ -201,6 +203,46 @@
     <h6 class="fw-semibold mb-3">📸 Arahkan Kamera ke QR Gudang</h6>
     <div id="reader" style="width:100%"></div>
 </div>
+<!-- RIWAYAT PENGIRIMAN -->
+<div class="card-box mt-4">
+    <h5 class="fw-semibold mb-3">
+        📜 Riwayat Pengiriman
+    </h5>
+
+    {% if riwayat_pengiriman %}
+        <div class="table-responsive">
+            <table class="table table-borderless align-middle">
+                <thead class="text-muted">
+                    <tr>
+                        <th style="width:160px">Waktu</th>
+                        <th>Aktivitas</th>
+                        <th>Driver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for r in riwayat_pengiriman %}
+                    <tr>
+                        <td class="text-muted small">
+                            {{ r.created_at_azka.strftime('%d %b %Y %H:%M') }}
+                        </td>
+                        <td>
+                            {{ r.actions_azka }}
+                        </td>
+                        <td>
+                            {{r.username_azka}}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-muted">
+            Belum ada riwayat pengiriman
+        </div>
+    {% endif %}
+</div>
+
 <script>
 let html5QrCode = null;
 let isScanning = false;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 12 Feb 2026 pada 01.21
+-- Waktu pembuatan: 12 Feb 2026 pada 18.42
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.0.30
 
@@ -42,26 +42,13 @@ CREATE TABLE `tbl_activity_logs_azka` (
 
 INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_azka`, `actions_azka`, `reference_azka`, `created_at_azka`) VALUES
 (1, 1, NULL, 'Login sistem', 'users', '2025-11-29 02:04:48'),
-(2, 2, NULL, '', 'Update stock barang', '2025-11-29 02:04:48'),
-(3, 5, NULL, 'Mengirim pesanan', 'orders', '2025-11-29 02:04:48'),
 (4, 1, NULL, 'LOGOUT', 'User admin logout', '2025-11-29 11:23:43'),
-(5, 5, NULL, 'LOGIN', 'User Kurir berhasil login', '2025-11-29 11:24:04'),
-(6, 5, NULL, 'LOGOUT', 'User Kurir logout', '2025-11-29 11:24:29'),
 (7, 1, NULL, 'LOGIN', 'User admin berhasil login', '2025-11-29 11:24:41'),
 (8, 1, NULL, 'Logout', 'User admin logout', '2025-11-29 11:52:22'),
 (9, 1, NULL, 'Login', 'User admin berhasil login', '2025-11-29 12:17:56'),
 (10, 1, NULL, 'Logout', 'User admin logout', '2025-11-29 12:39:28'),
-(11, 2, NULL, 'Login', 'User Gudang berhasil login', '2025-11-29 12:40:18'),
-(12, 2, NULL, 'Logout', 'User Gudang logout', '2025-11-29 12:45:58'),
 (13, 1, NULL, 'Login', 'User admin berhasil login', '2025-11-29 12:46:15'),
 (14, 1, NULL, 'Logout', 'User admin logout', '2025-11-29 12:49:23'),
-(15, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-29 12:50:18'),
-(16, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-29 12:51:21'),
-(17, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-29 12:51:45'),
-(18, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-29 13:00:48'),
-(19, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-11-29 13:03:12'),
-(20, 5, NULL, 'Login', 'User Kurir berhasil login', '2025-11-29 13:03:27'),
-(21, 5, NULL, 'Logout', 'User Kurir logout', '2025-11-29 13:03:36'),
 (22, 1, NULL, 'Login', 'User Admin berhasil login', '2025-11-29 13:03:49'),
 (23, 1, NULL, 'Logout', 'User Admin logout', '2025-11-29 16:10:55'),
 (24, 1, NULL, 'Login', 'User Admin berhasil login', '2025-11-29 16:11:13'),
@@ -73,15 +60,9 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (30, 1, NULL, 'Login', 'User Admin berhasil login', '2025-11-30 03:13:14'),
 (31, 1, NULL, 'Login', 'User Admin berhasil login', '2025-11-30 03:13:14'),
 (32, 1, NULL, 'Logout', 'User Admin logout', '2025-11-30 10:00:14'),
-(33, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-30 10:00:43'),
-(34, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-11-30 10:01:01'),
 (35, 1, NULL, 'Login', 'User Admin berhasil login', '2025-11-30 10:01:16'),
 (36, 1, NULL, 'Tambah Data', 'Barang #SKU-HP-006 Berhasil di tambahkan', '2025-11-30 10:57:40'),
 (37, 1, NULL, 'Logout', 'User Admin logout', '2025-11-30 10:58:38'),
-(38, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-30 10:58:56'),
-(39, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-30 11:36:57'),
-(40, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-11-30 11:40:40'),
-(41, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-11-30 11:45:49'),
 (42, 1, NULL, 'Login', 'User Admin berhasil login', '2025-11-30 11:46:03'),
 (43, 1, NULL, 'Login', 'User Admin berhasil login', '2025-11-30 12:00:35'),
 (44, 1, NULL, 'Edit Receiving', 'Receiving ID 1 diperbarui', '2025-11-30 14:05:40'),
@@ -96,18 +77,12 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (53, 1, NULL, 'Edit Receiving', 'Receiving ID 1 diperbarui', '2025-12-02 17:00:16'),
 (54, 1, NULL, 'Tambah Data', 'Gudang #Gudang Cabang Utara di tambahkan', '2025-12-02 23:56:08'),
 (55, 1, NULL, 'Logout', 'User Admin logout', '2025-12-03 08:36:07'),
-(56, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-12-03 08:36:28'),
-(57, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-12-03 11:24:40'),
 (58, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-03 11:24:59'),
 (59, 1, NULL, 'Logout', 'User Admin logout', '2025-12-03 11:36:19'),
-(60, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-12-03 11:36:34'),
-(61, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-12-03 11:36:53'),
 (62, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-03 11:37:06'),
 (63, 1, NULL, 'Logout', 'User Admin logout', '2025-12-03 12:52:28'),
 (64, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-03 12:52:41'),
 (65, 1, NULL, 'Logout', 'User Admin logout', '2025-12-03 13:04:51'),
-(66, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-12-03 13:05:04'),
-(67, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-12-03 13:05:09'),
 (68, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-03 13:05:22'),
 (69, 1, NULL, 'Tambah Data', 'Barang #SKU-PWRBNK-007 di tambahkan', '2025-12-03 15:34:56'),
 (70, 1, NULL, 'Edit', 'Edit barang: Laptop Mackbook', '2025-12-04 12:31:33'),
@@ -126,8 +101,6 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (83, 1, NULL, 'Kurir mengambil paket', '7', '2025-12-05 17:45:58'),
 (84, 1, NULL, 'Kurir mengambil paket', '8', '2025-12-05 17:48:32'),
 (85, 1, NULL, 'Logout', 'User Admin logout', '2025-12-05 18:25:36'),
-(86, 5, NULL, 'Login', 'User Kurir berhasil login', '2025-12-05 18:25:55'),
-(87, 5, NULL, 'Logout', 'User Kurir logout', '2025-12-05 18:26:13'),
 (88, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-05 18:26:31'),
 (89, 1, NULL, 'Tambah Data', 'Order #ORD-1023 di tambahkan', '2025-12-06 02:01:16'),
 (90, 1, NULL, 'Tambah Data', 'Order #ORD-1024 ditambahkan', '2025-12-06 08:18:13'),
@@ -146,13 +119,9 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (103, 7, NULL, 'Logout', 'User azka logout', '2025-12-07 11:31:59'),
 (104, 7, NULL, 'Login', 'User azka berhasil login', '2025-12-07 11:37:12'),
 (105, 7, NULL, 'Logout', 'User azka logout', '2025-12-07 11:37:36'),
-(106, 5, NULL, 'Login', 'User Kurir berhasil login', '2025-12-07 11:37:52'),
-(107, 5, NULL, 'Logout', 'User Kurir logout', '2025-12-07 11:37:58'),
 (108, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-07 11:38:12'),
 (109, 1, NULL, 'Tambah Data', 'Order #ORD-1031 ditambahkan', '2025-12-07 11:38:51'),
 (110, 1, NULL, 'Logout', 'User Admin logout', '2025-12-07 11:39:00'),
-(111, 5, NULL, 'Login', 'User Kurir berhasil login', '2025-12-07 11:39:13'),
-(112, 5, NULL, 'Logout', 'User Kurir logout', '2025-12-07 11:39:17'),
 (113, 7, NULL, 'Login', 'User azka berhasil login', '2025-12-07 11:39:30'),
 (114, 7, NULL, 'Logout', 'User azka logout', '2025-12-07 11:39:39'),
 (115, 6, NULL, 'Login', 'User Manager berhasil login', '2025-12-07 11:40:23'),
@@ -171,14 +140,10 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (128, 1, NULL, 'Logout', 'User Admin logout', '2025-12-10 12:22:17'),
 (129, 7, NULL, 'Login', 'User azka berhasil login', '2025-12-10 12:24:10'),
 (130, 7, NULL, 'Logout', 'User azka logout', '2025-12-11 12:33:52'),
-(131, 5, NULL, 'Login', 'User Kurir berhasil login', '2025-12-11 12:34:11'),
-(132, 5, NULL, 'Logout', 'User Kurir logout', '2025-12-11 12:34:29'),
 (133, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-11 12:34:42'),
 (134, 1, NULL, 'Logout', 'User Admin logout', '2025-12-11 12:43:38'),
 (135, 7, NULL, 'Login', 'User azka berhasil login', '2025-12-11 12:44:21'),
 (136, 7, NULL, 'Logout', 'User azka logout', '2025-12-11 12:44:56'),
-(137, 5, NULL, 'Login', 'User Kurir berhasil login', '2025-12-11 12:45:09'),
-(138, 5, NULL, 'Logout', 'User Kurir logout', '2025-12-11 13:08:43'),
 (139, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-11 13:09:17'),
 (140, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-28 00:07:17'),
 (141, 1, NULL, 'Tambah Order', 'Order ORD-1034 ditugaskan ke kurir ID 7', '2025-12-28 00:12:11'),
@@ -200,18 +165,12 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (157, 1, NULL, 'Logout', 'User Admin logout', '2025-12-28 00:20:36'),
 (158, 7, NULL, 'Login', 'User azka berhasil login', '2025-12-28 00:20:47'),
 (159, 7, NULL, 'Logout', 'User azka logout', '2025-12-28 00:21:00'),
-(160, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-12-28 00:21:14'),
-(161, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-12-28 00:22:02'),
 (162, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-28 00:23:10'),
 (163, 1, NULL, 'Logout', 'User Admin logout', '2025-12-28 00:23:24'),
-(164, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-12-28 00:23:46'),
-(165, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-12-28 00:24:03'),
 (166, 1, NULL, 'Login', 'User Admin berhasil login', '2025-12-28 02:56:08'),
 (167, 1, NULL, 'Logout', 'User Admin logout', '2025-12-28 02:56:52'),
 (168, 7, NULL, 'Login', 'User azka berhasil login', '2025-12-28 02:57:05'),
 (169, 7, NULL, 'Logout', 'User azka logout', '2025-12-28 02:57:47'),
-(170, 2, NULL, 'Login', 'User Staff Gudang berhasil login', '2025-12-28 02:58:04'),
-(171, 2, NULL, 'Logout', 'User Staff Gudang logout', '2025-12-28 02:59:16'),
 (172, 6, NULL, 'Login', 'User Manager berhasil login', '2025-12-28 02:59:37'),
 (173, 6, NULL, 'Login', 'User Manager berhasil login', '2025-12-28 02:59:41'),
 (174, 1, NULL, 'Login', 'User Admin berhasil login', '2026-01-15 10:28:09'),
@@ -284,8 +243,6 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (241, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-01 01:35:03'),
 (242, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-01 01:35:13'),
 (243, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-01 01:38:42'),
-(244, 5, NULL, 'Login', 'User Kurir berhasil login', '2026-02-01 01:39:07'),
-(245, 5, NULL, 'Logout', 'User Kurir berhasil logout', '2026-02-01 01:39:15'),
 (246, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-01 01:39:20'),
 (247, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-01 02:55:21'),
 (248, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-01 05:44:01'),
@@ -328,8 +285,6 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (285, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-02 13:18:28'),
 (286, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-02 13:18:32'),
 (287, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-02 13:29:56'),
-(288, 5, NULL, 'Login', 'User Kurir berhasil login', '2026-02-02 13:30:04'),
-(289, 5, NULL, 'Logout', 'User Kurir berhasil logout', '2026-02-02 13:33:26'),
 (290, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-02 13:33:32'),
 (291, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-02 13:34:57'),
 (292, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-02 14:40:04'),
@@ -371,17 +326,6 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (328, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-02 15:53:39'),
 (329, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-02 15:53:44'),
 (330, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-02 15:54:37'),
-(331, 5, NULL, 'Login', 'User Kurir berhasil login', '2026-02-02 15:54:42'),
-(332, 5, NULL, 'Scan IN | AE-1770047511 → ARRIVED_AT_ORIGIN_HUB', '', '2026-02-02 15:54:50'),
-(333, 5, NULL, 'Scan IN | AE-1770047511 → ARRIVED_AT_DEST_HUB', '', '2026-02-02 15:54:50'),
-(334, 5, NULL, 'Scan IN | AE-1770047511 → ARRIVED_AT_DEST_HUB', '', '2026-02-02 15:54:54'),
-(335, 5, NULL, 'Scan IN | AE-1770047511 → ARRIVED_AT_DEST_HUB', '', '2026-02-02 15:54:55'),
-(336, 5, NULL, 'Scan IN | AE-1770047511 → ARRIVED_AT_DEST_HUB', '', '2026-02-02 15:54:58'),
-(337, 5, NULL, 'Scan IN | AE-1770047511 → ARRIVED_AT_DEST_HUB', '', '2026-02-02 15:55:01'),
-(338, 5, NULL, 'Scan IN | AE-1770047511 → ARRIVED_AT_DEST_HUB', '', '2026-02-02 15:55:01'),
-(339, 5, NULL, 'Scan OUT | AE-1770047511 → OUT_FOR_DELIVERY', '', '2026-02-02 15:55:08'),
-(340, 5, NULL, 'Scan OUT | AE-1770047511 → OUT_FOR_DELIVERY', '', '2026-02-02 15:55:08'),
-(341, 5, NULL, 'Logout', 'User Kurir berhasil logout', '2026-02-02 15:55:15'),
 (342, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-02 15:55:20'),
 (343, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-02 15:59:06'),
 (344, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-02 15:59:10'),
@@ -533,100 +477,45 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (490, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-05 10:26:22'),
 (491, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-06 06:12:29'),
 (492, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-06 06:58:03'),
-(493, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 06:58:12'),
-(494, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-06 07:01:46'),
-(495, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 07:01:55'),
-(496, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-06 07:03:22'),
-(497, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 07:03:27'),
-(498, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 07:06:17'),
-(499, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-06 07:17:19'),
 (500, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-06 07:17:25'),
 (501, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-06 07:19:13'),
-(502, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 07:19:20'),
-(503, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-06 07:39:35'),
 (504, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-06 07:39:41'),
 (505, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-06 07:41:41'),
 (506, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-06 07:41:46'),
 (507, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-06 07:41:48'),
-(508, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 07:41:55'),
 (509, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-06 14:15:33'),
 (510, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-06 14:54:53'),
-(511, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 14:55:24'),
-(512, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-06 14:56:42'),
 (513, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-06 14:56:47'),
 (514, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-06 14:58:13'),
 (515, 1, NULL, 'Hapus shipment ID 44', '', '2026-02-06 15:19:45'),
 (516, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-06 15:25:32'),
-(517, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 15:25:39'),
-(518, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 15:34:02'),
-(519, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 15:57:39'),
-(520, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 16:00:16'),
-(521, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-06 16:06:20'),
 (522, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-06 16:06:38'),
 (523, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-06 16:06:44'),
-(524, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-06 16:07:05'),
-(525, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-06 16:10:24'),
 (526, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-06 16:10:29'),
 (527, 1, NULL, 'Hapus shipment ID 45', '', '2026-02-06 16:25:47'),
 (528, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-07 01:54:56'),
 (529, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-07 01:55:13'),
-(530, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-07 01:55:18'),
-(531, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-07 01:56:29'),
-(532, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-07 02:02:01'),
 (533, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 16:40:23'),
 (534, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 16:50:45'),
 (535, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 16:53:01'),
-(536, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 16:53:06'),
-(537, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 17:17:49'),
-(538, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770569550-450', '', '2026-02-08 17:32:54'),
-(539, 9, NULL, '🏢 Paket telah sampai di DC Gudang Utama Timur | AE-1770569550-450', '', '2026-02-08 17:32:59'),
-(540, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 17:33:03'),
 (541, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 17:33:09'),
 (542, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 17:33:29'),
-(543, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 17:33:34'),
-(544, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 17:34:47'),
 (545, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 17:34:51'),
 (546, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 17:36:55'),
-(547, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 17:37:00'),
-(548, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770572203-586', '', '2026-02-08 17:37:12'),
-(549, 9, NULL, '🏢 Paket telah sampai di DC Gudang Utama Timur | AE-1770572203-586', '', '2026-02-08 17:37:17'),
-(550, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 17:41:25'),
 (551, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 17:41:29'),
 (552, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 17:42:56'),
-(553, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 17:43:01'),
-(554, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770572565-820', '', '2026-02-08 17:43:13'),
-(555, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 17:43:20'),
 (556, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 17:43:24'),
 (557, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 17:44:13'),
-(558, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 17:44:21'),
-(559, 9, NULL, '🏢 Paket telah sampai di DC Gudang Utama Timur | AE-1770572565-820', '', '2026-02-08 17:44:32'),
-(560, 9, NULL, '🚚 Paket telah keluar dari gudang Gudang Utama | AE-1770572565-820', '', '2026-02-08 17:44:48'),
-(561, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 17:45:07'),
 (562, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 17:45:11'),
 (563, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 17:45:56'),
-(564, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 17:46:06'),
 (565, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 17:53:57'),
 (566, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 18:24:43'),
-(567, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 18:24:47'),
-(568, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770574400-240', '', '2026-02-08 18:25:00'),
-(569, 9, NULL, '🏢 Paket telah sampai di DC Gudang Utama Timur | AE-1770574400-240', '', '2026-02-08 18:25:04'),
-(570, 9, NULL, '🚚 Paket telah keluar dari gudang Gudang Utama Timur | AE-1770574400-240', '', '2026-02-08 18:25:10'),
-(571, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 18:25:14'),
 (572, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 18:25:44'),
 (573, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 18:26:21'),
-(574, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 18:26:25'),
-(575, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770575176-885', '', '2026-02-08 18:26:34'),
-(576, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 18:26:39'),
 (577, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 18:26:44'),
 (578, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 18:26:52'),
-(579, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 18:26:57'),
-(580, 9, NULL, '🏢 Paket telah sampai di DC Gudang Utama Timur | AE-1770575176-885', '', '2026-02-08 18:27:10'),
-(581, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 18:27:16'),
 (582, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 18:27:21'),
 (583, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-08 18:27:57'),
-(584, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-08 18:28:02'),
-(585, 9, NULL, '🚚 Paket telah keluar dari gudang Gudang Utama Barat | AE-1770575176-885', '', '2026-02-08 18:28:36'),
-(586, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-08 18:28:41'),
 (587, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-08 18:28:46'),
 (588, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 03:41:25'),
 (589, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 03:41:37'),
@@ -644,71 +533,30 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (601, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 17:01:22'),
 (602, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:01:28'),
 (603, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:05:21'),
-(604, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:05:25'),
-(605, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770656696-886', '', '2026-02-09 17:05:59'),
-(606, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:06:03'),
 (607, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:06:09'),
 (608, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:09:38'),
-(609, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:09:43'),
-(610, 9, NULL, '🏢 Paket telah sampai di DC Gudang Utama Timur | AE-1770656696-886', '', '2026-02-09 17:09:48'),
-(611, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:09:53'),
 (612, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:09:59'),
 (613, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:10:14'),
-(614, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:10:20'),
-(615, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:10:23'),
-(616, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:10:29'),
-(617, 9, NULL, '🚚 Paket telah keluar dari gudang Gudang Utama Timur | AE-1770656696-886', '', '2026-02-09 17:10:31'),
 (618, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:10:47'),
 (619, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:11:10'),
-(620, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:11:14'),
-(621, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:11:59'),
 (622, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:12:03'),
 (623, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:12:23'),
-(624, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:12:28'),
-(625, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770656951-744', '', '2026-02-09 17:17:26'),
-(626, 9, NULL, '🏢 Paket telah sampai di DC Gudang Utama Barat | AE-1770656951-744', '', '2026-02-09 17:17:36'),
-(627, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:17:47'),
 (628, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:17:51'),
 (629, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:21:59'),
-(630, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:22:03'),
-(631, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770657688-493', '', '2026-02-09 17:22:14'),
-(632, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:25:19'),
-(633, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:25:19'),
 (634, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:25:24'),
 (635, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:26:30'),
-(636, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:26:35'),
-(637, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770657973-668', '', '2026-02-09 17:26:45'),
-(638, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:26:50'),
-(639, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:26:50'),
 (640, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:26:54'),
-(641, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:27:41');
-INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_azka`, `actions_azka`, `reference_azka`, `created_at_azka`) VALUES
-(642, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:27:46'),
-(643, 9, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770657973-668', '', '2026-02-09 17:27:48'),
-(644, 9, NULL, '🚛 Paket sedang dalam perjalanan darat | AE-1770657973-668', '', '2026-02-09 17:28:05'),
-(645, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:28:10'),
+(641, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:27:41'),
 (646, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:28:15'),
 (647, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:28:26'),
-(648, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:28:36'),
-(649, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:28:58'),
 (650, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:29:02'),
 (651, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:29:17'),
 (652, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 17:29:23'),
 (653, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 17:33:27'),
-(654, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:33:31'),
-(655, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:33:35'),
-(656, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:33:35'),
 (657, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:33:39'),
 (658, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:41:45'),
-(659, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:41:50'),
-(660, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770658900-385', '', '2026-02-09 17:42:11'),
-(661, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:42:49'),
 (662, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:42:53'),
 (663, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:43:12'),
-(664, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:43:17'),
-(665, 9, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770658900-385', '', '2026-02-09 17:43:34'),
-(666, 9, NULL, '🚛 Paket sedang dalam perjalanan dari Gudang Utama | AE-1770658900-385', '', '2026-02-09 17:44:13'),
-(667, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 17:44:47'),
 (668, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:44:51'),
 (669, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:45:01'),
 (670, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 17:45:06'),
@@ -717,17 +565,11 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (673, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:45:27'),
 (674, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:46:03'),
 (675, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 17:46:08'),
-(676, 8, NULL, '📦 Paket masuk proses sortir | AE-1770658900-385', '', '2026-02-09 17:50:44'),
 (677, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 17:50:56'),
 (678, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 17:51:16'),
 (679, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 17:53:59'),
-(680, 5, NULL, 'Login', 'User Kurir berhasil login', '2026-02-09 17:54:07'),
-(681, 5, NULL, 'Logout', 'User Kurir berhasil logout', '2026-02-09 17:54:10'),
 (682, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-09 17:54:24'),
 (683, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-09 17:58:57'),
-(684, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 17:59:04'),
-(685, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:01:46'),
-(686, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:01:46'),
 (687, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 18:01:52'),
 (688, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 18:13:59'),
 (689, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 18:14:05'),
@@ -738,28 +580,11 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (694, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 18:23:06'),
 (695, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 18:23:11'),
 (696, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 18:25:45'),
-(697, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 18:25:50'),
-(698, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770661434-395', '', '2026-02-09 18:28:04'),
-(699, 9, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770661434-395', '', '2026-02-09 18:28:13'),
-(700, 9, NULL, '🚛 Paket sedang dalam perjalanan dari Gudang Utama Timur | AE-1770661434-395', '', '2026-02-09 18:28:22'),
-(701, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:28:33'),
 (702, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 18:28:59'),
 (703, 1, NULL, 'Hapus shipment ID 57', '', '2026-02-09 18:29:48'),
 (704, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 18:29:56'),
-(705, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 18:30:04'),
-(706, 9, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770661780-564', '', '2026-02-09 18:30:26'),
-(707, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:30:32'),
-(708, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 18:30:38'),
-(709, 9, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770661780-564', '', '2026-02-09 18:30:49'),
-(710, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:30:54'),
-(711, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 18:30:59'),
-(712, 9, NULL, '🚛 Paket sedang dalam perjalanan dari Gudang Utama | AE-1770661780-564', '', '2026-02-09 18:31:12'),
-(713, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:31:17'),
 (714, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 18:31:21'),
 (715, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 18:31:30'),
-(716, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 18:31:35'),
-(717, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:31:42'),
-(718, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:31:42'),
 (719, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 18:31:47'),
 (720, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 18:32:22'),
 (721, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 18:32:27'),
@@ -777,15 +602,10 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (733, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 18:53:39'),
 (734, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 18:53:50'),
 (735, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-09 18:56:35'),
-(736, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-09 18:56:39'),
-(737, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:56:42'),
-(738, 9, NULL, 'Logout', 'User Sopir berhasil logout', '2026-02-09 18:56:42'),
 (739, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 18:56:47'),
 (740, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 18:56:47'),
-(741, 8, NULL, '📦 Paket masuk sortir | AE-1770661780-564', '', '2026-02-09 18:56:57'),
 (742, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 19:01:21'),
 (743, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-09 19:01:43'),
-(744, 8, NULL, '🚚 Paket AE-1770661780-564 diserahkan ke kurir ID 7', '', '2026-02-09 19:01:58'),
 (745, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-09 19:02:03'),
 (746, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-09 19:02:07'),
 (747, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-11 17:39:39'),
@@ -793,7 +613,6 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (749, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-11 18:06:12'),
 (750, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-11 18:21:08'),
 (751, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-11 18:21:16'),
-(752, 7, 58, 'Paket AE-1770661780-564 Sedang dalam pengantaran', '', '2026-02-11 18:47:03'),
 (753, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-11 18:47:25'),
 (754, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-11 18:47:31'),
 (755, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-11 18:48:17'),
@@ -804,11 +623,93 @@ INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_az
 (760, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-11 23:42:37'),
 (761, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-11 23:44:18'),
 (762, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-11 23:44:30'),
-(763, 7, NULL, 'Paket AE-1770661780-564 sudah diterima oleh fadlan', '', '2026-02-11 23:53:48'),
 (764, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-11 23:53:55'),
 (765, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-11 23:54:01'),
 (766, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 00:01:55'),
-(767, 9, NULL, 'Login', 'User Sopir berhasil login', '2026-02-12 00:02:05');
+(769, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 00:27:49'),
+(770, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 03:39:48'),
+(771, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 12:05:54'),
+(772, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 12:06:02'),
+(773, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 12:07:20'),
+(774, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 12:07:23'),
+(775, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 12:07:36'),
+(776, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 12:07:38'),
+(777, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 12:08:37'),
+(778, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 12:09:47'),
+(779, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 12:09:54'),
+(780, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 12:19:46'),
+(783, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 12:32:23'),
+(784, 1, NULL, 'Hapus shipment ID 59', '', '2026-02-12 12:41:55'),
+(785, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 12:45:59'),
+(786, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 12:46:20'),
+(787, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 12:46:37'),
+(788, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 12:46:43'),
+(789, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 12:58:57'),
+(790, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 13:51:43'),
+(791, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 15:07:47'),
+(792, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 15:07:57'),
+(793, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 15:08:10'),
+(802, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 15:19:41'),
+(803, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 15:19:46'),
+(804, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 15:20:03'),
+(805, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 15:20:11'),
+(806, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 15:26:35'),
+(807, 7, NULL, 'Login', 'User fadlan berhasil login', '2026-02-12 15:26:40'),
+(808, 7, NULL, 'Logout', 'User fadlan berhasil logout', '2026-02-12 15:26:48'),
+(809, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 15:27:04'),
+(814, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 15:32:58'),
+(815, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 15:33:04'),
+(820, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 15:44:58'),
+(821, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 15:45:06'),
+(822, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 15:46:04'),
+(823, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 15:46:09'),
+(824, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 15:47:40'),
+(825, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 15:47:45'),
+(827, 10, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770900484-702', '', '2026-02-12 15:57:05'),
+(828, 10, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770900526-747', '', '2026-02-12 15:57:05'),
+(829, 10, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770900673-897', '', '2026-02-12 15:57:05'),
+(830, 10, NULL, '📦 Paket telah diserahkan kepada driver | AE-1770900829-805', '', '2026-02-12 15:57:05'),
+(831, 10, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770900484-702', '', '2026-02-12 15:57:25'),
+(832, 10, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770900526-747', '', '2026-02-12 15:57:25'),
+(833, 10, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770900673-897', '', '2026-02-12 15:57:25'),
+(834, 10, NULL, '🚚 Paket telah keluar dari gudang asal Gudang Utama Timur | AE-1770900829-805', '', '2026-02-12 15:57:25'),
+(835, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 16:03:14'),
+(836, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 16:03:19'),
+(837, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 16:03:36'),
+(838, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 16:03:43'),
+(845, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 16:26:42'),
+(846, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 16:26:46'),
+(847, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 16:31:58'),
+(848, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 16:32:04'),
+(853, 10, NULL, '🚛 Paket sedang dalam perjalanan dari Gudang Utama | AE-1770900484-702', '', '2026-02-12 16:43:32'),
+(854, 10, NULL, '🚛 Paket sedang dalam perjalanan dari Gudang Utama | AE-1770900526-747', '', '2026-02-12 16:43:32'),
+(855, 10, NULL, '🚛 Paket sedang dalam perjalanan dari Gudang Utama | AE-1770900673-897', '', '2026-02-12 16:43:32'),
+(856, 10, NULL, '🚛 Paket sedang dalam perjalanan dari Gudang Utama | AE-1770900829-805', '', '2026-02-12 16:43:32');
+INSERT INTO `tbl_activity_logs_azka` (`id_azka`, `user_id_azka`, `shipment_id_azka`, `actions_azka`, `reference_azka`, `created_at_azka`) VALUES
+(857, 10, NULL, '📦 Paket sedang disortir di hub Gudang Utama | AE-1770900484-702', '', '2026-02-12 16:43:44'),
+(858, 10, NULL, '📦 Paket sedang disortir di hub Gudang Utama | AE-1770900526-747', '', '2026-02-12 16:43:44'),
+(859, 10, NULL, '📦 Paket sedang disortir di hub Gudang Utama | AE-1770900673-897', '', '2026-02-12 16:43:44'),
+(860, 10, NULL, '📦 Paket sedang disortir di hub Gudang Utama | AE-1770900829-805', '', '2026-02-12 16:43:44'),
+(861, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 16:43:52'),
+(862, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 16:43:57'),
+(863, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 16:44:32'),
+(864, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 16:44:39'),
+(865, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 16:44:58'),
+(866, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-12 16:45:04'),
+(867, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-12 16:53:28'),
+(868, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 16:53:33'),
+(869, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 16:53:42'),
+(870, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-12 16:53:51'),
+(871, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-12 16:59:06'),
+(872, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 16:59:10'),
+(873, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 17:05:41'),
+(874, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-12 17:05:46'),
+(875, 8, NULL, 'Logout', 'User Alif berhasil logout', '2026-02-12 17:25:49'),
+(876, 1, NULL, 'Login', 'User Admin berhasil login', '2026-02-12 17:25:54'),
+(877, 1, NULL, 'Logout', 'User Admin berhasil logout', '2026-02-12 17:26:43'),
+(878, 10, NULL, 'Login', 'User Fauzan berhasil login', '2026-02-12 17:26:56'),
+(879, 10, NULL, 'Logout', 'User Fauzan berhasil logout', '2026-02-12 17:26:59'),
+(880, 8, NULL, 'Login', 'User Alif berhasil login', '2026-02-12 17:27:04');
 
 -- --------------------------------------------------------
 
@@ -827,14 +728,6 @@ CREATE TABLE `tbl_courier_scans_azka` (
   `longitude_azka` decimal(10,7) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `tbl_courier_scans_azka`
---
-
-INSERT INTO `tbl_courier_scans_azka` (`id_azka`, `courier_id_azka`, `shipment_id_azka`, `warehouse_id_azka`, `scan_type_azka`, `scan_time_azka`, `latitude_azka`, `longitude_azka`) VALUES
-(82, 7, 58, 14, 'OUT', '2026-02-12 01:20:43', NULL, NULL),
-(91, 7, 58, NULL, '', '2026-02-12 06:53:48', NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -844,7 +737,6 @@ INSERT INTO `tbl_courier_scans_azka` (`id_azka`, `courier_id_azka`, `shipment_id
 CREATE TABLE `tbl_driver_scans_azka` (
   `id_azka` int(11) NOT NULL,
   `driver_id_azka` int(11) DEFAULT NULL,
-  `shipment_id_azka` int(11) NOT NULL,
   `warehouse_id_azka` int(11) DEFAULT NULL,
   `scan_type_azka` enum('IN','OUT') DEFAULT NULL,
   `scan_time_azka` datetime DEFAULT NULL,
@@ -856,10 +748,11 @@ CREATE TABLE `tbl_driver_scans_azka` (
 -- Dumping data untuk tabel `tbl_driver_scans_azka`
 --
 
-INSERT INTO `tbl_driver_scans_azka` (`id_azka`, `driver_id_azka`, `shipment_id_azka`, `warehouse_id_azka`, `scan_type_azka`, `scan_time_azka`, `latitude_azka`, `longitude_azka`) VALUES
-(31, 9, 58, 16, 'IN', '2026-02-10 01:30:26', -7.2489076, 112.7502949),
-(32, 9, 58, 16, 'OUT', '2026-02-10 01:30:49', -7.2489076, 112.7502949),
-(33, 9, 58, 14, 'IN', '2026-02-10 01:31:12', -6.9088790, 107.6106028);
+INSERT INTO `tbl_driver_scans_azka` (`id_azka`, `driver_id_azka`, `warehouse_id_azka`, `scan_type_azka`, `scan_time_azka`, `latitude_azka`, `longitude_azka`) VALUES
+(42, 10, 16, 'IN', '2026-02-12 22:57:05', -7.2489076, 112.7502949),
+(43, 10, 16, 'OUT', '2026-02-12 22:57:25', -7.2489076, 112.7502949),
+(54, 10, 14, 'IN', '2026-02-12 23:43:32', -6.9088790, 107.6106028),
+(55, 10, 14, 'OUT', '2026-02-12 23:43:44', -6.9088790, 107.6106028);
 
 -- --------------------------------------------------------
 
@@ -880,8 +773,12 @@ CREATE TABLE `tbl_products_azka` (
 --
 
 INSERT INTO `tbl_products_azka` (`id_azka`, `shipment_id_azka`, `nama_barang_azka`, `berat_azka`, `qty_azka`) VALUES
-(22, 58, 'mouse gaming', 0.5, 1),
-(23, 59, 'Handphone', 0.5, 1);
+(24, 61, 'Iphone 13', 0.7, 1),
+(25, 62, 'Iphone 11', 0.6, 1),
+(26, 63, 'Velg VND', 4, 2),
+(27, 64, 'Alat Tulis', 1, 10),
+(28, 65, 'Magnum 1 bks', 0.5, 1),
+(29, 66, 'Alat Sholat', 0.8, 1);
 
 -- --------------------------------------------------------
 
@@ -941,8 +838,12 @@ CREATE TABLE `tbl_shipment_azka` (
 --
 
 INSERT INTO `tbl_shipment_azka` (`id_azka`, `tracking_number_azka`, `sender_name_azka`, `qr_code_data_azka`, `receiver_name_azka`, `receiver_address_azka`, `warehouse_id_azka`, `courier_id_azka`, `driver_id_azka`, `status_azka`, `is_interisland`, `created_at_azka`, `updated_at_azka`, `origin_lat`, `origin_lng`, `last_lat`, `last_lng`, `destination_lat`, `destination_lng`, `receiver_city_azka`, `product_id_azka`) VALUES
-(58, 'AE-1770661780-564', 'alif', 'PAKET|58|AE-1770661780-564', 'fadlan', 'Jl. Raya Soreang No. 80 - Kab. Bandung', 14, NULL, 9, 'DELIVERED', 0, '2026-02-10 01:29:42', '2026-02-12 06:53:48', -7.2489076, 112.7502949, -7.2489076, 112.7502949, -7.0266003, 107.5242728, 'KABUPATEN BANDUNG', 22),
-(59, 'AE-1770854399-218', 'Athar', 'PAKET|59|AE-1770854399-218', 'Azka', 'Jl. Raya Ciwidey No.45 - Kab. Bandung', 15, NULL, NULL, 'CREATED', 0, '2026-02-12 07:00:01', '2026-02-12 07:00:01', -6.1924323, 106.7648468, -6.1924323, 106.7648468, -7.1032329, 107.4683574, 'CIWIDEY', NULL);
+(61, 'AE-1770900484-702', 'Akbar', 'PAKET|61|AE-1770900484-702', 'Muhammad Azzam', 'Jl. Raya Soreang No.80 - Kab. Bandung', 14, NULL, 10, 'SORTING', 0, '2026-02-12 19:48:08', '2026-02-12 23:43:44', -7.2489076, 112.7502949, -7.2489076, 112.7502949, -7.0275919, 107.5181668, 'KABUPATEN BANDUNG', 24),
+(62, 'AE-1770900526-747', 'Athar', 'PAKET|62|AE-1770900526-747', 'azka', 'Jl. Raya Ciwidey No.50 - Kab. Bandung', 14, NULL, 10, 'SORTING', 0, '2026-02-12 19:48:48', '2026-02-12 23:43:44', -7.2489076, 112.7502949, -7.2489076, 112.7502949, -7.1032329, 107.4683574, 'CIWIDEY', 25),
+(63, 'AE-1770900673-897', 'Azka', 'PAKET|63|AE-1770900673-897', 'Rafasya', 'Jl. Raya Batujajar No. 100 - Kab. Bandung Barat ', 14, NULL, 10, 'SORTING', 0, '2026-02-12 19:51:15', '2026-02-12 23:43:44', -7.2489076, 112.7502949, -7.2489076, 112.7502949, -6.8744608, 107.5039114, 'BANDUNG BARAT', 26),
+(64, 'AE-1770900829-805', 'Bara', 'PAKET|64|AE-1770900829-805', 'Opik', 'Jl. Raya Batujajar Timur No. 80 - Kab. Bandung Barat', 14, NULL, 10, 'SORTING', 0, '2026-02-12 19:53:51', '2026-02-12 23:43:44', -7.2489076, 112.7502949, -7.2489076, 112.7502949, -6.9115958, 107.5022453, 'BANDUNG BARAT', 27),
+(65, 'AE-1770900902-609', 'Akbar', 'PAKET|65|AE-1770900902-609', 'Ramdan', 'Jl. Padasuka No.10 - Kota Cimahi', 14, NULL, NULL, 'CREATED', 0, '2026-02-12 19:55:03', '2026-02-12 23:37:05', -6.1924323, 106.7648468, -6.1924323, 106.7648468, -6.8688779, 107.5261509, 'CIMAHI', 28),
+(66, 'AE-1770901112-465', 'Ramdan', 'PAKET|66|AE-1770901112-465', 'Dirga', 'Jl. Cisangkan No. 10 - Kota Cimahi', 14, NULL, NULL, 'CREATED', 0, '2026-02-12 19:58:33', '2026-02-12 23:37:05', -6.1924323, 106.7648468, -6.1924323, 106.7648468, -6.8744656, 107.5302185, '', 29);
 
 -- --------------------------------------------------------
 
@@ -960,21 +861,20 @@ CREATE TABLE `tbl_users_azka` (
   `created_at_azka` timestamp NOT NULL DEFAULT current_timestamp(),
   `update_at_azka` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `is_active_azka` tinyint(1) DEFAULT 1,
-  `last_activity` datetime DEFAULT NULL
+  `last_activity` datetime DEFAULT NULL,
+  `desa_azka` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data untuk tabel `tbl_users_azka`
 --
 
-INSERT INTO `tbl_users_azka` (`id_azka`, `username_azka`, `email_azka`, `password_hash_azka`, `role_id_azka`, `warehouse_id_azka`, `created_at_azka`, `update_at_azka`, `is_active_azka`, `last_activity`) VALUES
-(1, 'Admin', 'm.azkanabhan07@gmail.com', 'pbkdf2:sha256:1000000$sJt8RlYDDklN6ZGq$08f5b01cc2feff97c75b8b826bd003091a81a6d015566e101afbaa40222b2431', 1, NULL, '2025-11-28 07:57:41', '2026-02-12 00:01:55', 1, '2026-02-12 07:01:55'),
-(2, 'Staff Gudang', 'gudang.azka@gmail.com', 'pbkdf2:sha256:1000000$UfiK8cWkTJhwQ4d8$0fbcd7400c465d8a9e480f87c8e9a1052dc542737bfc08fdf057bac582ebd891', 2, NULL, '2025-11-29 01:32:00', '2025-11-29 12:48:48', 1, NULL),
-(5, 'Kurir', 'kurir.azka@gmail.com', 'pbkdf2:sha256:1000000$cXuNLCazkwj2xNl7$8cac681748c3be6015bdd82f8cc0ae7430591ff0fd494f72c8a4a3f011bb3c3f', 3, NULL, '2025-11-29 01:33:14', '2026-02-09 17:54:10', 1, '2026-02-10 00:54:10'),
-(6, 'Manager', 'manager.azka@gmail.com', 'pbkdf2:sha256:1000000$t3lg6jdq18UrYKC2$5ce6d3ec38d1a7ab7da2e256c507661d049054fa238ca9f6c9f3dace3f510853', 4, NULL, '2025-11-29 01:34:02', '2025-11-29 01:34:02', 1, NULL),
-(7, 'fadlan', 'fadlan@gmail.com', 'pbkdf2:sha256:1000000$Br5EBARsNCgxSxfe$ccb32c800f4c64e3c1625ce015da2bab6b8a60bbfc006428256e8378a028ad19', 3, NULL, '2025-12-07 09:56:30', '2026-02-11 23:53:55', 1, '2026-02-12 06:53:55'),
-(8, 'Alif', 'alif1@gmail.com', 'pbkdf2:sha256:1000000$HB9QcY1IwvWyFGcx$3a03f3911a259b4fdd984f02c13de79660a766c4e392500b051b6c7b3e071cf5', 2, 14, '2026-01-19 12:37:03', '2026-02-09 19:02:03', 1, '2026-02-10 02:02:03'),
-(9, 'Sopir', 'sopir@gmail.com', 'pbkdf2:sha256:1000000$bRqpAQTtj8B0CCaN$5e229b4bb04f008631e2e9ad76813cfe0f7df1a03a0507e2807842193bebc970', 5, NULL, '2026-02-05 09:45:13', '2026-02-12 00:09:38', 1, '2026-02-12 07:09:38');
+INSERT INTO `tbl_users_azka` (`id_azka`, `username_azka`, `email_azka`, `password_hash_azka`, `role_id_azka`, `warehouse_id_azka`, `created_at_azka`, `update_at_azka`, `is_active_azka`, `last_activity`, `desa_azka`) VALUES
+(1, 'Admin', 'm.azkanabhan07@gmail.com', 'pbkdf2:sha256:1000000$sJt8RlYDDklN6ZGq$08f5b01cc2feff97c75b8b826bd003091a81a6d015566e101afbaa40222b2431', 1, NULL, '2025-11-28 07:57:41', '2026-02-12 17:26:43', 1, '2026-02-13 00:26:43', NULL),
+(6, 'Manager', 'manager.azka@gmail.com', 'pbkdf2:sha256:1000000$t3lg6jdq18UrYKC2$5ce6d3ec38d1a7ab7da2e256c507661d049054fa238ca9f6c9f3dace3f510853', 4, NULL, '2025-11-29 01:34:02', '2025-11-29 01:34:02', 1, NULL, NULL),
+(7, 'fadlan', 'fadlan@gmail.com', 'pbkdf2:sha256:1000000$Br5EBARsNCgxSxfe$ccb32c800f4c64e3c1625ce015da2bab6b8a60bbfc006428256e8378a028ad19', 3, NULL, '2025-12-07 09:56:30', '2026-02-12 17:05:59', 1, '2026-02-12 22:26:48', 'BANDUNG BARAT'),
+(8, 'Alif', 'alif1@gmail.com', 'pbkdf2:sha256:1000000$HB9QcY1IwvWyFGcx$3a03f3911a259b4fdd984f02c13de79660a766c4e392500b051b6c7b3e071cf5', 2, 14, '2026-01-19 12:37:03', '2026-02-12 17:41:21', 1, '2026-02-13 00:41:21', NULL),
+(10, 'Fauzan', 'fauzan@gmail.com', 'pbkdf2:sha256:1000000$ZdQpvhRfyKrSihMT$2ed568da37120197f87a0e80cf788ab17ce0dc10eb9db6d15df15425cb8be0b5', 5, NULL, '2026-02-12 12:35:17', '2026-02-12 17:26:59', 1, '2026-02-13 00:26:59', NULL);
 
 -- --------------------------------------------------------
 
@@ -1028,8 +928,7 @@ ALTER TABLE `tbl_courier_scans_azka`
 ALTER TABLE `tbl_driver_scans_azka`
   ADD PRIMARY KEY (`id_azka`),
   ADD KEY `fk_gudang` (`warehouse_id_azka`),
-  ADD KEY `fk_shipment` (`driver_id_azka`),
-  ADD KEY `shipment_id_azka` (`shipment_id_azka`);
+  ADD KEY `fk_shipment` (`driver_id_azka`);
 
 --
 -- Indeks untuk tabel `tbl_products_azka`
@@ -1078,7 +977,7 @@ ALTER TABLE `tbl_warehouses_azka`
 -- AUTO_INCREMENT untuk tabel `tbl_activity_logs_azka`
 --
 ALTER TABLE `tbl_activity_logs_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=768;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=881;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_courier_scans_azka`
@@ -1090,13 +989,13 @@ ALTER TABLE `tbl_courier_scans_azka`
 -- AUTO_INCREMENT untuk tabel `tbl_driver_scans_azka`
 --
 ALTER TABLE `tbl_driver_scans_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_products_azka`
 --
 ALTER TABLE `tbl_products_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_roles_azka`
@@ -1108,13 +1007,13 @@ ALTER TABLE `tbl_roles_azka`
 -- AUTO_INCREMENT untuk tabel `tbl_shipment_azka`
 --
 ALTER TABLE `tbl_shipment_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_users_azka`
 --
 ALTER TABLE `tbl_users_azka`
-  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_azka` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_warehouses_azka`
@@ -1146,8 +1045,7 @@ ALTER TABLE `tbl_courier_scans_azka`
 --
 ALTER TABLE `tbl_driver_scans_azka`
   ADD CONSTRAINT `fk_driver` FOREIGN KEY (`driver_id_azka`) REFERENCES `tbl_users_azka` (`id_azka`),
-  ADD CONSTRAINT `fk_gudang` FOREIGN KEY (`warehouse_id_azka`) REFERENCES `tbl_warehouses_azka` (`id_azka`),
-  ADD CONSTRAINT `fk_shipment` FOREIGN KEY (`shipment_id_azka`) REFERENCES `tbl_shipment_azka` (`id_azka`);
+  ADD CONSTRAINT `fk_gudang` FOREIGN KEY (`warehouse_id_azka`) REFERENCES `tbl_warehouses_azka` (`id_azka`);
 
 --
 -- Ketidakleluasaan untuk tabel `tbl_products_azka`

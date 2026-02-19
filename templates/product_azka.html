@@ -673,16 +673,11 @@
         <h4>📦 Logistics</h4>
         <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i> Dashboard</a>
         <a href="/product_azka" class="active"><i class="bi bi-box-seam"></i> Data Barang</a>
-        <a href="/suplier_azka"><i class="bi bi-truck"></i> Supplier</a>
         <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i> Activity Logs</a>
         <a href="admin_users_azka"><i class="bi bi-people"></i> Pengguna</a>
         <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
-        <a href="/order_azka"><i class="bi bi-receipt"></i> Orders</a>
-        <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i> Receiving</a>
         <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i> Shipment</a>
-        <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i> Movement</a>
-        <a href="/po_azka"><i class="bi bi-file-earmark-text"></i> Purchase Order</a>
-        <a href="#"><i class="bi bi-bar-chart"></i> Laporan</a>
+        <a href="/laporan_azka"><i class="bi bi-bar-chart"></i> Laporan</a>
     </div>
      <div class="mobile-menu" id="mobileMenu">
         <div class="menu-header">
@@ -693,16 +688,11 @@
         <div class="menu-grid">
             <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i>Dashboard</a>
             <a href="/product_azka"><i class="bi bi-box-seam"></i>Data Barang</a>
-            <a href="/suplier_azka"><i class="bi bi-truck"></i>Supplier</a>
             <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i>Activity Logs</a>
             <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
             <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
-            <a href="/order_azka"><i class="bi bi-receipt"></i>Orders</a>
-            <a href="/receiving_azka"><i class="bi bi-box-arrow-in-down"></i>Receiving</a>
             <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
-            <a href="/movement_azka"><i class="bi bi-arrow-left-right"></i>Stock Movement</a>
-            <a href="/po_azka"><i class="bi bi-file-earmark-text"></i>Purchase Order</a>
-            <a href="#"><i class="bi bi-bar-chart"></i>Laporan</a>
+             <a href="/laporan_azka"><i class="bi bi-bar-chart"></i> Laporan</a>
         </div>
     </div>
     <div class="content">
@@ -732,19 +722,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
 
-                    <!-- Hanya ADMIN yang bisa melihat tombol ini -->
-                    {% if session['role_id_azka'] == 1 %}
-                    <li>
-                        <a class="dropdown-item" href="/kurir_dashboard_azka">
-                            <i class="bi bi-truck"></i> Dashboard Kurir
-                        </a>
-                        <li><hr class="dropdown-divider"></li>
-                        <a class="dropdown-item" href="/gudang_dashboard_azka">
-                            <i class="bi bi-building me-2"></i> Dashboard Gudang
-                        </a>
-                    </li>
                     <li><hr class="dropdown-divider"></li>
-                    {% endif %}
                 
                     <li>
                         <a class="dropdown-item text-danger" href="/logout_azka">
@@ -760,10 +738,6 @@
                 <div class="d-flex justify-content-between mb-3">
                     <h5><i class="bi bi-list-check me-2"></i>Data Barang</h5>
                 
-                    <a href="#add_product" class="btn btn-primary"
-                    style="border-radius: 12px; padding: 8px 16px;">
-                        <i class="bi bi-plus-circle me-1"></i> Tambah Barang
-                    </a>
                 </div>
                 
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -791,39 +765,26 @@
                     <thead class="accent-color">
                         <tr>
                             <th>No</th>
-                            <th>Kode Barang</th>
-                            <th>Nama Product</th>
-                            <th>Nama Category</th>
-                            <th>Deskripsi</th>
-                            <th>Min Stock</th>
-                            <th>Aksi</th>
+                            <th>No Resi</th>
+                            <th>Pengirim</th>
+                            <th>Penerima</th>
+                            <th>Alamat</th>
+                            <th>Nama Barang</th>
+                            <th>Berat</th>
+                            <th>Jumlah</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for log in product_azka %}
                         <tr>
                             <td>{{ loop.index }}</td>
-                            <td>{{ log.sku_azka }}</td>
-                            <td>{{ log.nama_product_azka }}</td>
-                            <td>{{ log.category_name }}</td>
-                            <td>{{ log.unit_azka }}</td>
-                            <td>{{ log.min_stock_azka }}</td>
-                            <td class="text-center">
-
-                            <a href="#edit_{{ log.id_azka }}" 
-                                class="btn btn-sm btn-warning me-1"
-                                style="border-radius: 10px;">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            
-                                <a href="/product_delete_azka/{{ log.id_azka }}"
-                                class="btn btn-sm btn-danger"
-                                style="border-radius: 10px;"
-                                onclick="return confirm('Yakin ingin menghapus barang ini?');">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            
-                            </td>
+                            <td>{{ log.tracking_number_azka }}</td>
+                            <td>{{ log.sender_name_azka }}</td>
+                            <td>{{ log.receiver_name_azka }}</td>
+                            <td>{{ log.receiver_address_azka }}</td>
+                            <td>{{ log.nama_barang_azka }}</td>
+                            <td>{{ log.berat_azka }}</td>
+                            <td>{{ log.qty_azka }}</td>
                             
                         </tr>
                         {% endfor %}
@@ -831,87 +792,7 @@
                 </table>
         </div>
     </div>
-    <div id="add_product" class="modal-overlay">
-        <div class="modal-box">
-    
-            <h4>Tambah Data Barang</h4>
-    
-            <form action="/product_add_azka" method="POST">
-    
-                <label class="mt-2">Kode Barang (SKU)</label>
-                <input type="text" name="sku_azka" placeholder="Masukkan kode SKU" required>
-    
-                <label class="mt-2">Nama Product</label>
-                <input type="text" name="nama_product_azka" placeholder="Masukkan nama produk" required>
-    
-                <label class="mt-2">Kategori</label>
-                <select name="category_id_azka" class="form-control" required>
-                    {% for c in categories %}
-                    <option value="{{ c.id_azka }}">
-                        {{ loop.index }} - {{ c.nama_azka }}
-                    </option>
-                    {% endfor %}
-                </select>
-    
-                <label class="mt-2">Deskripsi / Unit</label>
-                <input type="text" name="unit_azka" placeholder="Masukkan deskripsi atau unit" required>
-    
-                <label class="mt-2">Minimal Stok</label>
-                <input type="number" name="min_stock_azka" placeholder="Masukkan minimal stok" required>
-    
-                <div class="d-flex justify-content-end gap-3 mt-4">
-                    <a href="#" class="btn btn-secondary">Batal</a>
-                    <button type="submit" class="btn btn-success">Simpan</button>
-                </div>
-    
-            </form>
-    
-        </div>
-    </div>
-    
-    {% for log in product_azka %}
-    <div id="edit_{{ log.id_azka }}" class="modal-overlay">
-        <div class="modal-box">
-
-            <h4>Edit Data Barang</h4>
-
-            <form action="/product_edit_azka/{{ log.id_azka }}" method="POST">
-
-                <label class="mt-2">Kode Barang (SKU)</label>
-                <input type="text" name="sku_azka" value="{{ log.sku_azka }}" required>
-
-                <label class="mt-2">Nama Product</label>
-                <input type="text" name="nama_azka" value="{{ log.nama_product_azka }}" required>
-
-                <label class="mt-2">Kategori</label>
-                <select name="category_id_azka" class="form-control" required>
-                    {% for c in categories %}
-                    <option value="{{ c.id_azka }}"
-                        {% if c.id_azka == log.category_id_azka %} selected {% endif %}>
-                        {{ loop.index }} - {{ c.nama_azka }}
-                    </option>
-                
-                    {% endfor %}
-                </select>
-                
-                
-
-                <label class="mt-2">Deskripsi / Unit</label>
-                <input type="text" name="unit_azka" value="{{ log.unit_azka }}" required>
-
-                <label class="mt-2">Minimal Stok</label>
-                <input type="number" name="min_stock_azka" value="{{ log.min_stock_azka }}" required>
-
-                <div class="d-flex justify-content-end gap-3 mt-4">
-                    <a href="#" class="btn btn-secondary">Batal</a>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-    {% endfor %}
+  
     <div class="bottom-nav d-md-none">
     <a href="/admin_dashboard_azka"
        class="{% if request.path == '/admin_dashboard_azka' %}active{% endif %}">

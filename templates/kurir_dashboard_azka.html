@@ -115,18 +115,16 @@
             </div>
         </div>
 
-        {% if last_scan_azka %}
-            {% if last_scan_azka.scan_type_azka == 'IN' %}
-                <span class="status-badge bg-success">🟢 DI GUDANG</span>
-            {% else %}
-                <span class="status-badge bg-danger">🔴 DI LUAR</span>
-            {% endif %}
-            <div class="text-muted mt-2">
-                Terakhir scan: {{ last_scan_azka.scan_time_azka }}
-            </div>
+        {% if last_scan_azka.scan_type_azka == 'RETURN' %}
+            <span class="status-badge bg-success">🟢 DI GUDANG</span>
+        {% elif last_scan_azka.scan_type_azka == 'OUT' %}
+            <span class="status-badge bg-danger">🔴 SEDANG MENGANTAR</span>
+        {% elif last_scan_azka.scan_type_azka == 'DELIVERED' %}
+            <span class="status-badge bg-warning text-dark">📦 BARU MENYERAHKAN PAKET</span>
         {% else %}
-            <span class="status-badge bg-secondary">BELUM SCAN</span>
+            <span class="status-badge bg-secondary">STATUS TIDAK DIKETAHUI</span>
         {% endif %}
+
     </div>
 
     <!-- FLOW JNT -->
@@ -170,25 +168,30 @@
     </div>
 
 <div class="row g-3 mb-4">
-<div class="row g-3 mb-4">
 
-    <div class="col-6">
+    <div class="col-md-4 col-12">
         <button type="button"
             class="btn btn-warning w-100 scan-btn"
             onclick="openScanner('OUT')">
-            🚚 AMBIL PAKET DARI GUDANG
+            🚚 AMBIL PAKET
         </button>
     </div>
 
-    <div class="col-6">
+    <div class="col-md-4 col-12">
         <button type="button"
             class="btn btn-primary w-100 scan-btn"
             onclick="openScanner('PACKAGE')">
-            📦 SERAHKAN KE PENERIMA
+            📦 SERAHKAN PAKET
         </button>
     </div>
 
-</div>
+    <div class="col-md-4 col-12">
+        <button type="button"
+            class="btn btn-success w-100 scan-btn"
+            onclick="openScanner('RETURN')">
+            🏭 KEMBALI KE GUDANG
+        </button>
+    </div>
 
 </div>
 
@@ -247,6 +250,16 @@ function openScanner(type) {
 
                 packageCode = data[1];
             }
+            // ================= SCAN RETURN =================
+            if (scanTypeAzka === "RETURN") {
+
+                if (data[0] !== "GUDANG") {
+                    alert("Harus scan QR Gudang untuk kembali!");
+                    return;
+                }
+
+                warehouseId = data[1];
+            }
 
             try {
 
@@ -294,6 +307,11 @@ function openScanner(type) {
 
                 // ================= SCAN PAKET =================
                 if (scanTypeAzka === "PACKAGE") {
+                    alert(result.message);
+                    location.reload();
+                }
+                // ================= SCAN RETURN =================
+                if (scanTypeAzka === "RETURN") {
                     alert(result.message);
                     location.reload();
                 }

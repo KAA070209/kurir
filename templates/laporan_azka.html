@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Laporan – Logistics Azka</title>
+
+    <link rel="icon" type="image/x-icon" href="/static/icon/icon.png">
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CHART -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ICON -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-light: #f8fafc;
+    --bg-card: #ffffff;
+    --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --border-radius: 16px;
+    --transition: all 0.3s ease;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: 'Inter', sans-serif;
+}
+
+/* ================= SIDEBAR ================= */
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 40px 0 20px;
+            box-shadow: var(--shadow-light);
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: slideInLeft 0.8s ease-out;
+            z-index: 1000;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .sidebar a i {
+            font-size: 20px;          /* Lebarkan ikon */
+            width: 45px;              /* Tambahkan ruang khusus ikon */
+            text-align: center;       /* Biar rapi di tengah */
+            flex-shrink: 0;           /* Jangan mengecil */
+        }
+
+
+        .sidebar a {
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            margin: 8px 20px;
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .sidebar a:hover::before,
+        .sidebar a.active::before {
+            left: 0;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            transform: translateX(8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .sidebar a.active {
+            font-weight: 600;
+        }
+
+/* ================= CONTENT ================= */
+
+.content {
+    margin-left: 280px;
+    padding: 40px;
+}
+
+.topbar {
+    background: var(--bg-card);
+    padding: 24px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    margin-bottom: 32px;
+}
+
+.topbar h4 {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ================= CHART ================= */
+.chart-container {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 🔥 penting supaya tidak keluar */
+}
+
+.chart-container canvas {
+    flex: 1;
+    max-width: 100%;
+    max-height: 100%;
+}
+.chart-container h5 {
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* ================= DESKTOP ================= */
+
+@media (min-width: 769px) {
+
+    .bottom-nav,
+    .mobile-menu {
+        display: none !important;
+    }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+
+    body {
+        padding-bottom: 80px;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 16px;
+    }
+
+    .topbar {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .chart-container {
+        height: 350px;
+        padding: 20px;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(12px);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid rgba(0,0,0,0.08);
+        z-index: 3000;
+    }
+
+    .bottom-nav a {
+        flex: 1;
+        text-align: center;
+        color: #6b7280;
+        font-size: 11px;
+        text-decoration: none;
+    }
+
+    .bottom-nav a i {
+        font-size: 22px;
+        display: block;
+    }
+
+    .bottom-nav a.active {
+        color: #6366f1;
+        font-weight: 600;
+    }
+
+    .mobile-menu {
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        height: 85vh;
+        background: #fff;
+        border-radius: 24px 24px 0 0;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        transition: 0.35s ease;
+        z-index: 4000;
+        padding: 20px;
+    }
+
+    .mobile-menu.show {
+        bottom: 0;
+    }
+
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .menu-grid a {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 16px 10px;
+        text-align: center;
+        font-size: 12px;
+        color: #1f2937;
+        text-decoration: none;
+    }
+
+    .menu-grid a i {
+        font-size: 24px;
+        display: block;
+        margin-bottom: 6px;
+        color: #6366f1;
+    }
+}
+@keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* TOPBAR */
+        .topbar {
+            background: var(--bg-card);
+            padding: 24px 32px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .topbar h4 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .topbar p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 700;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .dropdown-menu {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow-hover);
+            padding: 12px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+ <div class="sidebar">
+        <h4>📦 Logistics</h4>
+        <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/product_azka"><i class="bi bi-box-seam"></i> Data Barang</a>
+        <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i> Activity Logs</a>
+        <a href="/admin_users_azka"><i class="bi bi-people"></i> Pengguna</a>
+        <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
+        <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i> Shipment</a>
+        <a href="/laporan_azka" class="active"><i class="bi bi-bar-chart"></i> Laporan</a>
+    </div>
+        <!-- MOBILE FULL MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <span>📦 Logistics Menu</span>
+            <button id="closeMenu">&times;</button>
+        </div>
+
+        <div class="menu-grid">
+            <a href="/admin_dashboard_azka"><i class="bi bi-speedometer2"></i>Dashboard</a>
+            <a href="/product_azka"><i class="bi bi-box-seam"></i>Data Barang</a>
+            <a href="/activity_logs_azka"><i class="bi bi-clock-history"></i>Activity Logs</a>
+            <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
+            <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
+            <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
+            <a href="/laporan_azka"><i class="bi bi-bar-chart"></i> Laporan</a>
+        </div>
+    </div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <div class="topbar">
+        <div class="d-flex align-items-center gap-3">
+                <div>
+                     <h4>📊 Laporan Sistem Logistics</h4>
+                    <p>Monitoring statistik distribusi & aktivitas kurir/driver</p>
+                </div>
+            </div>
+                    
+            <div class="dropdown">
+                <button class="btn d-flex align-items-center gap-3" style="background: none; border: none;"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+
+                    <div class="user-avatar">
+                        {{ username_azka[0]|upper }}
+                    </div>
+
+                    <div class="text-start">
+                        <strong>{{ username_azka }}</strong><br>
+                        <small class="text-muted">Administrator</small>
+                    </div>
+
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+
+                    <!-- Hanya ADMIN yang bisa melihat tombol ini -->
+                    {% if session['role_id_azka'] == 1 %}
+
+                    <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                
+                    <li>
+                        <a class="dropdown-item text-danger" href="/logout_azka">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+                
+            </div>
+    </div>
+    
+    <!-- STATUS -->
+    <div class="row g-4">
+
+    <!-- STATUS -->
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5>📦 Shipment per Status</h5>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- GUDANG -->
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5>🏭 Shipment per Gudang</h5>
+                <canvas id="warehouseChart"></canvas>
+            </div>
+        </div>
+
+        <!-- KURIR -->
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5>🧍 Aktivitas Kurir</h5>
+                <canvas id="courierChart"></canvas>
+            </div>
+        </div>
+
+        <!-- DRIVER -->
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5>🚚 Aktivitas Driver</h5>
+                <canvas id="driverChart"></canvas>
+            </div>
+        </div>
+
+        <!-- KOTA TUJUAN -->
+        <div class="col-12">
+            <div class="chart-container">
+                <h5>🌍 Shipment per Kota Tujuan</h5>
+                <canvas id="cityChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+        padding: 15
+    },
+    plugins: {
+        legend: {
+            position: 'top',
+            labels: {
+                boxWidth: 14,
+                padding: 15,
+                font: {
+                    size: 13,
+                    weight: '500'
+                }
+            }
+        },
+        tooltip: {
+            callbacks: {
+                title: function(context) {
+                    return context[0].label; // tampilkan nama full
+                },
+                label: function(context) {
+                    return "Total: " + context.raw;
+                }
+            }
+        }
+    },
+    scales: {
+        x: {
+            ticks: {
+                autoSkip: false,          // 🔥 jangan skip nama
+                maxRotation: 45,
+                minRotation: 0,
+                font: {
+                    size: 11
+                }
+            }
+        },
+        y: {
+            beginAtZero: true,
+            ticks: {
+                precision: 0
+            }
+        }
+    }
+};
+const statusData = {{ shipment_status|tojson }};
+const warehouseData = {{ shipment_per_warehouse|tojson }};
+const courierData = {{ courier_activity|tojson }};
+const driverData = {{ driver_activity|tojson }};
+const cityData = {{ shipment_per_city|tojson }};
+
+// STATUS DOUGHNUT
+new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: statusData.map(item => item.status_azka),
+        datasets: [{
+            data: statusData.map(item => item.total)
+        }]
+    },
+    options: {
+        ...chartOptions,
+        cutout: '60%'
+    }
+});
+
+// GUDANG
+new Chart(document.getElementById('warehouseChart'), {
+    type: 'bar',
+    data: {
+        labels: warehouseData.map(item => item.nama_azka),
+        datasets: [{
+            label: 'Total Shipment',
+            data: warehouseData.map(item => item.total)
+        }]
+    },
+    options: chartOptions
+});
+
+// KURIR
+new Chart(document.getElementById('courierChart'), {
+    type: 'bar',
+    data: {
+        labels: courierData.map(item => item.username_azka),
+        datasets: [{
+            label: 'Total Scan Kurir',
+            data: courierData.map(item => item.total_scan)
+        }]
+    },
+    options: chartOptions
+});
+
+// DRIVER
+new Chart(document.getElementById('driverChart'), {
+    type: 'bar',
+    data: {
+        labels: driverData.map(item => item.username_azka),
+        datasets: [{
+            label: 'Total Scan Driver',
+            data: driverData.map(item => item.total_scan)
+        }]
+    },
+    options: chartOptions
+});
+
+new Chart(document.getElementById('cityChart'), {
+    type: 'bar',
+    data: {
+        labels: cityData.map(item => item.receiver_city_azka), // FULL NAME DISIMPAN
+        datasets: [{
+            label: 'Total Shipment',
+            data: cityData.map(item => item.total)
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+            padding: 15
+        },
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            tooltip: {
+                callbacks: {
+                    title: function(context) {
+                        return context[0].label; // 🔥 tampil FULL di tooltip
+                    },
+                    label: function(context) {
+                        return "Total: " + context.raw;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    autoSkip: false,
+                    maxRotation: 45,
+                    minRotation: 0,
+                    callback: function(value, index) {
+                        const label = this.getLabelForValue(value);
+
+                        // 🔥 hanya singkat di bawah chart
+                        if (label.length > 12) {
+                            return label.substring(0, 12) + "...";
+                        }
+                        return label;
+                    },
+                    font: {
+                        size: 11
+                    }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
+    }
+});
+</script>
+    <!-- BOOTSTRAP SCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+

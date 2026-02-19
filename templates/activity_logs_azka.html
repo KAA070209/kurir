@@ -613,6 +613,42 @@
     }
 }
 
+/* ================= PAGINATION FIX ================= */
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 16px;
+    padding: 0 8px;
+}
+
+.pagination .page-item {
+    margin: 0;
+}
+
+.pagination .page-link {
+    padding: 6px 10px;
+    font-size: 13px;
+    min-width: 36px;
+    text-align: center;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .pagination .page-link {
+        padding: 5px 8px;
+        font-size: 12px;
+        min-width: 32px;
+    }
+    
+    .pagination {
+        gap: 2px;
+        padding: 0 4px;
+    }
+}
+
 
     </style>
 </head>
@@ -627,7 +663,7 @@
         <a href="admin_users_azka"><i class="bi bi-people"></i> Pengguna</a>
         <a href="/gudang_azka"><i class="bi bi-building"></i> Gudang</a>
         <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i> Shipment</a>
-        <a href="#"><i class="bi bi-bar-chart"></i> Laporan</a>
+        <a href="/laporan_azka"><i class="bi bi-bar-chart"></i> Laporan</a>
     </div>
  <div class="mobile-menu" id="mobileMenu">
         <div class="menu-header">
@@ -642,7 +678,7 @@
             <a href="/admin_users_azka"><i class="bi bi-people"></i>Pengguna</a>
             <a href="/gudang_azka"><i class="bi bi-building"></i>Gudang</a>
             <a href="/shipment_azka"><i class="bi bi-box-arrow-up"></i>Shipment</a>
-            <a href="#"><i class="bi bi-bar-chart"></i>Laporan</a>
+             <a href="/laporan_azka"><i class="bi bi-bar-chart"></i> Laporan</a>
         </div>
     </div>
     <!-- MAIN CONTENT -->
@@ -666,20 +702,9 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
 
-                    <!-- Hanya ADMIN yang bisa melihat tombol ini -->
-                    {% if session['role_id_azka'] == 1 %}
-                    <li>
-                        <a class="dropdown-item" href="/kurir_dashboard_azka">
-                            <i class="bi bi-truck"></i> Dashboard Kurir
-                        </a>
-                        <li><hr class="dropdown-divider"></li>
-                        <a class="dropdown-item" href="/gudang_dashboard_azka">
-                            <i class="bi bi-building me-2"></i> Dashboard Gudang
-                        </a>
-                    </li>
+                    
                     <li><hr class="dropdown-divider"></li>
-                    {% endif %}
-                
+                    
                     <li>
                         <a class="dropdown-item text-danger" href="/logout_azka">
                             <i class="bi bi-box-arrow-right me-2"></i> Logout
@@ -720,74 +745,192 @@
                 </tbody>
             </table>
             
+            {% if sys_pages > 1 %}
             <nav class="mt-3">
-                <ul class="pagination">
+                <ul class="pagination justify-content-center">
+
+                    <!-- Previous -->
                     <li class="page-item {% if sys_page == 1 %}disabled{% endif %}">
-                        <a class="page-link" href="?sys_page={{ sys_page - 1 }}&act_page={{ act_page }}">Previous</a>
+                        <a class="page-link" href="?sys_page={{ sys_page - 1 }}&act_page={{ act_page }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
                     </li>
-            
-                    {% for p in range(1, sys_pages + 1) %}
+
+                    {% set start = sys_page - 2 if sys_page - 2 > 1 else 1 %}
+                    {% set end = sys_page + 2 if sys_page + 2 < sys_pages else sys_pages %}
+
+                    {% if start > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?sys_page=1&act_page={{ act_page }}">1</a>
+                        </li>
+                        {% if start > 2 %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for p in range(start, end + 1) %}
                     <li class="page-item {% if p == sys_page %}active{% endif %}">
                         <a class="page-link" href="?sys_page={{ p }}&act_page={{ act_page }}">{{ p }}</a>
                     </li>
                     {% endfor %}
-            
+
+                    {% if end < sys_pages %}
+                        {% if end < sys_pages - 1 %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                        <li class="page-item">
+                            <a class="page-link" href="?sys_page={{ sys_pages }}&act_page={{ act_page }}">{{ sys_pages }}</a>
+                        </li>
+                    {% endif %}
+
+                    <!-- Next -->
                     <li class="page-item {% if sys_page == sys_pages %}disabled{% endif %}">
-                        <a class="page-link" href="?sys_page={{ sys_page + 1 }}&act_page={{ act_page }}">Next</a>
+                        <a class="page-link" href="?sys_page={{ sys_page + 1 }}&act_page={{ act_page }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
                     </li>
+
                 </ul>
             </nav>
+            {% endif %}
             
             
         </div>
-
-        <div class="table-responsive table-responsive-custom">
-            <h5 class="mb-3"><i class="bi bi-list-check me-2"></i>Log Aktivitas Barang</h5>
-
-            <table class="table table-hover table-bordered align-middle table-custom">
-                <thead class="background">
-                    <tr>
-                        <th>No</th>
-                        <th>User</th>
-                        <th>Role</th>
-                        <th>Activity</th>
-                        <th>Deskripsi</th>
-                        <th>Waktu</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in activity_logs %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ log.username_azka }}</td>
-                        <td>{{ log.nama_azka }}</td>
-                        <td>{{ log.actions_azka }}</td>
-                        <td>{{ log.reference_azka }}</td>
-                        <td>{{ log.created_at_azka }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            
-            <nav class="mt-3">
-                <ul class="pagination">
-                    <li class="page-item {% if act_page == 1 %}disabled{% endif %}">
-                        <a class="page-link" href="?sys_page={{ sys_page }}&act_page={{ act_page - 1 }}">Previous</a>
-                    </li>
-            
-                    {% for p in range(1, act_pages + 1) %}
-                    <li class="page-item {% if p == act_page %}active{% endif %}">
-                        <a class="page-link" href="?sys_page={{ sys_page }}&act_page={{ p }}">{{ p }}</a>
-                    </li>
-                    {% endfor %}
-            
-                    <li class="page-item {% if act_page == act_pages %}disabled{% endif %}">
-                        <a class="page-link" href="?sys_page={{ sys_page }}&act_page={{ act_page + 1 }}">Next</a>
-                    </li>
-                </ul>
-            </nav>
-            
+<div class="table-responsive table-responsive-custom">
+    <h5 class="mb-3">
+        <i class="bi bi-truck me-2"></i>Log Aktivitas Shipment
+    </h5>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <input type="text"
+                id="shipmentSearch"
+                class="form-control"
+                placeholder="Cari tracking / status / driver / courier...">
         </div>
+    </div>
+    <table id="shipmentTable"
+       class="table table-hover table-bordered align-middle table-custom">
+        <thead class="background">
+            <tr>
+                <th>No</th>
+                <th>Tracking</th>
+                <th>Status</th>
+                <th>Dibawa Oleh</th>
+                <th>Keterangan</th>
+                <th>Waktu</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for log in shipment_logs %}
+        <tr>
+            <td>{{ (ship_page - 1) * 15 + loop.index }}</td>
+
+            <td>{{ log.tracking_number_azka }}</td>
+
+            <td>
+                <span class="badge bg-success">
+                    {{ log.status_azka }}
+                </span>
+            </td>
+
+            <td>
+                {% if log.status_azka == 'DELIVERED' %}
+                    
+                    {% if log.courier_name %}
+                        <div>Courier: {{ log.courier_name }}</div>
+                    {% endif %}
+
+                    {% if log.driver_name %}
+                        <div>Driver: {{ log.driver_name }}</div>
+                    {% endif %}
+
+
+                {% else %}
+
+                    {% if log.driver_name %}
+                        <div>Driver: {{ log.driver_name }}</div>
+                    {% endif %}
+
+                    {% if log.courier_name %}
+                        <div>Courier: {{ log.courier_name }}</div>
+                    {% endif %}
+
+                    {% if not log.driver_name and not log.courier_name %}
+                        -
+                    {% endif %}
+
+                {% endif %}
+            </td>
+            <td>{{ log.actions_azka }} - {{ log.reference_azka }}</td>
+
+            <td>{{ log.created_at_azka }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if ship_pages > 1 %}
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+
+            <!-- Previous -->
+            <li class="page-item {% if ship_page == 1 %}disabled{% endif %}">
+                <a class="page-link"
+                   href="?sys_page={{ sys_page }}&act_page={{ act_page }}&ship_page={{ ship_page - 1 }}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+
+            {% set start = ship_page - 2 if ship_page - 2 > 1 else 1 %}
+            {% set end = ship_page + 2 if ship_page + 2 < ship_pages else ship_pages %}
+
+            {% if start > 1 %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?sys_page={{ sys_page }}&act_page={{ act_page }}&ship_page=1">1</a>
+                </li>
+                {% if start > 2 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endif %}
+
+            {% for p in range(start, end + 1) %}
+            <li class="page-item {% if p == ship_page %}active{% endif %}">
+                <a class="page-link"
+                   href="?sys_page={{ sys_page }}&act_page={{ act_page }}&ship_page={{ p }}">
+                    {{ p }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {% if end < ship_pages %}
+                {% if end < ship_pages - 1 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?sys_page={{ sys_page }}&act_page={{ act_page }}&ship_page={{ ship_pages }}">
+                        {{ ship_pages }}
+                    </a>
+                </li>
+            {% endif %}
+
+            <!-- Next -->
+            <li class="page-item {% if ship_page == ship_pages %}disabled{% endif %}">
+                <a class="page-link"
+                   href="?sys_page={{ sys_page }}&act_page={{ act_page }}&ship_page={{ ship_page + 1 }}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+    {% endif %}
+</div>
 
     </div>
 <div class="bottom-nav d-md-none">
@@ -831,6 +974,21 @@
     </script>
     <!-- BOOTSTRAP SCRIPT -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById("shipmentSearch").addEventListener("keyup", function() {
+    let input = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#shipmentTable tbody tr");
 
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+
+        if (text.includes(input)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+});
+</script>
 </body>
 </html>
