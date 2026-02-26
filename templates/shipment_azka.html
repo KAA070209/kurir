@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -850,7 +850,19 @@
                     )'>
                     <i class="bi bi-geo-alt-fill"></i> Tracking
                 </button>
+                {% if s.status_azka not in['DELIVERED','READY_FOR_DELIVERY','PICKUP','ARRIVED_AT_HUB','SORTING'] %}
 
+                    {% if not s.driver_id_azka %}
+                    <button
+                        class="btn btn-success scan-driver-btn"
+                        onclick="openDriverScan({{ s.id_azka }}, '{{ s.tracking_number_azka }}')">
+                        Scan Driver
+                    </button>
+                    {% else %}
+                    <span class="badge bg-success">Driver Assigned</span>
+                    {% endif %}
+
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -910,6 +922,52 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="driverScanModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title">Scan Driver</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="mb-2">
+            <strong>No Resi:</strong>
+            <span id="scanResi"></span>
+        </div>
+
+        <input type="hidden" id="scanShipmentId">
+
+        <!-- INPUT MANUAL -->
+
+        <input 
+            type="text" 
+            id="driverQR"
+            class="form-control mb-3"
+            placeholder="Scan QR Driver..."
+        >
+
+        <div class="mb-3">
+            <label>Upload QR Driver</label>
+            <input 
+                type="file" 
+                id="qrImageInput"
+                accept="image/*"
+                class="form-control">
+        </div>
+
+        <div id="readerDriver"></div>
+
+
+        <div id="scanResult" class="mt-3"></div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="trackingModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -966,11 +1024,19 @@ function distance(lat1, lng1, lat2, lng2) {
 }
 </script>
 <script>
+
 let trackingMap = null;
 let truckMarker = null;
 let routeLine = null;
 
+let animationFrameId = null;
+let currentProgress = 0;
+let globalCoords = [];
+let isAnimating = false;
+let shipmentStatusGlobal = null;
+
 /* ================= ICON ================= */
+
 const warehouseIcon = L.icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
     iconSize: [32, 32],
@@ -995,35 +1061,42 @@ const truckIcon = L.icon({
     iconAnchor: [18, 36]
 });
 
+
 /* ================= OPEN MODAL ================= */
+
 function openTrackingModal(routes, status, truckPosition) {
+
     const modalEl = document.getElementById('trackingModal');
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
 
     modalEl.addEventListener('shown.bs.modal', () => {
         renderTrackingMap(routes, status, truckPosition);
-
-        // WAJIB untuk Leaflet di modal
         setTimeout(() => {
-            trackingMap.invalidateSize();
-        }, 200);
+            if (trackingMap) trackingMap.invalidateSize();
+        }, 300);
     }, { once: true });
 }
+
+
 /* ================= RENDER MAP ================= */
+
 function renderTrackingMap(routes, status, truckPosition) {
+
     if (!routes || routes.length === 0) {
         alert("Data tracking tidak tersedia");
         return;
     }
 
-    /* destroy map lama */
     if (trackingMap) {
         trackingMap.remove();
         trackingMap = null;
     }
 
-    trackingMap = L.map('trackingMap').setView([routes[0].lat, routes[0].lng], 6);
+    trackingMap = L.map('trackingMap').setView(
+        [routes[0].lat, routes[0].lng],
+        6
+    );
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
@@ -1032,9 +1105,9 @@ function renderTrackingMap(routes, status, truckPosition) {
     let points = [];
     let hubIndex = 1;
 
-    /* ===== MARKERS ===== */
     routes.forEach(r => {
-        if (!r || r.lat === null || r.lng === null) return;
+
+        if (!r.lat || !r.lng) return;
 
         const lat = parseFloat(r.lat);
         const lng = parseFloat(r.lng);
@@ -1060,54 +1133,140 @@ function renderTrackingMap(routes, status, truckPosition) {
         points.push([lat, lng]);
     });
 
-    /* ===== ROUTE LINE ===== */
-/* ===== ROUTE SESUAI JALAN ===== */
-if (points.length > 1) {
+    if (points.length > 1) {
 
-    if (routeLine) {
-        trackingMap.removeControl(routeLine);
-        routeLine = null;
+        routeLine = L.Routing.control({
+            waypoints: points.map(p => L.latLng(p[0], p[1])),
+            router: L.Routing.osrmv1({
+                serviceUrl: 'https://router.project-osrm.org/route/v1'
+            }),
+            addWaypoints: false,
+            draggableWaypoints: false,
+            fitSelectedRoutes: true,
+            show: false,
+            lineOptions: {
+                styles: [{ weight: 5, opacity: 0.8 }]
+            },
+            createMarker: () => null
+        }).addTo(trackingMap);
+
+        if (!truckMarker) {
+            truckMarker = L.marker(points[0], { icon: truckIcon }).addTo(trackingMap);
+        }
+
+        routeLine.on('routesfound', function (e) {
+
+        globalCoords = e.routes[0].coordinates;
+        shipmentStatusGlobal = status;
+
+        // ===== STATUS DIAM =====
+        if (status === "CREATED" || status === "PICKUP") {
+            currentProgress = 0;
+            isAnimating = false;
+        }
+
+        else if (
+            status === "ARRIVED_AT_ORIGIN_HUB" ||
+            status === "SORTING"
+        ) {
+            currentProgress = Math.floor(globalCoords.length * 0.25);
+            isAnimating = false;
+        }
+
+        // ===== STATUS BERJALAN =====
+        else if (
+            status === "IN_TRANSIT" ||
+            status === "OUT_FOR_DELIVERY" ||
+            status === "ON_THE_WAY"
+        ) {
+            if (!isAnimating) {
+                isAnimating = true;
+                animateTruck();
+            }
+        }
+
+        // ===== STATUS SELESAI =====
+        else if (status === "DELIVERED") {
+            currentProgress = globalCoords.length - 1;
+            isAnimating = false;
+        }
+
+        updateTruckPosition();
+    });
     }
-
-    routeLine = L.Routing.control({
-        waypoints: points.map(p => L.latLng(p[0], p[1])),
-        router: L.Routing.osrmv1({
-            serviceUrl: 'https://router.project-osrm.org/route/v1'
-        }),
-        addWaypoints: false,
-        draggableWaypoints: false,
-        fitSelectedRoutes: true,
-        show: false,
-        lineOptions: {
-            styles: [{ weight: 5, opacity: 0.8 }]
-        },
-        createMarker: () => null // MATIKAN marker default
-    }).addTo(trackingMap);
 }
-    /* ===== TRUCK ===== */
-    if (truckPosition && truckPosition.lat && truckPosition.lng) {
-        truckMarker = L.marker(
-            [truckPosition.lat, truckPosition.lng],
-            { icon: truckIcon }
-        ).addTo(trackingMap);
 
-        animateTruck(points);
+
+/* ================= ANIMATION ENGINE ================= */
+function animateTruck() {
+
+    const speed = 0.0025;
+
+    function step() {
+
+        if (!isAnimating) return;
+
+        currentProgress += speed;
+
+        if (currentProgress >= globalCoords.length - 1) {
+            currentProgress = globalCoords.length - 1;
+            isAnimating = false;
+            updateTruckPosition();
+            return;
+        }
+
+        updateTruckPosition();
+        requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+}
+
+/* ================= UPDATE POSITION ================= */
+
+function updateTruckPosition() {
+
+    if (!truckMarker || globalCoords.length === 0) return;
+
+    const index = Math.floor(currentProgress);
+    const nextIndex = index + 1;
+
+    if (nextIndex >= globalCoords.length) return;
+
+    const start = globalCoords[index];
+    const end = globalCoords[nextIndex];
+
+    const t = currentProgress - index;
+
+    const lat = start.lat + (end.lat - start.lat) * t;
+    const lng = start.lng + (end.lng - start.lng) * t;
+
+    truckMarker.setLatLng([lat, lng]);
+
+    const angle = Math.atan2(
+        end.lng - start.lng,
+        end.lat - start.lat
+    ) * (180 / Math.PI);
+
+    if (truckMarker.setRotationAngle) {
+        truckMarker.setRotationAngle(angle);
     }
 }
-routeLine.on('routesfound', function (e) {
-    const route = e.routes[0];
-    const coords = route.coordinates;
 
-    let i = 0;
-    function moveTruck() {
-        if (i >= coords.length) return;
 
-        truckMarker.setLatLng([coords[i].lat, coords[i].lng]);
-        i++;
-        setTimeout(moveTruck, 40);
+/* ================= MODAL CLOSE ================= */
+
+document.getElementById('trackingModal')
+.addEventListener('hidden.bs.modal', function () {
+
+    if (trackingMap) {
+        trackingMap.remove();
+        trackingMap = null;
     }
-    moveTruck();
+
+    // ANIMASI TETAP BERJALAN DI BACKGROUND
 });
+
 </script>
  <script>
         const openMenu = document.getElementById('openMenu');
@@ -1123,8 +1282,134 @@ routeLine.on('routesfound', function (e) {
             mobileMenu.classList.remove('show');
         });
     </script>
+<script>
+
+let driverScanner = null;
+
+function openDriverScan(shipmentId, resi){
+
+    document.getElementById("scanShipmentId").value = shipmentId;
+    document.getElementById("scanResi").innerText = resi;
+
+    const modal = new bootstrap.Modal(
+        document.getElementById("driverScanModal")
+    );
+
+    modal.show();
+
+    setTimeout(()=>{
+        startDriverScanner();
+    },500);
+}
+
+
+function startDriverScanner(){
+
+    if(driverScanner){
+        driverScanner.clear();
+    }
+
+    driverScanner = new Html5Qrcode("readerDriver");
+
+    driverScanner.start(
+        { facingMode: "environment" },
+        {
+            fps: 10,
+            qrbox: 250
+        },
+        (decodedText)=>{
+            assignDriver(decodedText);
+        }
+    );
+}
+
+
+function assignDriver(qr){
+
+    let shipmentId =
+        document.getElementById("scanShipmentId").value;
+
+    fetch("/admin_scan_driver_assignment_azka",{
+        method:"POST",
+        headers:{
+            "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+        body:
+            "shipment_id="+shipmentId+
+            "&driver_qr="+qr
+    })
+    .then(res=>res.json())
+    .then(data=>{
+
+        document.getElementById("scanResult")
+        .innerHTML = data.message;
+
+        if(driverScanner){
+            driverScanner.stop();
+        }
+
+        setTimeout(()=>{
+            location.reload();
+        },1000);
+
+    });
+
+}
+
+
+// INPUT MANUAL
+document.getElementById("driverQR")
+.addEventListener("change", function(){
+
+    assignDriver(this.value);
+    this.value = "";
+
+});
+
+
+// STOP CAMERA SAAT MODAL TUTUP
+document.getElementById("driverScanModal")
+.addEventListener("hidden.bs.modal", function(){
+
+    if(driverScanner){
+        driverScanner.stop();
+    }
+
+});
+
+</script>
+<script>
+
+// SCAN DARI GAMBAR
+document.getElementById("qrImageInput")
+.addEventListener("change", function(e){
+
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const html5QrCode = new Html5Qrcode("readerDriver");
+
+    html5QrCode.scanFile(file, true)
+    .then(decodedText => {
+
+        document.getElementById("scanResult")
+        .innerHTML = "QR terbaca: " + decodedText;
+
+        assignDriver(decodedText);
+
+    })
+    .catch(err => {
+
+        document.getElementById("scanResult")
+        .innerHTML = "QR tidak terbaca";
+
+    });
+
+});
+</script>
     <!-- BOOTSTRAP SCRIPT -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://unpkg.com/leaflet-rotatedmarker/leaflet.rotatedMarker.js"></script>
 </body>
 </html>

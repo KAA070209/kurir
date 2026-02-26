@@ -737,7 +737,19 @@
 
            <div class="card-box">
    <div class="card-box">
-    <h6 class="fw-semibold mb-3">📦 Pergerakan Paket Terbaru</h6>
+   <h6 class="fw-semibold mb-3">📦 Pergerakan Paket Terbaru</h6>
+
+<div class="d-flex justify-content-between mb-3 gap-2 flex-wrap">
+    <input type="text" id="searchLogs" class="form-control"
+           placeholder="Cari nama / aktivitas..."
+           style="max-width:300px">
+
+    <div>
+        <button class="btn btn-sm btn-primary" onclick="prevPage()">Prev</button>
+        <span id="pageInfo" class="mx-2"></span>
+        <button class="btn btn-sm btn-primary" onclick="nextPage()">Next</button>
+    </div>
+</div>
 
     <ul class="list-group list-group-flush">
     {% for log in tracking_logs_azka %}
@@ -778,7 +790,21 @@
             <div class="d-flex justify-content-between w-100 me-3">
                 <div>
                     <strong>Resi:</strong> {{ s.tracking_number_azka }}
-                    <span class="badge bg-secondary ms-2">
+                    <span class="badge
+                        {% if s.status_azka == 'DELIVERED' %}
+                            bg-success
+                        {% elif s.status_azka == 'IN_TRANSIT' %}
+                            bg-primary
+                        {% elif s.status_azka == 'PICKUP' %}
+                            bg-warning text-dark
+                        {% elif s.status_azka == 'ARRIVED_AT_HUB' %}
+                            bg-info text-dark
+                        {% elif s.status_azka == 'READY_FOR_DELIVERY' %}
+                            bg-dark
+                        {% else %}
+                            bg-secondary
+                        {% endif %}
+                    ">
                         {{ s.status_azka }}
                     </span>
                 </div>
@@ -830,13 +856,14 @@
 </div>
 
 <div class="card-box mt-4">
-    <h5 class="fw-semibold mb-3">📍 Posisi Kurir Saat Ini</h5>
+    <h5 class="fw-semibold mb-3">📍 Posisi Kurir / Driver Saat Ini</h5>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>Kurir</th>
+                    <th>Nama</th>
+                    <th>Role</th>
                     <th>Status</th>
                     <th>Lokasi</th>
                     <th>Waktu</th>
@@ -846,7 +873,7 @@
                 {% for k in courier_position_azka %}
                 <tr>
                     <td class="fw-semibold">{{ k.username_azka }}</td>
-
+                    <td>{{ k.role_name_azka }}</td>
                     <td>
                     {% if k.delivery_status_azka == 'WAREHOUSE' %}
                         <span class="badge bg-success">DI GUDANG</span>
