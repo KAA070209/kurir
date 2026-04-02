@@ -210,118 +210,145 @@
 </div>
 <script>
 let scanTypeAzka = null;
-let html5QrCode;
+let kurirScanner = null;
+let scannerStarted = false;
 
+// ======================= SOUND =======================
+function playSound(type) {
+    let audio;
+    if (type === "success") {
+        audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+    } else {
+        audio = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+    }
+    audio.play();
+}
+
+// ======================= OPEN SCANNER =======================
 function openScanner(type) {
+
     scanTypeAzka = type;
     document.getElementById("scannerBox").style.display = "block";
 
-    html5QrCode = new Html5Qrcode("reader");
+    // biar ga double scanner
+    if (scannerStarted) return;
 
-    html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
+    scannerStarted = true;
 
-        async (msg) => {
-
-            const data = msg.split("|");
-
-            let warehouseId = null;
-            let packageCode = null;
-
-            // ================= SCAN GUDANG =================
-            if (scanTypeAzka === "OUT") {
-
-                if (data[0] !== "GUDANG") {
-                    alert("Harus scan QR Gudang!");
-                    return;
-                }
-
-                warehouseId = data[1];
-            }
-
-            // ================= SCAN PAKET =================
-            if (scanTypeAzka === "PACKAGE") {
-
-                if (data[0] !== "PAKET") {
-                    alert("Harus scan QR Paket!");
-                    return;
-                }
-
-                packageCode = data[1];
-            }
-            // ================= SCAN RETURN =================
-            if (scanTypeAzka === "RETURN") {
-
-                if (data[0] !== "GUDANG") {
-                    alert("Harus scan QR Gudang untuk kembali!");
-                    return;
-                }
-
-                warehouseId = data[1];
-            }
-
-            try {
-
-                const res = await fetch("/scan_kurir_azka", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams({
-                        scan_type_azka: scanTypeAzka,
-                        warehouse_id_azka: warehouseId,
-                        package_code: packageCode
-                    })
-                });
-
-                const result = await res.json();
-
-                if (!res.ok) {
-                    alert(result.message || "Error");
-                    return;
-                }
-
-                await html5QrCode.stop();
-
-                // ================= TAMPILKAN LIST PAKET =================
-                if (scanTypeAzka === "OUT") {
-
-                    const list = document.getElementById("packageList");
-                    list.innerHTML = "";
-
-                    result.data.forEach(pkg => {
-                        list.innerHTML += `
-                            <li class="list-group-item">
-                                <strong>📦 ${pkg.product_name_azka}</strong><br>
-                                👤 Penerima: ${pkg.receiver_name_azka}<br>
-                                ⚖ Berat: ${pkg.weight_azka} Kg<br>
-                                🧾 Resi: ${pkg.tracking_number_azka}<br>
-                                📍 Tujuan: ${pkg.receiver_city_azka}
-                            </li>
-                        `;
-                    });
-
-                    document.getElementById("packageListBox").style.display = "block";
-                }
-
-                // ================= SCAN PAKET =================
-                if (scanTypeAzka === "PACKAGE") {
-                    alert(result.message);
-                    location.reload();
-                }
-                // ================= SCAN RETURN =================
-                if (scanTypeAzka === "RETURN") {
-                    alert(result.message);
-                    location.reload();
-                }
-
-            } catch (err) {
-                console.error(err);
-                alert("Gagal scan");
-            }
+    kurirScanner = new Html5QrcodeScanner(
+        "reader",
+        {
+            fps: 10,
+            qrbox: 250,
+            rememberLastUsedCamera: true
         }
     );
+
+    kurirScanner.render(async (msg) => {
+
+        const data = msg.split("|");
+
+        let warehouseId = null;
+        let packageCode = null;
+
+        // ================= VALIDASI =================
+        if (scanTypeAzka === "OUT") {
+
+            if (data[0] !== "GUDANG") {
+                alert("Harus scan QR Gudang!");
+                playSound("danger");
+                return;
+            }
+
+            warehouseId = data[1];
+        }
+
+        if (scanTypeAzka === "PACKAGE") {
+
+            if (data[0] !== "PAKET") {
+                alert("Harus scan QR Paket!");
+                playSound("danger");
+                return;
+            }
+
+            packageCode = data[1];
+        }
+
+        if (scanTypeAzka === "RETURN") {
+
+            if (data[0] !== "GUDANG") {
+                alert("Harus scan QR Gudang!");
+                playSound("danger");
+                return;
+            }
+
+            warehouseId = data[1];
+        }
+
+        try {
+
+            const res = await fetch("/scan_kurir_azka", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    scan_type_azka: scanTypeAzka,
+                    warehouse_id_azka: warehouseId,
+                    package_code: packageCode
+                })
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                alert(result.message || "Error");
+                playSound("danger");
+                return;
+            }
+
+            playSound("success");
+
+            // ================= OUT =================
+            if (scanTypeAzka === "OUT") {
+
+                const list = document.getElementById("packageList");
+                list.innerHTML = "";
+
+                result.data.forEach(pkg => {
+                    list.innerHTML += `
+                        <li class="list-group-item">
+                            <strong>📦 ${pkg.product_name_azka}</strong><br>
+                            👤 ${pkg.receiver_name_azka}<br>
+                            ⚖ ${pkg.weight_azka} Kg<br>
+                            🧾 ${pkg.tracking_number_azka}<br>
+                            📍 ${pkg.receiver_city_azka}
+                        </li>
+                    `;
+                });
+
+                document.getElementById("packageListBox").style.display = "block";
+            }
+
+            // ================= PACKAGE =================
+            if (scanTypeAzka === "PACKAGE") {
+                alert(result.message);
+                setTimeout(() => location.reload(), 500);
+            }
+
+            // ================= RETURN =================
+            if (scanTypeAzka === "RETURN") {
+                alert(result.message);
+                setTimeout(() => location.reload(), 500);
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Gagal scan");
+            playSound("danger");
+        }
+
+    });
 }
 </script>
 

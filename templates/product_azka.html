@@ -663,7 +663,14 @@
     }
 }
 
+.table-custom img {
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
 
+.table-custom img:hover {
+    transform: scale(1.1);
+}
     </style>
 </head>
 <body>
@@ -772,6 +779,8 @@
                             <th>Nama Barang</th>
                             <th>Berat</th>
                             <th>Jumlah</th>
+                            <th>QR Paket</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -785,8 +794,60 @@
                             <td>{{ log.nama_barang_azka }}</td>
                             <td>{{ log.berat_azka }}</td>
                             <td>{{ log.qty_azka }}</td>
-                            
+                            <td class="text-center">
+                                <img src="{{ url_for('static', filename='qr_paket/' + log.tracking_number_azka + '.png') }}" 
+                                    width="60" 
+                                    class="img-thumbnail">
+                            </td>
+
+                            <td class="text-center">
+
+                                <!-- BUTTON LIHAT -->
+                                <button class="btn btn-sm btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#qrModal{{ loop.index }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                                <!-- BUTTON DOWNLOAD -->
+                                <a href="{{ url_for('static', filename='qr_paket/' + log.tracking_number_azka + '.png') }}"
+                                download="{{ log.tracking_number_azka }}.png"
+                                class="btn btn-sm btn-success">
+                                    <i class="bi bi-download"></i>
+                                </a>
+
+                            </td>
                         </tr>
+                        <!-- QR MODAL -->
+                        <div class="modal fade" id="qrModal{{ loop.index }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content" style="border-radius:16px;">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    QR Paket - {{ log.tracking_number_azka }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body text-center">
+                                <img src="{{ url_for('static', filename='qr_paket/' + log.tracking_number_azka + '.png') }}" 
+                                    class="img-fluid mb-3"
+                                    style="max-width:250px;">
+                            </div>
+
+                            <div class="modal-footer">
+                                <a href="{{ url_for('static', filename='qr_paket/' + log.tracking_number_azka + '.png') }}"
+                                download="{{ log.tracking_number_azka }}.png"
+                                class="btn btn-success">
+                                <i class="bi bi-download me-1"></i> Download
+                                </a>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Tutup
+                                </button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
                         {% endfor %}
                     </tbody>
                 </table>

@@ -902,17 +902,22 @@
                 <label class="mt-2">Password</label>
                 <input type="password" name="password_hash_azka"
                     placeholder="Masukkan password" required>
-
                 <label class="mt-2">Role</label>
-                <select name="role_id_azka" required>
+                <select name="role_id_azka" id="roleSelect" required>
                     <option value="">--Pilih Role--</option>
                     {% for r_azka in roles_azka %}
-                    <option value="{{ r_azka.id_azka }}">
+                    <option value="{{ r_azka.id_azka }}"
+                            data-role-name="{{ r_azka.nama_azka }}">
                         {{ r_azka.nama_azka }}
                     </option>
                     {% endfor %}
                 </select>
-
+                <div id="wilayahField" style="display:none;">
+                    <label class="mt-2">Wilayah Kurir</label>
+                    <input type="text"
+                        name="wilayah_azka"
+                        placeholder="Masukkan wilayah kurir">
+                </div>
                 <div class="d-flex justify-content-end gap-3 mt-4">
                     <a href="#" class="btn btn-secondary">Batal</a>
                     <button type="submit" class="btn btn-success">
@@ -1034,7 +1039,23 @@
         <span>Menu</span>
     </a>
 </div>
+<script>
+document.getElementById('roleSelect').addEventListener('change', function() {
 
+    const selectedOption = this.options[this.selectedIndex];
+    const roleName = selectedOption.getAttribute('data-role-name');
+    const wilayahField = document.getElementById('wilayahField');
+
+    if(roleName && roleName.toLowerCase() === 'kurir') {
+        wilayahField.style.display = 'block';
+        wilayahField.querySelector('input').required = true;
+    } else {
+        wilayahField.style.display = 'none';
+        wilayahField.querySelector('input').required = false;
+        wilayahField.querySelector('input').value = '';
+    }
+});
+</script>
  <script>
         const openMenu = document.getElementById('openMenu');
         const closeMenu = document.getElementById('closeMenu');

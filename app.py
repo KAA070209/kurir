@@ -89,24 +89,26 @@ def get_lat_lng_city_from_address(address):
 
 def safe_filename(name):
     return re.sub(r'[^a-zA-Z0-9_-]', '_', name.lower())
-def get_description(status, warehouse_name, is_interisland):
+def get_description(status, warehouse_name, is_interisland, receiver_city="", next_warehouse_city=""):
     if status == 'PICKUP':
         return "📦 Paket telah diserahkan kepada driver"
 
     # SETELAH PICKUP + SCAN OUT
     if status == 'ARRIVED_AT_ORIGIN_HUB':
-        return f"🚚 Paket telah keluar dari gudang asal {warehouse_name}"
+        next_city = next_warehouse_city or receiver_city or 'gudang selanjutnya'
+        return f"🚚 Paket telah keluar dari gudang asal {warehouse_name} menuju kota gudang {next_city}"
 
     if status == 'IN_TRANSIT':
         if is_interisland:
-            return f"🚢 Paket sedang dalam pengiriman antar pulau dari {warehouse_name}"
-        return f"🚛 Paket sedang dalam perjalanan dari {warehouse_name}"
+            return f"🚢 Paket sedang dalam pengiriman antar pulau dari {warehouse_name} ke {receiver_city or 'wilayah tujuan'}"
+        next_city = next_warehouse_city or receiver_city or 'daerah tujuan'
+        return f"🚛 Paket sedang dalam perjalanan dari {warehouse_name} ke {next_city}"
 
-    if status == 'SORTING':
-        return f"📦 Paket sedang disortir di hub {warehouse_name}"
+    if status == 'TRANSIT_HUB':
+        return f"🔄 Paket sedang transit di hub {warehouse_name}"
 
     if status == 'READY_FOR_DELIVERY':
-        return "📍 Paket siap dikirim ke alamat penerima"
+        return f"📍 Paket siap dikirim ke {receiver_city or 'alamat penerima'}"
 
     return "-"
 
@@ -238,7 +240,7 @@ def admin_dashboard_azka():
 
     conn_azka = get_db_connection_azka()
     cursor_azka = conn_azka.cursor(dictionary=True)
-
+    
 
     tables_azka = {
         "total_users_azka": "tbl_users_azka",
@@ -288,50 +290,63 @@ def admin_dashboard_azka():
         """, (status_azka,))
         status_count_azka[status_azka] = cursor_azka.fetchone()['total_azka']
 
-        # ===================== LOG PAKET PER SHIPMENT =====================
+    # ===================== LOG PAKET PER SHIPMENT (FINAL - NO DOUBLE) =====================
     cursor_azka.execute("""
-        SELECT
-            s.id_azka AS shipment_id_azka,
-            s.tracking_number_azka,
-            s.status_azka,
+    SELECT DISTINCT
+        s.id_azka AS shipment_id_azka,
+        s.tracking_number_azka,
+        s.status_azka,
 
-            u.username_azka AS nama_aktor_azka,
-            CASE
-                WHEN u.role_id_azka = 3 THEN 'KURIR'
-                WHEN u.role_id_azka = 5 THEN 'Driver'
-                ELSE 'Gudang'
-            END AS role_aktor_azka,
+        u.username_azka AS nama_aktor_azka,
 
-            CASE
-                WHEN cs.scan_type_azka = 'OUT'
-                    THEN CONCAT('Paket ', s.tracking_number_azka, ' sedang dalam pengantaran')
-                ELSE l.actions_azka
-            END AS deskripsi_azka,
+        CASE
+            WHEN u.role_id_azka = 3 THEN 'KURIR'
+            WHEN u.role_id_azka = 5 THEN 'DRIVER'
+            WHEN u.role_id_azka = 2 THEN 'GUDANG'
+            ELSE 'Administrator'
+        END AS role_aktor_azka,
 
-            COALESCE(cs.scan_time_azka, l.created_at_azka) AS created_at_azka
+        CASE
+            WHEN cs.scan_type_azka = 'OUT'
+                THEN CONCAT('Paket ', s.tracking_number_azka, ' sedang dalam perjalanan')
+            WHEN cs.scan_type_azka = 'IN'
+                THEN CONCAT('Paket ', s.tracking_number_azka, ' tiba di gudang')
+            ELSE l.actions_azka
+        END AS deskripsi_azka,
 
-        FROM tbl_activity_logs_azka l
-        JOIN tbl_users_azka u ON l.user_id_azka = u.id_azka
-        JOIN tbl_shipment_azka s
-            ON l.actions_azka LIKE CONCAT('%', s.tracking_number_azka, '%')
+        l.created_at_azka
 
-      LEFT JOIN (
+    FROM tbl_activity_logs_azka l
+
+    JOIN tbl_users_azka u
+        ON l.user_id_azka = u.id_azka
+
+    JOIN tbl_shipment_azka s
+        ON l.actions_azka LIKE CONCAT('%', s.tracking_number_azka, '%')
+
+    LEFT JOIN (
         SELECT cs1.*
         FROM tbl_courier_scans_azka cs1
         JOIN (
-            SELECT courier_id_azka, MAX(scan_time_azka) last_scan
+            SELECT courier_id_azka, MAX(scan_time_azka) AS last_scan
             FROM tbl_courier_scans_azka
             GROUP BY courier_id_azka
         ) last_cs
         ON cs1.courier_id_azka = last_cs.courier_id_azka
         AND cs1.scan_time_azka = last_cs.last_scan
-    ) cs ON cs.courier_id_azka = u.id_azka
+    ) cs
+    ON cs.courier_id_azka = u.id_azka
 
-        WHERE l.actions_azka LIKE '%Paket%'
-        ORDER BY s.id_azka, created_at_azka DESC
+    WHERE l.actions_azka LIKE '%Paket%'
+
+    ORDER BY l.created_at_azka DESC
+
     """)
 
     raw_logs_azka = cursor_azka.fetchall()
+
+
+    # ================= GROUP PER SHIPMENT =================
     shipment_logs_azka = {}
 
     for row in raw_logs_azka:
@@ -345,26 +360,31 @@ def admin_dashboard_azka():
                 "logs": []
             }
 
-        shipment_logs_azka[sid]["logs"].append({
+        log_data = {
             "nama_aktor_azka": row['nama_aktor_azka'],
             "role_aktor_azka": row['role_aktor_azka'],
             "deskripsi_azka": row['deskripsi_azka'],
             "created_at_azka": row['created_at_azka']
-        })
+        }
+
+        # Anti double
+        if log_data not in shipment_logs_azka[sid]["logs"]:
+            shipment_logs_azka[sid]["logs"].append(log_data)
 
     shipment_logs_azka = list(shipment_logs_azka.values())
-
-
-    # ===================== POSISI KURIR TERKINI =====================
+# ===================== POSISI KURIR TERKINI =====================
     cursor_azka.execute("""
-        SELECT 
+        SELECT DISTINCT
             u.id_azka,
             u.username_azka,
             u.role_id_azka,
+            r.nama_azka AS role_name_azka, 
+
             CASE 
                 WHEN u.role_id_azka = 5 THEN 'DRIVER'
                 WHEN u.role_id_azka = 3 THEN 'KURIR'
             END AS user_type,
+
             w.nama_azka AS warehouse_name_azka,
             w.address_azka,
             s.scan_type_azka,
@@ -379,6 +399,11 @@ def admin_dashboard_azka():
             END AS delivery_status_azka
 
         FROM tbl_users_azka u
+
+        -- ✅ JOIN ROLE
+        LEFT JOIN tbl_roles_azka r
+            ON u.role_id_azka = r.id_azka
+
         LEFT JOIN (
             -- ===== DRIVER SCAN TERAKHIR =====
             SELECT 
@@ -410,14 +435,15 @@ def admin_dashboard_azka():
             ) y ON cs.courier_id_azka = y.courier_id_azka
             AND cs.scan_time_azka = y.last_scan
         ) s ON u.id_azka = s.user_id
+
         LEFT JOIN tbl_warehouses_azka w
             ON s.warehouse_id_azka = w.id_azka
+
         WHERE u.role_id_azka IN (3,5)
         ORDER BY u.username_azka;
     """)
 
     courier_position_azka = cursor_azka.fetchall()
-
     # ===================== LOG SCAN KURIR (MONITORING) =====================
     cursor_azka.execute("""
         SELECT 
@@ -502,7 +528,7 @@ def laporan_azka():
     shipment_status = cursor.fetchall()
 
     # =============================
-    # 2️⃣ SHIPMENT PER GUDANG
+    # 2️⃣ SHIPMENT PER GUDANG (TIDAK TERMASUK DELIVERED)
     # =============================
     cursor.execute("""
         SELECT 
@@ -511,6 +537,7 @@ def laporan_azka():
         FROM tbl_shipment_azka s
         JOIN tbl_warehouses_azka w 
             ON s.warehouse_id_azka = w.id_azka
+        WHERE s.status_azka != 'DELIVERED'
         GROUP BY w.nama_azka
     """)
     shipment_per_warehouse = cursor.fetchall()
@@ -556,6 +583,19 @@ def laporan_azka():
         GROUP BY receiver_city_azka
     """)
     shipment_per_city = cursor.fetchall()
+    # =============================
+    # 6️⃣ TREN DELIVERED PER BULAN
+    # =============================
+    cursor.execute("""
+        SELECT 
+            DATE_FORMAT(updated_at_azka, '%Y-%m') AS bulan,
+            COUNT(*) AS total
+        FROM tbl_shipment_azka
+        WHERE status_azka = 'DELIVERED'
+        GROUP BY DATE_FORMAT(updated_at_azka, '%Y-%m')
+        ORDER BY bulan ASC
+    """)
+    delivered_trend = cursor.fetchall()
     cursor.close()
     conn.close()
 
@@ -566,7 +606,8 @@ def laporan_azka():
         shipment_per_warehouse=shipment_per_warehouse,
         courier_activity=courier_activity,
         driver_activity=driver_activity,
-        shipment_per_city=shipment_per_city   # tambahkan ini
+        shipment_per_city=shipment_per_city,   # tambahkan ini
+        delivered_trend=delivered_trend
     )
 @app.before_request
 def update_last_activity():
@@ -621,7 +662,6 @@ def admin_users_azka():
         roles_azka=roles_azka,
         username_azka=session.get('username_azka')
     )
-
 @app.route('/admin_users_add_azka', methods=['GET', 'POST'])
 def admin_users_add_azka():
     if 'user_id_azka' not in session or session.get('role_id_azka') != 1:
@@ -631,13 +671,23 @@ def admin_users_add_azka():
     conn = get_db_connection_azka()
     cursor = conn.cursor(dictionary=True)
 
-
-
     if request.method == 'POST':
         username_azka = request.form['username_azka']
         email_azka = request.form['email_azka']
         password_hash_azka = request.form['password_hash_azka']
         role_id_azka = request.form['role_id_azka']
+        wilayah_azka = request.form.get('wilayah_azka', '').strip().upper()
+
+        # Normalisasi awalan wilayah
+        if wilayah_azka.startswith('KAB'):
+            wilayah_azka = wilayah_azka.replace('KAB.', '')
+            wilayah_azka = wilayah_azka.replace('KAB', '')
+            wilayah_azka = 'KABUPATEN ' + wilayah_azka.strip()
+
+        elif wilayah_azka.startswith('KOTA'):
+            wilayah_azka = wilayah_azka.replace('KOTA.', '')
+            wilayah_azka = wilayah_azka.replace('KOTA', '')
+            wilayah_azka = 'KOTA ' + wilayah_azka.strip()
 
         password_hash_azka = generate_password_hash(
             password_hash_azka,
@@ -645,30 +695,34 @@ def admin_users_add_azka():
             salt_length=16
         )
 
+        # cek role
+        cursor.execute("SELECT nama_azka FROM tbl_roles_azka WHERE id_azka=%s", (role_id_azka,))
+        role = cursor.fetchone()
+
+        if role and role['nama_azka'].lower() == 'kurir':
+            wilayah = wilayah_azka
+        else:
+            wilayah = None
+
         cursor.execute("""
             INSERT INTO tbl_users_azka
-            (username_azka, email_azka, password_hash_azka, role_id_azka, is_active_azka)
-            VALUES (%s, %s, %s, %s, 1)
+            (username_azka, email_azka, password_hash_azka, role_id_azka, is_active_azka, wilayah_azka)
+            VALUES (%s, %s, %s, %s, 1, %s)
         """, (
             username_azka,
             email_azka,
             password_hash_azka,
-            role_id_azka
+            role_id_azka,
+            wilayah
         ))
 
         conn.commit()
         flash("User berhasil ditambahkan!", "success")
 
-        cursor.close()
-        conn.close()
         return redirect(url_for('admin_users_azka'))
-
-    cursor.close()
-    conn.close()
 
     return render_template(
         'admin_users_azka.html',
-        roles_azka=roles_azka,
         username_azka=session.get('username_azka')
     )
 
@@ -939,19 +993,20 @@ def product_azka():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-       SELECT
+    SELECT
+            b.id_azka,
             b.tracking_number_azka,
             b.sender_name_azka,
             b.receiver_name_azka,
             b.receiver_address_azka,
+            b.qr_code_data_azka,
             a.nama_barang_azka,
             a.berat_azka,
             a.qty_azka
         FROM
             tbl_products_azka a
-        INNER JOIN tbl_shipment_azka b ON a.shipment_id_azka = b.id_azka;
-            
-        
+        INNER JOIN tbl_shipment_azka b 
+            ON a.shipment_id_azka = b.id_azka
     """)
     product_azka = cursor.fetchall()
 
@@ -965,77 +1020,6 @@ def product_azka():
 
     )
 
-@app.route('/product_edit_azka/<int:id_azka>', methods=['GET', 'POST'])
-def product_edit_azka(id_azka):
-    if 'user_id_azka' not in session:
-        flash("Silakan login dulu!", "warning")
-        return redirect(url_for('login_azka'))
-
-    conn = get_db_connection_azka()
-    cursor = conn.cursor(dictionary=True)
-
-    if request.method == "POST":
-        sku = request.form['sku_azka']
-        nama = request.form['nama_azka']
-        category = request.form['category_id_azka']
-        unit = request.form['unit_azka']
-        min_stock = request.form['min_stock_azka']
-
-        cursor.execute("""
-            UPDATE tbl_products_azka SET
-                sku_azka=%s,
-                nama_product_azka=%s,
-                category_id_azka=%s,
-                unit_azka=%s,
-                min_stock_azka=%s
-            WHERE id_azka=%s
-        """, (sku, nama, category, unit, min_stock, id_azka))
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-        insert_log_azka(session['user_id_azka'], "Edit", f"Edit barang: {nama}")
-        flash("Barang berhasil diperbarui!", "success")
-        return redirect(url_for('product_azka'))
-
-    cursor.execute("SELECT * FROM tbl_products_azka WHERE id_azka=%s", (id_azka,))
-    product = cursor.fetchone()
-
-    cursor.execute("SELECT * FROM tbl_product_categories_azka")
-    categories = cursor.fetchall()
-
-    conn.close()
-
-    return render_template(
-        "product_azka.html",
-        product=product,
-        categories=categories,
-        username_azka=session['username_azka']
-    )
-
-@app.route('/product_delete_azka/<int:id_azka>', methods=['GET'])
-def product_delete_azka(id_azka):
-    if 'user_id_azka' not in session:
-        flash("Silakan login dulu!", "warning")
-        return redirect(url_for('login_azka'))
-
-    conn = get_db_connection_azka()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT nama_azka FROM tbl_products_azka WHERE id_azka=%s", (id_azka,))
-    row = cursor.fetchone()
-    nama_barang = row[0] if row else "Tidak diketahui"
-
-    cursor.execute("DELETE FROM tbl_products_azka WHERE id_azka=%s", (id_azka,))
-    conn.commit()
-
-    conn.close()
-
-    insert_log_azka(session['user_id_azka'], "Delete", f"Hapus barang: {nama_barang}")
-
-    flash("Barang berhasil dihapus!", "danger")
-    return redirect(url_for('product_azka'))
 
 @app.route('/gudang_azka')
 def gudang_azka():
@@ -1132,9 +1116,9 @@ def gudang_add_azka():
         # INSERT GUDANG
         cursor.execute("""
             INSERT INTO tbl_warehouses_azka
-            (nama_azka, address_azka, latitude_azka, longitude_azka, city_azka)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (nama_azka, address_azka, lat, lng, city))
+            (nama_azka, address_azka, latitude_azka, longitude_azka)
+            VALUES (%s, %s, %s, %s)
+        """, (nama_azka, address_azka, lat, lng))
 
         id_azka = cursor.lastrowid
         qr_data_azka = f"GUDANG|{id_azka}"
@@ -1281,6 +1265,7 @@ def shipment_azka():
             s.origin_lng,
             s.qr_code_data_azka,
             u.username_azka AS courier,
+            s.driver_id_azka,
             w.nama_azka AS origin_name
         FROM tbl_shipment_azka s
         LEFT JOIN tbl_users_azka u
@@ -1442,7 +1427,15 @@ def shipment_add_azka():
         ))
 
         shipment_id = cursor.lastrowid
-
+        # ===== LOG CREATED =====
+        cursor.execute("""
+            INSERT INTO tbl_activity_logs_azka
+            (user_id_azka, actions_azka, created_at_azka)
+            VALUES (%s, %s, NOW())
+        """, (
+            session['user_id_azka'],
+            f"Shipment {shipment_id}|CREATED|Shipment dibuat"
+        ))
         # ===== QR DATA =====
         qr_data = f"PAKET|{shipment_id}|{tracking_number}"
 
@@ -1485,73 +1478,199 @@ def shipment_add_azka():
         conn.close()
 
     return redirect(url_for('shipment_azka'))
-
 @app.route('/shipment_delete_azka/<int:shipment_id>', methods=['POST'])
 def shipment_delete_azka(shipment_id):
 
     if 'user_id_azka' not in session:
         return "Unauthorized", 401
 
-    # 🔒 HANYA ADMIN
     if session.get('role_id_azka') != 1:
         return "Forbidden", 403
 
     conn = get_db_connection_azka()
     cursor = conn.cursor(dictionary=True)
 
-    # ===== AMBIL SHIPMENT =====
-    cursor.execute("""
-        SELECT status_azka
-        FROM tbl_shipment_azka
-        WHERE id_azka = %s
-    """, (shipment_id,))
-    shipment = cursor.fetchone()
+    try:
+        conn.start_transaction()
 
-    if not shipment:
+        # 🔒 LOCK DATA
+        cursor.execute("""
+            SELECT status_azka, tracking_number_azka
+            FROM tbl_shipment_azka
+            WHERE id_azka = %s
+            FOR UPDATE
+        """, (shipment_id,))
+        shipment = cursor.fetchone()
+
+        if not shipment:
+            raise Exception("Shipment tidak ditemukan ❌")
+
+        forbidden_status = [
+            'DRIVER_ASSIGNED',
+            'PICKUP',
+            'ARRIVED_AT_ORIGIN_HUB',
+            'IN_TRANSIT',
+            'SORTING',
+            'OUT_FOR_DELIVERY',
+            'ON_THE_WAY',
+            'DELIVERED'
+        ]
+
+        if shipment['status_azka'] in forbidden_status:
+            raise Exception("Shipment sudah diproses, tidak bisa dihapus ❌")
+
+        # =============================
+        # LOG DULU (SEBELUM DELETE)
+        # =============================
+        cursor.execute("""
+            INSERT INTO tbl_activity_logs_azka
+            (user_id_azka, shipment_id_azka, actions_azka, reference_azka, created_at_azka)
+            VALUES (%s,%s,%s,%s,NOW())
+        """, (
+            session['user_id_azka'],
+            shipment_id,
+            "DELETE_SHIPMENT",
+            shipment['tracking_number_azka']
+        ))
+
+        # =============================
+        # HAPUS FILE QR
+        # =============================
+        qr_path = f"static/qr_paket/{shipment['tracking_number_azka']}.png"
+        if os.path.exists(qr_path):
+            os.remove(qr_path)
+
+        # =============================
+        # HAPUS SHIPMENT (CASCADE)
+        # =============================
+        cursor.execute("""
+            DELETE FROM tbl_shipment_azka 
+            WHERE id_azka=%s
+        """, (shipment_id,))
+
+        conn.commit()
+        flash("Shipment berhasil dihapus 🗑️", "success")
+
+    except Exception as e:
+        conn.rollback()
+        flash(str(e), "danger")
+
+    finally:
         conn.close()
-        flash("Shipment tidak ditemukan", "danger")
-        return redirect(url_for('shipment_azka'))
 
-    # 🚫 STATUS YANG TIDAK BOLEH DIHAPUS
-    forbidden_status = [
-        'PICKUP',
-        'ARRIVED_AT_ORIGIN_HUB',
-        'IN_TRANSIT',
-        'SORTING',
-        'OUT_FOR_DELIVERY',
-        'ON_THE_WAY',
-        'DELIVERED'
-    ]
-
-    if shipment['status_azka'] in forbidden_status:
-        conn.close()
-        flash("Shipment sudah diproses, tidak bisa dihapus ❌", "danger")
-        return redirect(url_for('shipment_azka'))
-
-    # ===== HAPUS DATA TERKAIT (AMAN) =====
-    cursor.execute("DELETE FROM tbl_products_azka WHERE shipment_id_azka=%s", (shipment_id,))
-    cursor.execute("DELETE FROM tbl_courier_scans_azka WHERE shipment_id_azka=%s", (shipment_id,))
-    cursor.execute("DELETE FROM tbl_driver_scans_azka WHERE shipment_id_azka=%s", (shipment_id,))
-
-    # ===== HAPUS SHIPMENT =====
-    cursor.execute("DELETE FROM tbl_shipment_azka WHERE id_azka=%s", (shipment_id,))
-
-    # ===== LOG =====
-    cursor.execute("""
-        INSERT INTO tbl_activity_logs_azka
-        (user_id_azka, actions_azka, created_at_azka)
-        VALUES (%s,%s,NOW())
-    """, (
-        session['user_id_azka'],
-        f"Hapus shipment ID {shipment_id}"
-    ))
-
-    conn.commit()
-    conn.close()
-
-    flash("Shipment berhasil dihapus 🗑️", "success")
     return redirect(url_for('shipment_azka'))
+@app.route('/admin_scan_driver_assignment_azka', methods=['POST'])
+def admin_scan_driver_assignment_azka():
 
+    if 'user_id_azka' not in session:
+        return jsonify({"message": "Unauthorized"}), 401
+
+    if session.get('role_id_azka') != 1:
+        return jsonify({"message": "Forbidden"}), 403
+
+    shipment_id = request.form.get('shipment_id')
+    driver_qr = request.form.get('driver_qr')
+
+    if not shipment_id or not driver_qr:
+        return jsonify({"message": "Data tidak lengkap"}), 400
+
+    conn = get_db_connection_azka()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        conn.start_transaction()
+
+        # ================= PARSE QR =================
+        if "SOPIR|" in driver_qr:
+            driver_id = driver_qr.split("|")[1]
+        else:
+            driver_id = driver_qr.strip()
+
+        # ================= LOCK DRIVER =================
+        cursor.execute("""
+            SELECT id_azka, username_azka
+            FROM tbl_users_azka
+            WHERE id_azka = %s
+            AND role_id_azka = 5
+            FOR UPDATE
+        """, (driver_id,))
+        driver = cursor.fetchone()
+
+        if not driver:
+            conn.rollback()
+            return jsonify({"message": "Driver tidak ditemukan"}), 404
+
+        # ================= LOCK SHIPMENT =================
+        cursor.execute("""
+            SELECT id_azka, tracking_number_azka, status_azka, warehouse_id_azka
+            FROM tbl_shipment_azka
+            WHERE id_azka = %s
+            FOR UPDATE
+        """, (shipment_id,))
+        shipment = cursor.fetchone()
+
+        if not shipment:
+            conn.rollback()
+            return jsonify({"message": "Shipment tidak ditemukan"}), 404
+
+        if shipment['status_azka'] != 'CREATED':
+            conn.rollback()
+            return jsonify({
+                "message": "Shipment sudah diproses, tidak bisa assign driver"
+            }), 400
+
+        # ================= CEK DRIVER AKTIF =================
+        cursor.execute("""
+            SELECT s.warehouse_id_azka, w.nama_azka
+            FROM tbl_shipment_azka s
+            LEFT JOIN tbl_warehouses_azka w
+                ON s.warehouse_id_azka = w.id_azka
+            WHERE s.driver_id_azka = %s
+            AND s.status_azka NOT IN ('DELIVERED', 'CANCELLED')
+            LIMIT 1
+        """, (driver['id_azka'],))
+        active_shipment = cursor.fetchone()
+
+        # ================= VALIDASI GUDANG =================
+        if active_shipment:
+            if active_shipment['warehouse_id_azka'] != shipment['warehouse_id_azka']:
+                conn.rollback()
+                return jsonify({
+                    "message": f"Driver sedang aktif di gudang {active_shipment['nama_azka']}, tidak bisa assign ke gudang berbeda"
+                }), 400
+
+        # ================= ASSIGN DRIVER =================
+        cursor.execute("""
+            UPDATE tbl_shipment_azka
+            SET driver_id_azka = %s,
+                status_azka = 'DRIVER_ASSIGNED'
+            WHERE id_azka = %s
+        """, (driver['id_azka'], shipment_id))
+
+        # ================= LOG =================
+        cursor.execute("""
+            INSERT INTO tbl_activity_logs_azka
+            (user_id_azka, shipment_id_azka, actions_azka, created_at_azka)
+            VALUES (%s,%s,%s,NOW())
+        """, (
+            session['user_id_azka'],
+            shipment_id,
+            f"Driver {driver['username_azka']} assigned ke paket {shipment['tracking_number_azka']}"
+        ))
+
+        conn.commit()
+
+        return jsonify({
+            "message": f"Driver {driver['username_azka']} berhasil ditugaskan"
+        })
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"message": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
 # ===========================
 #   GUDANG DASHBOARD
 # ===========================
@@ -1606,96 +1725,7 @@ def gudang_dashboard_azka():
         data_per_kota=data_per_kota,            # ✅ PENTING
         shipment_scan_list_azka=shipment_scan_list_azka
     )
-@app.route('/scan_sortir_azka', methods=['POST'])
-def scan_sortir_azka():
-    data = request.get_json()
-    raw_qr = data.get('tracking_number')
 
-    if not raw_qr:
-        return jsonify({"status": "danger", "message": "❌ QR kosong"})
-
-    try:
-        raw_qr = raw_qr.strip().replace("\n", "").replace("\r", "").replace("\ufeff", "")
-
-        parts = [x.strip() for x in raw_qr.split("|")]
-
-        if len(parts) != 3 or parts[0].upper() != "PAKET":
-            raise ValueError("QR Paket tidak valid")
-
-        shipment_id = int(parts[1])
-        tracking = parts[2]
-
-    except Exception as e:
-        print("ERROR PARSE PAKET:", repr(raw_qr))
-        print("DETAIL:", str(e))
-        return jsonify({
-            "status": "danger",
-            "message": "❌ Format QR Paket tidak valid"
-        })
-
-    shipment_id = int(parts[1])
-    tracking = parts[2]
-
-    conn = get_db_connection_azka()
-    conn.autocommit = False
-    cursor = conn.cursor(dictionary=True)
-
-    # 🔒 Lock shipment (anti double scan)
-    cursor.execute("""
-        SELECT id_azka, status_azka
-        FROM tbl_shipment_azka
-        WHERE id_azka=%s AND tracking_number_azka=%s
-        FOR UPDATE
-    """, (shipment_id, tracking))
-
-    shipment = cursor.fetchone()
-    if not shipment:
-        conn.close()
-        return jsonify({
-            "status": "danger",
-            "message": "❌ Paket tidak ditemukan"
-        })
-
-    # ================= VALIDASI STATUS =================
-    if shipment['status_azka'] == 'SORTING':
-        conn.close()
-        return jsonify({
-            "status": "warning",
-            "message": "⚠️ Paket sudah dalam proses sortir"
-        })
-
-    if shipment['status_azka'] != 'IN_TRANSIT':
-        conn.close()
-        return jsonify({
-            "status": "danger",
-            "message": "❌ Paket belum siap disortir"
-        })
-
-    # ================= UPDATE =================
-    cursor.execute("""
-        UPDATE tbl_shipment_azka
-        SET status_azka='SORTING'
-        WHERE id_azka=%s
-    """, (shipment_id,))
-
-    # 📝 ACTIVITY LOG
-    cursor.execute("""
-        INSERT INTO tbl_activity_logs_azka
-        (user_id_azka, actions_azka, created_at_azka)
-        VALUES (%s,%s,NOW())
-    """, (
-        session.get('user_id_azka'),
-        f"📦 Paket masuk sortir | {tracking}"
-    ))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({
-        "status": "success",
-        "message": "✅ Paket berhasil masuk proses sortir",
-        "reload": True
-    })
 @app.route('/scan_kurir_ready_delivery_azka', methods=['POST'])
 def scan_kurir_ready_delivery_azka():
 
@@ -1703,8 +1733,6 @@ def scan_kurir_ready_delivery_azka():
 
     qr_kurir = data.get('qr_kurir')
     qr_paket = data.get('qr_paket')
-    latitude = data.get('latitude')
-    longitude = data.get('longitude')
 
     if not qr_kurir or not qr_paket:
         return jsonify({
@@ -1779,13 +1807,6 @@ def scan_kurir_ready_delivery_azka():
                 "message": "❌ Tracking tidak cocok"
             })
 
-        # ================= VALIDASI STATUS =================
-        if shipment['status_azka'] != 'READY_FOR_PICKUP':
-            conn.rollback()
-            return jsonify({
-                "status": "warning",
-                "message": "⚠️ Paket belum siap diambil kurir"
-            })
 
         if shipment['status_azka'] == 'READY_FOR_DELIVERY':
             conn.rollback()
@@ -1866,7 +1887,98 @@ def scan_kurir_ready_delivery_azka():
 
     finally:
         conn.close()
+@app.route('/scan_sortir_azka', methods=['POST'])
+def scan_sortir_azka():
 
+    if 'user_id_azka' not in session:
+        return jsonify({"status": "danger", "message": "Unauthorized"}), 401
+
+    data = request.get_json()
+    raw_qr = data.get('qr_paket')  # samakan dengan frontend
+
+    if not raw_qr:
+        return jsonify({
+            "status": "danger",
+            "message": "❌ QR kosong"
+        })
+
+    try:
+        raw_qr = raw_qr.strip().replace("\n", "").replace("\r", "").replace("\ufeff", "")
+
+        parts = [x.strip() for x in raw_qr.split("|")]
+
+        if len(parts) != 3 or parts[0].upper() != "PAKET":
+            raise ValueError("QR Paket tidak valid")
+
+        shipment_id = int(parts[1])
+        tracking = parts[2]
+
+    except Exception as e:
+        print("ERROR PARSE:", raw_qr)
+        print("DETAIL:", str(e))
+        return jsonify({
+            "status": "danger",
+            "message": "❌ Format QR tidak valid"
+        })
+
+    conn = get_db_connection_azka()
+    conn.autocommit = False
+    cursor = conn.cursor(dictionary=True)
+
+    # Lock data
+    cursor.execute("""
+        SELECT id_azka, status_azka
+        FROM tbl_shipment_azka
+        WHERE id_azka=%s AND tracking_number_azka=%s
+        FOR UPDATE
+    """, (shipment_id, tracking))
+
+    shipment = cursor.fetchone()
+
+    if not shipment:
+        conn.close()
+        return jsonify({
+            "status": "danger",
+            "message": "❌ Paket tidak ditemukan"
+        })
+
+    if shipment['status_azka'] == 'SORTING':
+        conn.close()
+        return jsonify({
+            "status": "warning",
+            "message": "⚠️ Paket sudah disortir"
+        })
+
+    if shipment['status_azka'] != 'TRANSIT_HUB':
+        conn.close()
+        return jsonify({
+            "status": "danger",
+            "message": "❌ Paket belum masuk gudang"
+        })
+
+    cursor.execute("""
+        UPDATE tbl_shipment_azka
+        SET status_azka='SORTING'
+        WHERE id_azka=%s
+    """, (shipment_id,))
+
+    cursor.execute("""
+        INSERT INTO tbl_activity_logs_azka
+        (user_id_azka, actions_azka, created_at_azka)
+        VALUES (%s,%s,NOW())
+    """, (
+        session.get('user_id_azka'),
+        f"📦 Paket sedang di sortir | {tracking}"
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "status": "success",
+        "message": f"✅ Paket {tracking} masuk sortir",
+        "reload": False
+    })
 @app.route('/gudang_lokasi_azka')
 def gudang_lokasi_azka():
     if 'user_id_azka' not in session:
@@ -1997,89 +2109,93 @@ def scan_kurir_azka():
     try:
         conn.start_transaction()
 
-        # =================================================
-        # ================= SCAN OUT GUDANG =================
-        # =================================================
+        # =====================================================
+        # ===================== OUT ===========================
+        # =====================================================
         if scan_type == "OUT":
 
             if not warehouse_id:
                 return jsonify({"message": "Scan gudang wajib"}), 400
 
             warehouse_id = int(warehouse_id)
+
+            # Validasi gudang
+            cursor.execute("""
+                SELECT id_azka FROM tbl_warehouses_azka
+                WHERE id_azka=%s
+            """, (warehouse_id,))
+            if not cursor.fetchone():
+                conn.rollback()
+                return jsonify({"message": "Gudang tidak valid"}), 400
+
+            # Tidak boleh masih ON_THE_WAY
             cursor.execute("""
                 SELECT COUNT(*) as total
                 FROM tbl_shipment_azka
                 WHERE courier_id_azka=%s
                 AND status_azka='ON_THE_WAY'
             """, (courier_id,))
-
-            existing = cursor.fetchone()['total']
-
-            if existing > 0:
+            if cursor.fetchone()['total'] > 0:
                 conn.rollback()
                 return jsonify({
-                    "message": f"Masih ada {existing} paket belum terkirim"
+                    "message": "Masih ada paket belum terkirim"
                 }), 400
 
+            # Ambil paket sesuai gudang
             cursor.execute("""
-            SELECT 
-                s.id_azka,
-                s.tracking_number_azka,
-                s.receiver_name_azka,
-                s.receiver_city_azka,
-                p.nama_barang_azka AS product_name_azka,
-                p.berat_azka AS weight_azka
-            FROM tbl_shipment_azka s
-            LEFT JOIN tbl_products_azka p
-                ON p.shipment_id_azka = s.id_azka
-            WHERE s.courier_id_azka=%s
-            AND s.status_azka='READY_FOR_DELIVERY'
-            ORDER BY s.created_at_azka ASC
-            LIMIT 10
-            FOR UPDATE
-        """, (courier_id,))
-
+                SELECT 
+                    s.id_azka,
+                    s.tracking_number_azka,
+                    s.receiver_name_azka,
+                    s.receiver_city_azka,
+                    p.nama_barang_azka AS product_name_azka,
+                    p.berat_azka AS weight_azka
+                FROM tbl_shipment_azka s
+                LEFT JOIN tbl_products_azka p
+                    ON p.shipment_id_azka = s.id_azka
+                WHERE s.courier_id_azka=%s
+                AND s.status_azka='READY_FOR_DELIVERY'
+                AND s.warehouse_id_azka=%s
+                ORDER BY s.created_at_azka ASC
+                LIMIT 10
+                FOR UPDATE
+            """, (courier_id, warehouse_id))
 
             shipments = cursor.fetchall()
 
-            # Jika tidak ada, jangan error 400
             if not shipments:
                 conn.rollback()
                 return jsonify({
-                    "message": "Tidak ada paket READY_FOR_DELIVERY",
-                    "data": []
-                }), 200
+                    "message": "Tidak ada paket di gudang ini"
+                }), 400
 
             shipment_ids = [s['id_azka'] for s in shipments]
 
+            # Update status
             cursor.execute(f"""
                 UPDATE tbl_shipment_azka
                 SET status_azka='ON_THE_WAY'
                 WHERE id_azka IN ({','.join(['%s']*len(shipment_ids))})
             """, shipment_ids)
 
+            # Insert scan + log
             for shipment in shipments:
 
-                sid = shipment['id_azka']
-                tracking = shipment['tracking_number_azka']
-
-                # Scan OUT
                 cursor.execute("""
                     INSERT INTO tbl_courier_scans_azka
-                    (shipment_id_azka, courier_id_azka, warehouse_id_azka, scan_type_azka, scan_time_azka)
+                    (courier_id_azka, shipment_id_azka, warehouse_id_azka, scan_type_azka, scan_time_azka)
                     VALUES (%s,%s,%s,'OUT',NOW())
-                """, (sid, courier_id, warehouse_id))
+                """, (courier_id, shipment['id_azka'], warehouse_id))
 
-                # Activity Log
                 cursor.execute("""
                     INSERT INTO tbl_activity_logs_azka
-                    (user_id_azka, shipment_id_azka, actions_azka, reference_azka, created_at_azka)
-                    VALUES (%s,%s,%s,%s,NOW())
+                    (user_id_azka, shipment_id_azka, actions_azka, reference_azka)
+                    VALUES (%s,%s,%s,%s)
                 """, (
                     courier_id,
-                    sid,
-                    f"Paket {tracking} sedang dalam pengantaran",
-                    tracking
+                    shipment['id_azka'],
+                    f"Paket {shipment['tracking_number_azka']} sedang dalam pengantaran",
+                    shipment['tracking_number_azka']
                 ))
 
             conn.commit()
@@ -2089,10 +2205,9 @@ def scan_kurir_azka():
                 "data": shipments
             }), 200
 
-
-        # =================================================
-        # ================= SCAN PAKET ====================
-        # =================================================
+        # =====================================================
+        # ================= DELIVERED =========================
+        # =====================================================
         elif scan_type == "PACKAGE":
 
             if not package_code:
@@ -2113,14 +2228,14 @@ def scan_kurir_azka():
                 return jsonify({"message": "Paket tidak ditemukan"}), 404
 
             if shipment['courier_id_azka'] != courier_id:
-                return jsonify({"message": "Paket bukan milik kurir ini"}), 403
+                return jsonify({"message": "Bukan milik kurir ini"}), 403
 
             if shipment['status_azka'] != 'ON_THE_WAY':
                 return jsonify({
                     "message": f"Status paket masih {shipment['status_azka']}"
                 }), 400
 
-            # Update Delivered
+            # Update status
             cursor.execute("""
                 UPDATE tbl_shipment_azka
                 SET status_azka='DELIVERED',
@@ -2128,18 +2243,18 @@ def scan_kurir_azka():
                 WHERE id_azka=%s
             """, (shipment_id,))
 
-            # Scan IN (delivered)
+            # Insert scan
             cursor.execute("""
                 INSERT INTO tbl_courier_scans_azka
-                (shipment_id_azka, courier_id_azka, scan_type_azka, scan_time_azka)
-                VALUES (%s,%s,'IN',NOW())
-            """, (shipment_id, courier_id))
+                (courier_id_azka, shipment_id_azka, scan_type_azka, scan_time_azka)
+                VALUES (%s,%s,'DELIVERED',NOW())
+            """, (courier_id, shipment_id))
 
-            # Activity Log
+            # Activity log
             cursor.execute("""
                 INSERT INTO tbl_activity_logs_azka
-                (user_id_azka, shipment_id_azka, actions_azka, reference_azka, created_at_azka)
-                VALUES (%s,%s,%s,%s,NOW())
+                (user_id_azka, shipment_id_azka, actions_azka, reference_azka)
+                VALUES (%s,%s,%s,%s)
             """, (
                 courier_id,
                 shipment_id,
@@ -2148,71 +2263,161 @@ def scan_kurir_azka():
             ))
 
             conn.commit()
+            return jsonify({"message": "Paket berhasil diserahkan"}), 200
 
-            return jsonify({"message": "Paket sudah diterima"}), 200
-        # =================================================
-        # ============ RETURN TO WAREHOUSE =================
-        # =================================================
+        # =====================================================
+        # ================= RETURN ============================
+        # =====================================================
         elif scan_type == "RETURN":
 
             if not warehouse_id:
-                conn.rollback()
                 return jsonify({"message": "Scan gudang wajib"}), 400
 
             warehouse_id = int(warehouse_id)
 
-            # Pastikan tidak ada paket ON_THE_WAY
+            # ================= LOCK KURIR =================
+            cursor.execute("""
+                SELECT id_azka
+                FROM tbl_users_azka
+                WHERE id_azka=%s
+                FOR UPDATE
+            """, (courier_id,))
+
+            if not cursor.fetchone():
+                conn.rollback()
+                return jsonify({
+                    "message": "Kurir tidak valid"
+                }), 400
+
+            # ================= VALIDASI GUDANG =================
+            cursor.execute("""
+                SELECT id_azka
+                FROM tbl_warehouses_azka
+                WHERE id_azka=%s
+                FOR UPDATE
+            """, (warehouse_id,))
+
+            if not cursor.fetchone():
+                conn.rollback()
+                return jsonify({
+                    "message": "Gudang tidak valid"
+                }), 400
+
+            # ================= CEK SUDAH OUT ATAU BELUM =================
+            cursor.execute("""
+                SELECT warehouse_id_azka
+                FROM tbl_courier_scans_azka
+                WHERE courier_id_azka=%s
+                AND scan_type_azka='OUT'
+                ORDER BY scan_time_azka DESC
+                LIMIT 1
+                FOR UPDATE
+            """, (courier_id,))
+
+            last_out = cursor.fetchone()
+
+            if not last_out:
+                conn.rollback()
+                return jsonify({
+                    "message": "Kurir belum mengambil paket"
+                }), 400
+
+            # Pastikan return ke gudang yang sama
+            if last_out['warehouse_id_azka'] != warehouse_id:
+                conn.rollback()
+                return jsonify({
+                    "message": "Harus kembali ke gudang asal"
+                }), 400
+
+            # ================= LOCK SEMUA PAKET AKTIF =================
+            cursor.execute("""
+                SELECT 
+                    id_azka,
+                    tracking_number_azka,
+                    status_azka
+                FROM tbl_shipment_azka
+                WHERE courier_id_azka=%s
+                AND status_azka IN (
+                    'READY_FOR_DELIVERY',
+                    'ON_THE_WAY',
+                    'FAILED_DELIVERY',
+                    'RETURN_TO_SENDER'
+                )
+                FOR UPDATE
+            """, (courier_id,))
+
+            active_shipments = cursor.fetchall()
+
+            if active_shipments:
+                paket_list = ", ".join(
+                    [p['tracking_number_azka'] for p in active_shipments]
+                )
+
+                conn.rollback()
+                return jsonify({
+                    "message": f"Masih membawa paket: {paket_list}"
+                }), 400
+
+            # ================= CEK ADA PAKET NYANGKUT =================
             cursor.execute("""
                 SELECT COUNT(*) as total
                 FROM tbl_shipment_azka
                 WHERE courier_id_azka=%s
-                AND status_azka='ON_THE_WAY'
+                AND status_azka NOT IN (
+                    'DELIVERED',
+                    'CANCELLED'
+                )
+                FOR UPDATE
             """, (courier_id,))
 
-            remaining = cursor.fetchone()['total']
+            sisa = cursor.fetchone()['total']
 
-            if remaining > 0:
+            if sisa > 0:
                 conn.rollback()
                 return jsonify({
-                    "message": f"Masih ada {remaining} paket belum terkirim"
+                    "message": "Masih ada paket belum selesai"
                 }), 400
 
-            # Log return scan
+            # ================= INSERT RETURN =================
             cursor.execute("""
                 INSERT INTO tbl_courier_scans_azka
-                (shipment_id_azka, courier_id_azka, warehouse_id_azka, scan_type_azka, scan_time_azka)
-                VALUES (NULL,%s,%s,'RETURN',NOW())
+                (
+                    courier_id_azka,
+                    warehouse_id_azka,
+                    scan_type_azka,
+                    scan_time_azka
+                )
+                VALUES (%s,%s,'RETURN',NOW())
             """, (courier_id, warehouse_id))
 
+            # ================= ACTIVITY LOG =================
             cursor.execute("""
                 INSERT INTO tbl_activity_logs_azka
-                (user_id_azka, shipment_id_azka, actions_azka, reference_azka, created_at_azka)
-                VALUES (%s,NULL,%s,NULL,NOW())
+                (
+                    user_id_azka,
+                    shipment_id_azka,
+                    actions_azka,
+                    created_at_azka
+                )
+                VALUES (%s,NULL,%s,NOW())
             """, (
                 courier_id,
-                "Kurir kembali ke gudang dan menyelesaikan pengantaran"
+                "Kurir kembali ke gudang"
             ))
 
             conn.commit()
 
             return jsonify({
-                "message": "Kurir berhasil kembali ke gudang. Siap ambil paket baru."
+                "message": "Kurir berhasil kembali ke gudang"
             }), 200
-
-        else:
-            conn.rollback()
-            return jsonify({"message": "Scan type tidak valid"}), 400
-
-
     except Exception as e:
-        print("SCAN ERROR:", e)
         conn.rollback()
+        print("SCAN ERROR:", e)
         return jsonify({"message": "Terjadi kesalahan server"}), 500
 
     finally:
         cursor.close()
         conn.close()
-
 @app.route('/scan_kurir_masuk_gudang_azka', methods=['POST'])
 def scan_kurir_masuk_gudang_azka():
 
@@ -2300,23 +2505,39 @@ def qr_sopir_azka(driver_id_azka):
 @app.route('/scan_sopir_azka', methods=['POST'])
 def scan_sopir_azka():
 
+    # =============================
+    # AUTH
+    # =============================
     if 'user_id_azka' not in session:
-        return "Unauthorized", 401
+        return {"message": "Unauthorized"}, 401
 
     if session.get('role_id_azka') != 5:
-        return "Forbidden", 403
+        return {"message": "Forbidden"}, 403
 
     driver_id = session['user_id_azka']
-    scan_type = request.form.get('scan_type_azka')
-    warehouse_id = request.form.get('warehouse_id_azka')
 
-    if scan_type not in ['IN', 'OUT']:
-        return "Scan wajib IN atau OUT", 400
+    # =============================
+    # AMBIL DATA JSON
+    # =============================
+    data = request.get_json(silent=True) or {}
+    scan_type_azka = data.get('scan_type_azka')
+    warehouse_id_azka = data.get('warehouse_id_azka')
 
-    if not warehouse_id:
-        return "Warehouse wajib", 400
+    print("DEBUG DATA:", data)
 
-    warehouse_id = int(warehouse_id)
+    # =============================
+    # VALIDASI INPUT
+    # =============================
+    if scan_type_azka not in ['IN', 'OUT', 'RETURN']:
+        return {"message": "Scan type tidak valid"}, 400
+
+    if not warehouse_id_azka:
+        return {"message": "Warehouse wajib"}, 400
+
+    try:
+        warehouse_id_azka = int(warehouse_id_azka)
+    except:
+        return {"message": "Warehouse tidak valid"}, 400
 
     conn = get_db_connection_azka()
     cursor = conn.cursor(dictionary=True)
@@ -2325,7 +2546,23 @@ def scan_sopir_azka():
         conn.start_transaction()
 
         # =============================
-        # VALIDASI POLA SCAN
+        # CEK ADA SHIPMENT AKTIF
+        # =============================
+        cursor.execute("""
+            SELECT COUNT(*) as total
+            FROM tbl_shipment_azka
+            WHERE driver_id_azka=%s
+            AND status_azka IN (
+                'DRIVER_ASSIGNED',
+                'PICKUP',
+                'ARRIVED_AT_ORIGIN_HUB',
+                'IN_TRANSIT'
+            )
+        """, (driver_id,))
+        active_job = cursor.fetchone()['total']
+
+        # =============================
+        # LAST SCAN
         # =============================
         cursor.execute("""
             SELECT scan_type_azka
@@ -2337,167 +2574,191 @@ def scan_sopir_azka():
         """, (driver_id,))
         last_scan = cursor.fetchone()
 
+        # =============================
+        # VALIDASI FLOW
+        # =============================
         if last_scan:
-            if last_scan['scan_type_azka'] == 'IN' and scan_type != 'OUT':
-                raise Exception("Setelah IN wajib OUT dulu")
-            if last_scan['scan_type_azka'] == 'OUT' and scan_type != 'IN':
-                raise Exception("Setelah OUT wajib IN dulu")
+            last = last_scan['scan_type_azka']
+
+            if last == 'IN' and scan_type_azka != 'OUT':
+                raise Exception("Setelah IN wajib OUT")
+
+            if last == 'OUT' and scan_type_azka not in ['IN', 'RETURN']:
+                raise Exception("Setelah OUT hanya boleh IN atau RETURN")
+
         else:
-            if scan_type != 'IN':
+            if scan_type_azka != 'IN':
                 raise Exception("Scan pertama wajib IN")
 
         # =============================
-        # DATA GUDANG
+        # VALIDASI GUDANG
         # =============================
         cursor.execute("""
-            SELECT nama_azka, latitude_azka, longitude_azka
+            SELECT id_azka, nama_azka, latitude_azka, longitude_azka, address_azka
             FROM tbl_warehouses_azka
             WHERE id_azka=%s
-        """, (warehouse_id,))
+        """, (warehouse_id_azka,))
         wh = cursor.fetchone()
 
         if not wh:
             raise Exception("Gudang tidak ditemukan")
 
-        updated_count = 0
+        # =============================
+        # VALIDASI RETURN
+        # =============================
+        if scan_type_azka == 'RETURN':
 
-        # =============================
-        # LOGIC SHIPMENT
-        # =============================
-        # =============================
-        # LOGIC SHIPMENT (FIX TOTAL)
-        # =============================
-        if scan_type == 'IN':
+            if not last_scan or last_scan['scan_type_azka'] != 'OUT':
+                raise Exception("RETURN hanya boleh setelah OUT")
 
-            # Cek apakah driver sudah bawa shipment
+            # cek masih bawa paket
             cursor.execute("""
                 SELECT COUNT(*) as total
                 FROM tbl_shipment_azka
                 WHERE driver_id_azka=%s
-                AND status_azka NOT IN ('DELIVERED','READY_FOR_DELIVERY')
+                AND status_azka = 'IN_TRANSIT'
             """, (driver_id,))
-            still_carrying = cursor.fetchone()['total']
+            masih_bawa = cursor.fetchone()['total']
 
-            if still_carrying > 0:
-                # Hub ke-2 dst → update SEMUA shipment driver
-                cursor.execute("""
-                    SELECT id_azka, status_azka,
-                        tracking_number_azka,
-                        is_interisland
-                    FROM tbl_shipment_azka
-                    WHERE driver_id_azka=%s
-                    AND status_azka NOT IN ('DELIVERED','READY_FOR_DELIVERY')
-                    FOR UPDATE
-                """, (driver_id,))
-            else:
-                # IN pertama → ambil max 20 dari gudang
-                cursor.execute("""
-                    SELECT id_azka, status_azka,
-                        tracking_number_azka,
-                        is_interisland
-                    FROM tbl_shipment_azka
-                    WHERE warehouse_id_azka=%s
-                    AND driver_id_azka IS NULL
-                    AND status_azka='CREATED'
-                    ORDER BY created_at_azka
-                    LIMIT 20
-                    FOR UPDATE
-                """, (warehouse_id,))
-
-        else:  # OUT
-
-            # OUT → update semua shipment driver
-            cursor.execute("""
-                SELECT id_azka, status_azka,
-                    tracking_number_azka,
-                    is_interisland
-                FROM tbl_shipment_azka
-                WHERE driver_id_azka=%s
-                AND status_azka NOT IN ('DELIVERED','READY_FOR_DELIVERY')
-                FOR UPDATE
-            """, (driver_id,))
-
-        shipments = cursor.fetchall() or []
+            if masih_bawa > 0:
+                raise Exception("Masih ada paket di perjalanan")
 
         # =============================
-        # FLOW STATUS
+        # AMBIL SHIPMENT
         # =============================
-        next_status_map = {
-            'CREATED': 'PICKUP',
-            'PICKUP': 'ARRIVED_AT_ORIGIN_HUB',
-            'ARRIVED_AT_ORIGIN_HUB': 'IN_TRANSIT',
-            'IN_TRANSIT': 'SORTING',
-            'SORTING': 'READY_FOR_DELIVERY'
-        }
-
-        for s in shipments:
-
-            next_status = next_status_map.get(s['status_azka'])
-            if not next_status:
-                continue
-
-            new_driver = driver_id
-            if next_status == 'READY_FOR_DELIVERY':
-                new_driver = None
-
-            cursor.execute("""
-                UPDATE tbl_shipment_azka
-                SET status_azka=%s,
-                    warehouse_id_azka=%s,
-                    driver_id_azka=%s
-                WHERE id_azka=%s
-            """, (
-                next_status,
-                warehouse_id,
-                new_driver,
-                s['id_azka']
-            ))
-
-            desc = get_description(
-                next_status,
-                wh['nama_azka'],
-                s['is_interisland']
+        cursor.execute("""
+            SELECT id_azka,
+                   status_azka,
+                   tracking_number_azka,
+                   is_interisland,
+                   warehouse_id_azka
+            FROM tbl_shipment_azka
+            WHERE driver_id_azka=%s
+            AND status_azka NOT IN (
+                'DELIVERED',
+                'READY_FOR_DELIVERY',
+                'TRANSIT_HUB'
             )
+            FOR UPDATE
+        """, (driver_id,))
 
-            cursor.execute("""
-                INSERT INTO tbl_activity_logs_azka
-                (user_id_azka, actions_azka, created_at_azka)
-                VALUES (%s,%s,NOW())
-            """, (
-                driver_id,
-                f"{desc} | {s['tracking_number_azka']}"
-            ))
+        shipments = cursor.fetchall()
 
-            updated_count += 1
+        updated_count = 0
 
         # =============================
-        # INSERT DRIVER SCAN (selalu masuk)
+        # PROSES SHIPMENT (KALAU ADA)
+        # =============================
+        if shipments:
+            for s in shipments:
+
+                current_status = s['status_azka']
+
+                # FLOW STATUS
+                if scan_type_azka == 'RETURN':
+                    next_status = 'ARRIVED_AT_ORIGIN_HUB'
+                else:
+                    next_status_map = {
+                        'DRIVER_ASSIGNED': 'PICKUP',
+                        'PICKUP': 'ARRIVED_AT_ORIGIN_HUB',
+                        'ARRIVED_AT_ORIGIN_HUB': 'IN_TRANSIT',
+                        'IN_TRANSIT': 'TRANSIT_HUB',
+                    }
+                    next_status = next_status_map.get(current_status)
+
+                if not next_status:
+                    continue
+
+                # VALIDASI ORIGIN
+                if current_status == 'DRIVER_ASSIGNED':
+                    if scan_type_azka != 'IN':
+                        raise Exception("Scan pertama di gudang asal wajib IN")
+
+                    if s['warehouse_id_azka'] != warehouse_id_azka:
+                        raise Exception(
+                            f"Shipment {s['tracking_number_azka']} bukan dari gudang ini"
+                        )
+
+                # DRIVER RELEASE
+                new_driver = driver_id
+                if next_status == 'TRANSIT_HUB':
+                    new_driver = None
+
+                # UPDATE
+                cursor.execute("""
+                    UPDATE tbl_shipment_azka
+                    SET status_azka=%s,
+                        warehouse_id_azka=%s,
+                        driver_id_azka=%s
+                    WHERE id_azka=%s
+                """, (
+                    next_status,
+                    warehouse_id_azka,
+                    new_driver,
+                    s['id_azka']
+                ))
+
+                # LOG
+                wh_next_city = wh['address_azka'] if wh.get('address_azka') else ''
+                desc = get_description(
+                    next_status,
+                    wh['nama_azka'],
+                    s.get('is_interisland', False),
+                    s.get('receiver_city_azka', ''),
+                    wh_next_city
+                )
+
+                cursor.execute("""
+                    INSERT INTO tbl_activity_logs_azka
+                    (user_id_azka, actions_azka, created_at_azka)
+                    VALUES (%s,%s,NOW())
+                """, (
+                    driver_id,
+                    f"{desc} | {s['tracking_number_azka']}"
+                ))
+
+                updated_count += 1
+
+        else:
+            # =============================
+            # KALAU TIDAK ADA SHIPMENT
+            # =============================
+            if scan_type_azka != 'RETURN':
+                raise Exception("Tidak ada shipment aktif")
+
+        # =============================
+        # SIMPAN SCAN
         # =============================
         cursor.execute("""
             INSERT INTO tbl_driver_scans_azka
-            (driver_id_azka, warehouse_id_azka,
-             scan_type_azka, latitude_azka,
-             longitude_azka, scan_time_azka)
+            (driver_id_azka,
+             warehouse_id_azka,
+             scan_type_azka,
+             latitude_azka,
+             longitude_azka,
+             scan_time_azka)
             VALUES (%s,%s,%s,%s,%s,NOW())
         """, (
             driver_id,
-            warehouse_id,
-            scan_type,
+            warehouse_id_azka,
+            scan_type_azka,
             wh['latitude_azka'],
             wh['longitude_azka']
         ))
 
         conn.commit()
-        return f"OK - {updated_count} shipment diproses"
+
+        return {
+            "message": f"OK - {updated_count} shipment diproses"
+        }
 
     except Exception as e:
         conn.rollback()
-        return str(e), 400
+        print("ERROR SCAN SOPIR:", e)
+        return {"message": str(e)}, 400
 
     finally:
         conn.close()
-
-
 @app.route('/dashboard_sopir_azka')
 def dashboard_sopir_azka():
     if 'user_id_azka' not in session:
@@ -2518,7 +2779,7 @@ def dashboard_sopir_azka():
     """, (session['user_id_azka'],))
     kurir_azka = cursor.fetchone()
 
-    # 🔄 Scan terakhir
+    # Scan terakhir
     cursor.execute("""
         SELECT cs.*, w.nama_azka
         FROM tbl_driver_scans_azka cs
@@ -2544,9 +2805,6 @@ def dashboard_sopir_azka():
         LIMIT 50
     """, (session['user_id_azka'],))
     riwayat_pengiriman = cursor.fetchall()
-
-
-
 
     cursor.execute("""
         SELECT COUNT(*) as total
